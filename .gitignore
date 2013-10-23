@@ -22,3 +22,5 @@ target/
 /resources/perftest*
 *.iml
 /atlassian-ide-plugin.xml
+
+ngrinder-controller/keystore
