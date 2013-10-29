@@ -168,6 +168,9 @@
 							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 						</manifest>
 					</archive>
+                    <excludes>
+                        <exclude>shell/**</exclude>
+                    </excludes>
 				</configuration>
 			</plugin>
 
