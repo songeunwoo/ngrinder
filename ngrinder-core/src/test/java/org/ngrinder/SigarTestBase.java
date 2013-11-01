@@ -13,20 +13,28 @@
  */
 package org.ngrinder;
 
-import java.io.File;
-
+import org.hyperic.jni.ArchNotSupportedException;
+import org.hyperic.sigar.Sigar;
 import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * TestBase for sigar lib path
  * 
- * @author JunHo Yoon
  */
 public class SigarTestBase {
 
 	@Before
-	public void setupSigarLibPath() {
+	public void setupSigarLibPath() throws IOException {
 		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
-						+ new File("./native_lib").getAbsolutePath());
-	}
+						+ new File(""));
+    }
+
+    @Test
+    public void test() throws IOException, ArchNotSupportedException {
+       Sigar sigar = new Sigar();
+    }
 }
