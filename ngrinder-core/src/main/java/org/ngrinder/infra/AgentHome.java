@@ -13,22 +13,18 @@
  */
 package org.ngrinder.infra;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.Properties;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Class which represents AgentHome.
@@ -86,27 +82,37 @@ public class AgentHome {
 		return directory;
 	}
 
+    /**
+     * Get agent native directory.
+     *
+     * @return agent home directory
+     */
+    public File getNativeDirectory() {
+        File nativeFile = new File(directory.getAbsolutePath(), "native");
+        if (!nativeFile.exists())
+            nativeFile.mkdir();
+        return nativeFile;
+    }
+
 	/**
-	 * Copy {@link InputStream} to path in the target.
-	 * 
-	 * @param io
-	 *            {@link InputStream}
-	 * @param target
-	 *            target path. only file name will be used.
-	 * @param overwrite
-	 *            true if overwrite
-	 */
-	public void copyFileTo(InputStream io, File target, boolean overwrite) {
-		// Copy missing files
-		try {
-			target = new File(directory, target.getName());
-			if (!(target.exists())) {
-				FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
-			}
-		} catch (IOException e) {
-			throw processException("Failed to write a file to " + target.getAbsolutePath(), e);
-		}
-	}
+     * Copy {@link InputStream} to path in the target.
+     *
+     * @param io
+     *            {@link InputStream}
+     * @param target
+     *            target path. only file name will be used.
+     */
+    public void copyFileTo(InputStream io, File target) {
+        // Copy missing files
+        try {
+            target = new File(directory, target.getName());
+            if (!(target.exists())) {
+                FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
+            }
+        } catch (IOException e) {
+            throw processException("Failed to write a file to " + target.getAbsolutePath(), e);
+        }
+    }
 
 	/**
 	 * Get properties from path.

@@ -38,6 +38,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+        <dependency>
+            <groupId>sigar</groupId>
+            <artifactId>sigar-native</artifactId>
+            <version>1.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
@@ -102,16 +107,11 @@
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.1</version>
 		</dependency>
-
         <dependency>
-            <groupId>native1</groupId>
-            <artifactId>native_log1</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/patch/sigar.jar</systemPath>
-        </dependency>
-
-
+             <groupId>org.fusesource</groupId>
+             <artifactId>sigar</artifactId>
+             <version>1.6.4</version>
+         </dependency>
         <dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>

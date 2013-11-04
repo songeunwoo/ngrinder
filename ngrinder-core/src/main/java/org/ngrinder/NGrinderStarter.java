@@ -13,24 +13,13 @@
  */
 package org.ngrinder;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,9 +34,14 @@ import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.Context;
-import ch.qos.logback.core.joran.spi.JoranException;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Main class to start agent or monitor.
@@ -111,7 +105,7 @@ public class NGrinderStarter {
 	}
 
 	/*
-	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
+	 * Get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
 	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
@@ -218,7 +212,7 @@ public class NGrinderStarter {
 	}
 
 	/**
-	 * stop the ngrinder agent.
+	 * Stop the ngrinder agent.
 	 */
 	public void stopAgent() {
 		LOG.info("Stop nGrinder agent!");
@@ -226,6 +220,8 @@ public class NGrinderStarter {
 	}
 
 	private void addLibarayPath() {
+        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
+            + agentConfig.getHome().getNativeDirectory().getAbsolutePath());
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
 		String nativePath = isWebStart ? jnlpLibPath.getAbsolutePath() : LOCAL_NATIVE_PATH;
 		System.setProperty("java.library.path", property + File.pathSeparator + nativePath);
@@ -238,7 +234,6 @@ public class NGrinderStarter {
 	 * @return jar file collection
 	 */
 	protected Collection<File> getJarFileList() {
-
 		ArrayList<File> fileString = new ArrayList<File>();
 		if (isWebStart) {
 			jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
@@ -277,9 +272,9 @@ public class NGrinderStarter {
 
 		// Add patch first
 		for (File each : libList) {
-			if (each.getName().contains("patch")) {
+            if (each.getName().contains("patch")) {
 				addClassPath(classLoader, each);
-				libString.add(each.getPath());
+                libString.add(each.getPath());
 			}
 		}
 
@@ -340,7 +335,7 @@ public class NGrinderStarter {
 	}
 
 	/**
-	 * print help and exit. This is provided for mocking.
+	 * Print help and exit. This is provided for mocking.
 	 * 
 	 * @param message
 	 *            message
@@ -430,25 +425,25 @@ public class NGrinderStarter {
 	 * @param startMode
 	 *            monitor or agent
 	 */
-	public void checkDuplicatedRun(String startMode) {
-		Sigar sigar = new Sigar();
-		String existingPid = this.agentConfig.getAgentPidProperties(startMode);
-		if (StringUtils.isNotEmpty(existingPid)) {
-			try {
-				ProcState procState = sigar.getProcState(existingPid);
-				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
-						|| procState.getState() == ProcState.SLEEP) {
-					printHelpAndExit("Currently " + startMode + " is running with pid " + existingPid
-							+ ". Please stop it before run");
-				}
-				agentConfig.updateAgentPidProperties(startMode);
-			} catch (SigarException e) {
-				noOp();
-			}
-		}
+    public void checkDuplicatedRun(String startMode) {
+        Sigar sigar = new Sigar();
+        String existingPid = this.agentConfig.getAgentPidProperties(startMode);
+        if (StringUtils.isNotEmpty(existingPid)) {
+            try {
+                ProcState procState = sigar.getProcState(existingPid);
+                if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
+                        || procState.getState() == ProcState.SLEEP) {
+                    printHelpAndExit("Currently " + startMode + " is running with pid " + existingPid
+                            + ". Please stop it before run");
+                }
+                agentConfig.updateAgentPidProperties(startMode);
+            } catch (SigarException e) {
+                noOp();
+            }
+        }
 
-		this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
-	}
+        this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
+    }
 
 	/**
 	 * Check the current directory is valid or not.
