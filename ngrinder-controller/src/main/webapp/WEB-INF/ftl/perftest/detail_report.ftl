@@ -79,79 +79,78 @@
 	   </form>
 		<div class="row">
 			<div class="span3">
-			   <table class="table table-bordered compactpadding">
-				   <colgroup>
+			    <table class="table table-bordered compactpadding">
+				    <colgroup>
 						<col width="120px">
-						<col> 
-				   </colgroup>
-			       <tr>
+						<col>
+				    </colgroup>
+			        <tr>
 			       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
 			           <td><strong>${test.vuserPerAgent}</strong></td>
-			       </tr>
-			       <tr>
+			        </tr>
+			        <tr>
                        <th><@spring.message "perfTest.report.agent"/></th>
                        <td><span>${test.agentCount}</span>
-                   </tr>
-                   <tr>
+                    </tr>
+                    <tr>
                        <th><@spring.message "perfTest.report.process"/></th>
                        <td>${test.processes}</td>
-                   </tr>
-                   <tr>
+                    </tr>
+                    <tr>
                        <th><@spring.message "perfTest.report.thread"/></th>
                        <td>${test.threads}</td>
-                   </tr>
-                   <tr>
+                    </tr>
+                    <tr>
                         <td colspan="2" class="divider"></td>
-                   </tr>
-                   <#if test.threshold?? && test.threshold == "D"> 
-	                   <tr> 
+                    </tr>
+                    <#if test.threshold?? && test.threshold == "D">
+	                   <tr>
 	                       <th><@spring.message "perfTest.configuration.duration"/></th>
 	                       <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
 	                   </tr>
-                   <#else>
-                   		<tr> 
+                    <#else>
+                   		<tr>
 	                       <th><@spring.message "perfTest.configuration.runCount"/></th>
 	                       <td><span>${test.runCount}</td>
 	                   </tr>
-                   </#if>
-                   <tr> 
-	                   <th><@spring.message "perfTest.configuration.runtime"/></th>
-	                   <td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
-	               </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
-                       <td><span>${test.ignoreSampleCount}</span></td> 
-                   </tr>
-                   <tr>
+                    </#if>
+                    <tr>
+	                    <th><@spring.message "perfTest.configuration.runtime"/></th>
+	                    <td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
+	                </tr>
+                    <tr>
+                        <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
+                        <td><span>${test.ignoreSampleCount}</span></td>
+                    </tr>
+                    <tr>
                         <td colspan=2></td>
-                   </tr>
-                   <tr>
-                       <th>TPS</th>
-                       <td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.meantime"/></th>
-                       <td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
-                       
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.peakTPS"/></th> 
-                       <td><strong>${test.peakTps!""}</strong></td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.totalTests"/></th>
-                       <td>${(test.tests + test.errors)!""}</td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.successfulTests"/></th> 
-                       <td>${(test.tests)!""}</td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.errors"/></th>
-                       <td>${test.errors!""}</td> 
-                   </tr>
-			   </table>
-			   <ul class="nav nav-list">
+                    </tr>
+                    <tr>
+                        <th>TPS</th>
+                        <td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
+                    </tr>
+                    <tr>
+                        <th><@spring.message "perfTest.report.meantime"/></th>
+                        <td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
+                    </tr>
+                    <tr>
+                        <th><@spring.message "perfTest.report.peakTPS"/></th>
+                        <td><strong>${test.peakTps!""}</strong></td>
+                    </tr>
+                    <tr>
+                        <th><@spring.message "perfTest.report.totalTests"/></th>
+                        <td>${(test.tests + test.errors)!""}</td>
+                    </tr>
+                    <tr>
+                        <th><@spring.message "perfTest.report.successfulTests"/></th>
+                        <td>${(test.tests)!""}</td>
+                    </tr>
+                    <tr>
+                        <th><@spring.message "perfTest.report.errors"/></th>
+                        <td>${test.errors!""}</td>
+                    </tr>
+			    </table>
+			    <ul class="nav nav-list">
 					<li class="active">
 						<a id="test_btn" href="javascript:void(0);">
 							<i class="icon-tag icon-white"></i> <@spring.message "perfTest.report.performanceReport"/>
@@ -166,8 +165,20 @@
 							</#list>
 						</ul>
 					</li>
-					</#if>
-			   </ul>
+			        </#if>
+                    <#list pluginList as pluginName>
+                    <li><a><i class="icon-tags"></i> ${pluginName}</a></li>
+                        <li>
+                           <ul class="nav nav-list">
+                               <#list test.targetHostIP as targetIp>
+                                   <li><a class="plugin-montor" href="javascript:void(0);" ip="${targetIp}" plugin="${pluginName}">
+                                       <i class="icon-chevron-right"></i> ${targetIp}
+                                   </a></li>
+                               </#list>
+                           </ul>
+                        </li>
+                    </#list>
+			    </ul>
 			</div>
 			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:35px">
@@ -187,54 +198,9 @@
                      	<th><@spring.message "perfTest.report.testcomment"/></th>
                     	<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
                    </tr>  
-               </table>
-			    <div id="test_panel">
-					<legend>
-						Performance
-		                <button id="download_csv" class="btn btn-primary pull-right">
-		                	<i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/>
-		                </button>
-					</legend>
-					<h6>TPS 
-						<span 
-							rel="popover" 
-							data-content='<@spring.message "perfTest.report.tps.help"/>' 
-							title='<@spring.message "perfTest.report.tps"/>'
-							data-html='true' 
-							><i class="icon-question-sign" style="vertical-align:middle;"></i></span></h6>
-			    	<div class="bigchart" id="tps_chart"></div>
-					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
-    				<div class="chart" id="mean_time_chart"></div>
-    				<h6 id="min_time_first_byte_header"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
-    				<div class="chart" id="min_time_first_byte_chart"></div>
-    				<h6 id="user_defined_header"><@spring.message "perfTest.report.header.userDefinedChart"/></h6>
-    				<div class="chart" id="user_defined_chart"></div>
-					<h6><@spring.message "perfTest.report.header.errors"/></h6>
-    				<div class="chart" id="error_chart"></div>
+                </table>
+			    <div id="detail_panel">
 				</div>
-				<div id="monitor_panel" style="display:none">
-	    			<div class="page-header page-header">
-						<h4>System Monitoring</h4> 
-					</div>
-				    <h6>CPU</h6>
-                    <div class="chart" id="cpu_usage_chart"></div>
-					<h6>Used Memory</h6>
-                    <div class="chart" id="mem_usage_chart"></div>
-					<h6 id="recevied_byte_per_sec_header">Received Byte Per Second</h6>
-                    <div class="chart" id="recevied_byte_per_sec_chart"></div>
-					<h6 id="sent_byte_per_sec_header">Sent Per Second</h6>
-                    <div class="chart" id="sent_byte_per_sec_chart"></div>
-					<h6 id="custom_monitor_header_1">Custom Monitor Chart 1</h6>
-                    <div class="chart" id="custom_monitor_chart_1"></div>
-					<h6 id="custom_monitor_header_2">Custom Monitor Chart 2</h6>
-                    <div class="chart" id="custom_monitor_chart_2"></div>
-					<h6 id="custom_monitor_header_3">Custom Monitor Chart 3</h6>
-                    <div class="chart" id="custom_monitor_chart_3"></div>
-					<h6 id="custom_monitor_header_4">Custom Monitor Chart 4</h6>
-                    <div class="chart" id="custom_monitor_chart_4"></div>
-					<h6 id="custom_monitor_header_5">Custom Monitor Chart 5</h6>
-                    <div class="chart" id="custom_monitor_chart_5"></div>
-                </div>
 			</div>
 		</div>
 		<#include "../common/copyright.ftl">
@@ -247,33 +213,32 @@
 	<script>
 	    var performanceInit = false;
 	    var targetMonitorData = {}; //save monitor data
+        var targetPluginData = {}; //save plugin monitor data
+        var performanceData;  // save performance data
 	    var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";
 	    var imgTitle = "<@spring.message "perfTest.report.exportImg.title"/>"
     	
 		$(document).ready(function() {
 		    $("#test_btn").click(function() {
-		    	cleanImgElem();
-		        $("#test_panel").show();
-		        $("#monitor_panel").hide();
-		        getPerformanceData();
+                generatePerformanceChart();
 		        changActiveLink($(this));
 		    });
 		    
 		    $("a.target-montor").click(function() {
-		    	cleanImgElem();
-                $("#test_panel").hide();
-                $("#monitor_panel").show();
                 var $elem = $(this);
-                getMonitorData($elem.attr("ip"), false);
+                generateMonitorChart($elem.attr("ip"));
                 changActiveLink($elem);
             });
 
-            $("#download_csv").click(function() {
-                document.forms.download_csv_form.action = "${req.getContextPath()}/perftest/${(test.id)?c}/download_csv";
-                document.forms.download_csv_form.submit();
+            $("a.plugin-montor").click(function() {
+                var $elem = $(this);
+                var pluginName = $elem.attr("plugin");
+                generatePluginChart(pluginName, $elem.attr("ip"));
+                changActiveLink($elem);
             });
-			
-			$("#test_btn").click();
+
+            $.ajaxSetup({"cache":false});
+            generatePerformanceChart();
 		});
 		
 		function changActiveLink(obj) {
@@ -283,132 +248,33 @@
 			obj.children("i").addClass("icon-white");
 		}
 
-		function getPerformanceData(){
-		    if(performanceInit){
-		    	generateImg(imgBtnLabel, imgTitle);
-		        return;
-		    }
-		    performanceInit = true;
-            $.ajax({
-                url: "${req.getContextPath()}/perftest/${(test.id)?c}/graph",
-                dataType:'json',
-                cache: true,
-                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
-                success: function(res) {
-                    if (res.success) {
-                        var result = drawMultiPlotChart('tps_chart', res.TPS.data, res.TPS.lables, res.chartInterval);
-                        if (result !== undefined){ result.replot(); }
-                        result = drawMultiPlotChart('mean_time_chart', res.Mean_Test_Time_ms.data, res.Mean_Test_Time_ms.lables, res.chartInterval);
-                        if (result !== undefined){ result.replot(); }
-
-                        if (res.Mean_time_to_first_byte !== undefined && 
-                        		res.Mean_time_to_first_byte.data !== '[ ]') {
-                        	drawMultiPlotChart('min_time_first_byte_chart', res.Mean_time_to_first_byte.data, res.Mean_time_to_first_byte.lables, res.chartInterval).replot();
-                        } else {
-                        	$("#min_time_first_byte_chart").hide();	
-                        	$("#min_time_first_byte_header").hide();
-                        }
-                        if (res.User_defined !== undefined && 
-                        		res.User_defined.lables !== undefined && res.User_defined.lables.length != 0) {
-                        	drawMultiPlotChart('user_defined_chart', res.User_defined.data, res.User_defined.lables, res.chartInterval).replot();
-                        } else {
-                        	$("#user_defined_chart").hide();	
-                        	$("#user_defined_header").hide();
-                        }
-                        drawMultiPlotChart('error_chart', res.Errors.data, res.Errors.lables, res.chartInterval);
-                        generateImg(imgBtnLabel, imgTitle); 
-                        return true;
+		function generatePerformanceChart(){
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_perf", {},  function() {
+                    if (performanceData == undefined) {
+                        getPerformanceDataAndDraw(${(test.id)?c});
                     } else {
-                        showErrorMsg("Get report data failed.");
-                        return false;
+                        drawPerformanceChart(performanceData);
                     }
-                },
-                error: function() {
-                    showErrorMsg("An unknow Error occurred!");
-                    return false;
-                }
-            }); 
+                });
         }
-		
-		function clearPrePlot() {
-			$("#monitor_panel div.jqplot-target").each(function() {
-				$(this).removeClass("jqplot-target");
-			});
-        	$("#cpu_usage_chart").empty();
-        	$("#mem_usage_chart").empty();
-        	$("#recevied_byte_per_sec_chart").empty();
-        	$("#sent_byte_per_sec_chart").empty();
-        	$("#custom_monitor_chart_1").empty();
-        	$("#custom_monitor_chart_2").empty();
-        	$("#custom_monitor_chart_3").empty();
-        	$("#custom_monitor_chart_4").empty();
-        	$("#custom_monitor_chart_5").empty();
-		}
-		
-		function drawPlot(ip) {
-			clearPrePlot();
-        	var currMonitorData = targetMonitorData[ip];
-       		drawChart('cpu_usage_chart', currMonitorData.cpu, formatPercentage, currMonitorData.interval).replot();
-       		drawChart('mem_usage_chart', currMonitorData.memory, formatMemory, currMonitorData.interval).replot();
-       		drawExtMonitorData(currMonitorData);
-       		generateImg(imgBtnLabel, imgTitle);
-		}
-		
-		function drawExtMonitorData(systemData) {
-            drawChartForMonitor(systemData.received, "recevied_byte_per_sec_chart", "recevied_byte_per_sec_header", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.sent, "sent_byte_per_sec_chart", "sent_byte_per_sec_header", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData1, "custom_monitor_chart_1", "custom_monitor_header_1", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData2, "custom_monitor_chart_2", "custom_monitor_header_2", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData3, "custom_monitor_chart_3", "custom_monitor_header_3", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData4, "custom_monitor_chart_4", "custom_monitor_header_4", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData5, "custom_monitor_chart_5", "custom_monitor_header_5", systemData.interval, formatNetwork);
-		}
-		
-		function drawChartForMonitor(data, area, titleArea, interval, format) {
-			if (data !== '[]') {
-            	$("#" + area).show();	
-            	$("#" + titleArea).show();
-            	$("#" + area + "_img_btn").show();
-            	plot = drawChart(area, data, format, interval);
-            	plot.replot();
-            } else {
-            	$("#" + area).hide();	
-            	$("#" + titleArea).hide();
-				$("#" + area + "_img_btn").hide();
-            }
-		}
-		
-        function getMonitorData(ip){
-        	if (targetMonitorData[ip]) {
-        		drawPlot(ip);
-				return;
-        	}
-        	
-            $.ajax({
-                url: "${req.getContextPath()}/perftest/${(test.id)?c}/monitor",
-                dataType:'json',
-                cache: true,
-                data: {'monitorIP': ip, 'imgWidth': 700},
-                success: function(res) {
-                    if (res.success) {
-                    	if ($.isEmptyObject(res.SystemData)) {
-                    		showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
-                    		res.SystemData.cpu = [0];
-                    		res.SystemData.memory = [0];
-                    		res.SystemData.received = [0];
-                    		res.SystemData.sent = [0];
-                    	}
-                    	targetMonitorData[ip] = res.SystemData;
-                    	drawPlot(ip);
-                        return true;
+
+        function generateMonitorChart(ip){
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_target", function() {
+                    if (!targetMonitorData[ip]) {
+                        getTargetMonitorDataAndDraw(${(test.id)?c}, ip);
                     } else {
-                        showErrorMsg("Failed to retrieve monitor data.");
-                        return false;
+                        drawMonitorChart(targetMonitorData[ip]);
                     }
-                },
-                error: function() {
-                    showErrorMsg("Display Error!");
-                    return false;
+                });
+        }
+
+        function generatePluginChart(pluginName, ip){
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_target_plugin?pluginName=" + pluginName, function() {
+                var pluginDataMap = targetPluginData[pluginName];
+                if (!pluginDataMap || !pluginDataMap[ip]) {
+                    getTargetPluginDataAndDraw(${test.id}, pluginName, ip);
+                } else {
+                    drawPluginChart(pluginDataMap[ip]);
                 }
             });
         }

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
@@ -120,8 +121,11 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		perfTestRunnable.finishTest();
 		sleep(10000);
 
-		List<SystemDataModel> systemData = monitorService.getSystemMonitorData(currentTest.getId(), "127.0.0.1");
-		assertTrue(systemData.size() > 0);
+		int interval = monitorService.getSystemMonitorDataInterval(currentTest.getId(), "127.0.0.1", 700);
+		Map<String, String> systemDataMap = monitorService.getSystemMonitorDataAsString(currentTest.getId(), "127.0.0.1", interval);
+		assertTrue(systemDataMap.keySet().size() > 0);
+		// value is like [2,3,4,6,3...]
+		assertTrue(systemDataMap.values().iterator().next().length() > 2);
 
 	}
 

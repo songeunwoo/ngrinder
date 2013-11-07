@@ -17,6 +17,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
@@ -1412,31 +1413,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
 
-		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
-		FileInputStream in = null;
-		InputStreamReader isr = null;
-		LineNumberReader lnr = null;
-		int lineNumber = 0;
-		int interval = 0;
-		try {
-			in = new FileInputStream(monitorDataFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
-			lnr.skip(monitorDataFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int) (lineNumber / pointCount), 1);
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
-			LOGGER.error(e.getMessage(), e);
-		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
-			LOGGER.error(e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
-			IOUtils.closeQuietly(in);
-		}
-		return interval;
+		return getRecordInterval(monitorIP, imageWidth, monitorDataFile);
 	}
 
 	/**
@@ -1530,38 +1507,92 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get all{@link SystemDataModel} from monitor data file of one test and target.
-	 * 
+	 * Get interval value of the monitor data of a plugin, like jvm monitor plugin.
+	 * The usage of interval value is same as system monitor data.
+	 *
 	 * @param testId
 	 *            test id
 	 * @param monitorIP
-	 *            IP address of the monitor target
-	 * @return SystemDataModel list
+	 *            ip address of monitor target
+	 * @param pluginName
+	 *            plugin name
+	 * @param imageWidth
+	 *            image with of the chart.
+	 * @return interval value.
 	 */
-	public List<SystemDataModel> getSystemMonitorData(long testId, String monitorIP) {
-		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, monitorIP);
-		List<SystemDataModel> rtnList = Lists.newArrayList();
-		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
-		BufferedReader br = null;
+	public int getPluginMonitorDataInterval(long testId, String monitorIP, String pluginName, int imageWidth) {
+		File monitorDataFile = getPluginMonitorDataFile(testId, monitorIP, pluginName);
+		return getRecordInterval(monitorIP, imageWidth, monitorDataFile);
+	}
+
+	/**
+	 * Get sampling interval of plugin. It is configured by plugin, so need to get it from plugin directory.
+	 * @param testId
+	 *            test id
+	 * @param pluginName
+	 *            plugin name
+	 * @return sampling interval value
+	 */
+	public int getPluginMonitorSamplingInterval(long testId, String pluginName) {
+		File reportDir = getReportFileDirectory(testId);
+		File pluginDir = new File(reportDir, pluginName);
+		File monitorDataFile = new File(pluginDir, "interval");
 		try {
-			br = new BufferedReader(new FileReader(monitorDataFile));
-			br.readLine(); // skip the header.
-			// header:
-			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"
-			String line = br.readLine();
-			while (StringUtils.isNotBlank(line)) {
-				SystemDataModel model = new SystemDataModel();
-				String[] datalist = StringUtils.split(line, ",");
-				model.setIp(datalist[0]);
-				model.setSystem(datalist[1]);
-				model.setCollectTime(NumberUtils.toLong(datalist[2]));
-				model.setFreeMemory(NumberUtils.toLong(datalist[3]));
-				model.setTotalMemory(NumberUtils.toLong(datalist[4]));
-				model.setCpuUsedPercentage(NumberUtils.toFloat(datalist[5]));
-				rtnList.add(model);
-				line = br.readLine();
+			String intervalStr = FileUtils.readFileToString(monitorDataFile);
+			return Integer.valueOf(intervalStr);
+		} catch (IOException e) {
+			return 3; // default value 3.
+		}
+	}
+
+	/**
+	 * Get plugins list of a test.
+	 * @param testId
+	 *            test id
+	 * @return plugin name list
+	 */
+	public List<String> getPluginsOfTest(long testId) {
+		List<String> rtnList = new ArrayList<String>();
+		File reportDir = getReportFileDirectory(testId);
+		File[] fileList = reportDir.listFiles();
+		for (File file : fileList) {
+			if (file.isDirectory()) {
+				rtnList.add(file.getName());
 			}
+		}
+		return rtnList;
+	}
+
+	/*
+	Plugin monitor data should be {TestReportDir}/{pluginName}/{targetIP}.data
+	 */
+	private File getPluginMonitorDataFile(long testId, String monitorIP, String pluginName) {
+		File reportDir = getReportFileDirectory(testId);
+		File pluginDir = new File(reportDir, pluginName);
+		checkArgument(pluginDir.exists(), "Plugin:{} doesn't exist!", pluginDir.getPath());
+
+		return new File(pluginDir, monitorIP + ".data");
+	}
+
+	/*
+	 Get the interval value. In the normal, the image width is 700, and if the data count is too big,
+	 there will be too many points in the chart. So we will calculate the interval to get appropriate count of data to
+	 display. For example, interval value "2" means, get one record for every "2" records.
+	 */
+	private int getRecordInterval(String monitorIP, int imageWidth, File monitorDataFile) {
+		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
+		FileInputStream in = null;
+		InputStreamReader isr = null;
+		LineNumberReader lnr = null;
+		int lineNumber = 0;
+		int interval = 0;
+		try {
+			in = new FileInputStream(monitorDataFile);
+			isr = new InputStreamReader(in);
+			lnr = new LineNumberReader(isr);
+			lnr.skip(monitorDataFile.length());
+			lineNumber = lnr.getLineNumber() + 1;
+			interval = Math.max((int) (lineNumber / pointCount), 1);
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
@@ -1569,10 +1600,85 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
+			IOUtils.closeQuietly(lnr);
+			IOUtils.closeQuietly(isr);
+			IOUtils.closeQuietly(in);
+		}
+		return interval;
+	}
+
+	/**
+	 * Get plugin monitor data and wrap the data as a string value like "[22,11,12,34,....]", which can be used directly
+	 * in JS as a vector.
+	 *
+	 * @param testId
+	 *            test id
+	 * @param monitorIP
+	 *            ip address of the monitor target
+	 * @param pluginName
+	 *            plugin name
+	 * @param dataInterval
+	 *            interval value to get data. Interval value "2" means, get one record for every "2" records.
+	 * @return return the data in map
+	 */
+	public Map<String, String> getPluginMonitorDataAsString(long testId, String monitorIP, String pluginName, int dataInterval) {
+		Map<String, String> returnMap = Maps.newHashMap();
+		File monitorDataFile = getPluginMonitorDataFile(testId, monitorIP, pluginName);
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(monitorDataFile));
+			String header = br.readLine();
+
+			StringBuilder headerSB = new StringBuilder("[");
+			String[] headerlist = StringUtils.split(header, ",");
+			String[] refinedHeaderlist = StringUtils.split(header, ",");
+			List<StringBuilder> dataStringBuilderList = new ArrayList<StringBuilder>(headerlist.length);
+
+			for (int i = 0; i < headerlist.length; i++) {
+				dataStringBuilderList.add(new StringBuilder("["));
+				String refinedHead = headerlist[i].trim().replaceAll(" ", "_");
+				refinedHeaderlist[i] = refinedHead;
+				headerSB.append("'").append(refinedHead).append("'").append(",");
+			}
+			String headerStringInJSList = headerSB.deleteCharAt(headerSB.length() - 1).append("]").toString();
+			returnMap.put("header", headerStringInJSList);
+
+			String line = br.readLine();
+			int skipCount = dataInterval;
+			// to be compatible with previous version, check the length before adding
+			while (StringUtils.isNotBlank(line)) {
+				if (skipCount < dataInterval) {
+					skipCount++;
+					continue;
+				} else {
+					skipCount = 1;
+					String[] datalist = StringUtils.split(line, ",");
+					for (int i = 0; i < datalist.length; i++) {
+						StringBuilder dataSB = dataStringBuilderList.get(i);
+						if ("null".equals(datalist[i]) || "undefined".equals(datalist[i])) {
+							dataSB.append("null").append(",");
+						} else {
+							dataSB.append(datalist[i]).append(",");
+						}
+					}
+					line = br.readLine();
+				}
+			}
+
+			for (int i = 0; i < refinedHeaderlist.length; i++) {
+				StringBuilder dataSB = dataStringBuilderList.get(i);
+				if (dataSB.charAt(dataSB.length() - 1) == ',') {
+					dataSB.deleteCharAt(dataSB.length() - 1).append("]");
+				}
+				returnMap.put(refinedHeaderlist[i], dataSB.toString());
+			}
+		} catch (IOException e) {
+			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error(e.getMessage(), e);
+		} finally {
 			IOUtils.closeQuietly(br);
 		}
-		LOGGER.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, monitorIP);
-		return rtnList;
+		return returnMap;
 	}
 
 	/**

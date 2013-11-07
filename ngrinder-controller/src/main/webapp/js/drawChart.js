@@ -1,3 +1,4 @@
+// data is in KB
 var formatMemory = function(format, value) {
 	if (value === null) {
 		return "";
@@ -10,6 +11,21 @@ var formatMemory = function(format, value) {
 	}
 };
 
+// data is in Byte
+var formatMemoryInByte = function(format, value) {
+    if (value === null) {
+        return "";
+    } else if (value < 1024) {
+        return value.toFixed(1) + "B ";
+    } else if (value < 1048576) { //1024 * 1024
+        return (value/1024).toFixed(1) + "K ";
+    } else if (value < 1073741824) { //1024 * 1024 * 1024
+        return (value/1048576).toFixed(2) + "M ";
+    } else {
+        return (value/1073741824).toFixed(3) + "G ";
+    }
+};
+
 var formatNetwork = function(format, value) {
 	if (value === null) {
 		return "";
@@ -17,9 +33,11 @@ var formatNetwork = function(format, value) {
 		return value.toFixed(1) + "B ";
 	} else if (value < 1048576) { //1024 * 1024
 		return (value/1024).toFixed(1) + "K ";
-	} else {
+	} else if (value < 1073741824) { //1024 * 1024 * 1024
 		return (value/1048576).toFixed(2) + "M ";
-	}
+	} else {
+        return (value/1073741824).toFixed(3) + "G ";
+    }
 };
 
 var formatPercentage = function(format, value) {

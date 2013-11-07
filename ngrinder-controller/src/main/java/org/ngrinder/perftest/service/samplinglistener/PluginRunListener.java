@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @since 3.1
  */
 public class PluginRunListener implements SamplingLifeCycleListener {
-	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PluginRunListener.class);
 
 	private final List<OnTestSamplingRunnable> plugins;
 	private final SingleConsole singleConsole;

@@ -256,9 +256,9 @@
 							<!-- SIGNING -->
 							<sign>
 								<keystore>${basedir}/keystore/agent.keystore</keystore>
-		                        <keypass></keypass>  
-		                        <storepass></storepass> 
-		                        <alias></alias>
+		                        <keypass>keypass</keypass>
+		                        <storepass>storepass</storepass>
+		                        <alias>agent</alias>
 		                        <validity>true</validity>
 							</sign>
 							<unsignAlreadySignedJars>false</unsignAlreadySignedJars>

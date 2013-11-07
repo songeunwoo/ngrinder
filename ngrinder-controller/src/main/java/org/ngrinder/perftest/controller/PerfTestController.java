@@ -910,7 +910,52 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = { "{id}/detail_report", "{id}/report" })
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getPerfTest(id));
+		model.addAttribute("pluginList", perfTestService.getPluginsOfTest(id));
 		return "perftest/detail_report";
+	}
+
+	/**
+	 * Get the detailed perf test report.
+	 *
+	 * @param model
+	 *            model
+	 * @param id
+	 *            test id
+	 * @return perftest/detail_report
+	 */
+	@RequestMapping(value = { "{id}/detail_report_perf"})
+	public String getPerformanceReportDetail(ModelMap model, @PathVariable("id") long id) {
+		return "perftest/detail_report_performance";
+	}
+
+	/**
+	 * Get the detailed perf test report.
+	 *
+	 * @param model
+	 *            model
+	 * @param id
+	 *            test id
+	 * @return perftest/detail_report
+	 */
+	@RequestMapping(value = { "{id}/detail_report_target"})
+	public String getTargetMonitorDetail(ModelMap model, @PathVariable("id") long id) {
+		return "perftest/detail_report_target";
+	}
+
+	/**
+	 * Get the detailed perf test report.
+	 *
+	 * @param model
+	 *            model
+	 * @param id
+	 *            test id
+	 * @return perftest/detail_report
+	 */
+	@RequestMapping(value = { "{id}/detail_report_target_plugin"})
+	public String getPluginMonitorDetail(ModelMap model, @PathVariable("id") long id,
+										 @RequestParam("pluginName") String pluginName) {
+		model.addAttribute("pluginName", pluginName);
+		return "perftest/detail_report_target_plugin";
 	}
 
 	private PerfTest getPerfTestWithPermissionCheck(User user, Long id, boolean withTag) {
@@ -955,4 +1000,27 @@ public class PerfTestController extends NGrinderBaseController {
 								: NGrinderConstants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
 		return sysMonitorMap;
 	}
+
+	/**
+	 * Get the plugin monitor data of the target.
+	 *
+	 * @param id
+	 *            test Id
+	 * @param monitorIP
+	 *            monitorIP
+	 * @param imgWidth
+	 *            image width
+	 * @return json message
+	 */
+	@RequestMapping("{id}/plugin/{pluginName}")
+	@ResponseBody
+	public String getPluginMonitorData(@PathVariable("id") long id, @PathVariable("pluginName") String pluginName,
+									   @RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
+		int interval = perfTestService.getPluginMonitorDataInterval(id, monitorIP, pluginName, imgWidth);
+		Map<String, String> pluginMonitorMap = perfTestService.getPluginMonitorDataAsString(id, monitorIP, pluginName, interval);
+		pluginMonitorMap.put("interval",
+				String.valueOf(interval * perfTestService.getPluginMonitorSamplingInterval(id, pluginName)));
+		return toJson(pluginMonitorMap);
+	}
+
 }
