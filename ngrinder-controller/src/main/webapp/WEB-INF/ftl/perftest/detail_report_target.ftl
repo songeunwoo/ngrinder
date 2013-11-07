@@ -57,26 +57,6 @@
             drawChart("custom_monitor_chart_3", systemData.customData3, formatNetwork, systemData.interval);
             drawChart("custom_monitor_chart_4", systemData.customData4, formatNetwork, systemData.interval);
             drawChart("custom_monitor_chart_5", systemData.customData5, formatNetwork, systemData.interval);
-
-            drawChartForMonitor(systemData.customData1, "custom_monitor_chart_1", "custom_monitor_header_1", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData2, "custom_monitor_chart_2", "custom_monitor_header_2", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData3, "custom_monitor_chart_3", "custom_monitor_header_3", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData4, "custom_monitor_chart_4", "custom_monitor_header_4", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData5, "custom_monitor_chart_5", "custom_monitor_header_5", systemData.interval, formatNetwork);
-        }
-
-        function drawChartForMonitor(data, area, titleArea, interval, format) {
-            if (data !== '[]') {
-                $("#" + area).show();
-                $("#" + titleArea).show();
-                $("#" + area + "_img_btn").show();
-                plot = drawChart(area, data, format, interval);
-            } else {
-                // need to hide extended custom monitor data chart,if they do not exist.
-                $("#" + area).hide();
-                $("#" + titleArea).hide();
-                $("#" + area + "_img_btn").hide();
-            }
         }
 
     </script>
