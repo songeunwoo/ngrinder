@@ -72,12 +72,6 @@
 			<artifactId>svnkit</artifactId>
 			<version>1.7.5-2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.4.1</version>
-			<scope>test</scope>
-		</dependency>
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -412,7 +406,7 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
+                <filtering>true</filtering>
 				<excludes>
 					<exclude>**/script_template/**/*</exclude>
 				</excludes>
@@ -440,7 +434,6 @@
                     <webResources>
 						<resource>
 							<directory>patch</directory>
-                            <directory>target/jnlp/lib/</directory>
 							<targetPath>WEB-INF/lib</targetPath>
 							<includes>
 								<include>**/*.jar</include>

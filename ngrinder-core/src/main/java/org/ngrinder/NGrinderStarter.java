@@ -21,14 +21,11 @@ import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
-import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.jnlp.JNLPLoader;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
@@ -60,13 +57,9 @@ public class NGrinderStarter {
 
 	private ReconfigurableURLClassLoader classLoader;
 
-	private File jnlpLibPath;
-
 	private static final String LOCAL_NATIVE_PATH = "./native_lib";
 
-	private static boolean isWebStart = false;
 	private static String startMode = "monitor";
-	private JNLPLoader jnlpLoader;
 
 	/**
 	 * Constructor.
@@ -92,11 +85,11 @@ public class NGrinderStarter {
 		configureLogging(verboseMode, logDirectory);
 	}
 
-	protected void checkRunningDirectory() {
-		if (!isValidCurrentDirectory() && !isWebStart) {
-			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
-		}
-	}
+    protected void checkRunningDirectory() {
+        if (!isValidCurrentDirectory()) {
+            staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
+        }
+    }
 
 	private void addCustomClassLoader() {
 		URL[] urLs = ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs();
@@ -223,8 +216,7 @@ public class NGrinderStarter {
         System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
             + agentConfig.getHome().getNativeDirectory().getAbsolutePath());
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		String nativePath = isWebStart ? jnlpLibPath.getAbsolutePath() : LOCAL_NATIVE_PATH;
-		System.setProperty("java.library.path", property + File.pathSeparator + nativePath);
+		System.setProperty("java.library.path", property + File.pathSeparator + LOCAL_NATIVE_PATH);
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
@@ -233,34 +225,18 @@ public class NGrinderStarter {
 	 * 
 	 * @return jar file collection
 	 */
-	protected Collection<File> getJarFileList() {
-		ArrayList<File> fileString = new ArrayList<File>();
-		if (isWebStart) {
-			jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
-			try {
-				jnlpLoader = ReflectionUtil.newInstanceByName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
-				if (!jnlpLoader.isWebStartPossible()) {
-					staticPrintHelpAndExit("Sorry, nGrinder agent can not run on your JDK,\n"
-							+ "Please install Oracle JDK! ");
-				}
+    protected Collection<File> getJarFileList() {
+        ArrayList<File> fileString = new ArrayList<File>();
 
-				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
-			} catch (Exception e) {
-				staticPrintHelpAndExit("Error occurred while getting Jar file from jnlp download service !", e);
-			}
-
-		} else {
-			File libFolder = new File(".", "lib").getAbsoluteFile();
-			if (!libFolder.exists()) {
-				printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
-			} else {
-				String[] exts = new String[] { "jar" };
-				fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
-			}
-		}
-
-		return fileString;
-	}
+        File libFolder = new File(".", "lib").getAbsoluteFile();
+        if (!libFolder.exists()) {
+            printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
+        } else {
+            String[] exts = new String[]{"jar"};
+            fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
+        }
+        return fileString;
+    }
 
 	/**
 	 * Add class path.
@@ -365,7 +341,6 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		checkJavaVersion();
-		isWebStart = BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
 		startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());

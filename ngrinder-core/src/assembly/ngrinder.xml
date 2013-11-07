@@ -48,6 +48,14 @@
       </includes>
     </fileSet>
     <fileSet>
+          <directory>${project.basedir}</directory>
+          <outputDirectory>/</outputDirectory>
+          <includes>
+              <include>*.sh</include>
+              <include>*.bat</include>
+          </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/patch</directory>
       <outputDirectory>/lib</outputDirectory>
       <includes>
