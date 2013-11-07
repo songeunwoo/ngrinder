@@ -13,27 +13,22 @@
  */
 package org.ngrinder.agent.service;
 
-import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
-import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.model.AgentJars;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -44,10 +39,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.*;
+
+import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
  * Agent manager service.
@@ -88,6 +89,7 @@ public class AgentManagerService implements IAgentManagerService {
 			AgentControllerIdentityImplementation agentControllerIdentity = cast(agentIdentity);
 			attachedAgentMap.put(createAgentKey(agentControllerIdentity), agentControllerIdentity);
 		}
+
 
 		// If region is not specified retrieved all
 		List<AgentInfo> agentsInDB = getAgentRepository().findAll();
@@ -439,4 +441,76 @@ public class AgentManagerService implements IAgentManagerService {
 	public void setConfig(Config config) {
 		this.config = config;
 	}
+
+    /*
+    * (non-Javadoc)
+    *
+    * @see
+    * org.ngrinder.agent.service.IAgentManagerService#compressAgentFolder
+    */
+    @Override
+    public  File compressAgentFolder() throws IOException {
+        String version = config.getVesion();
+
+        String tomcatLibUrl = AgentManagerService.class.getClassLoader().getResource("../lib").getFile();
+
+        File tomcatLibjars = new File(tomcatLibUrl);
+
+        String[] names = tomcatLibjars.list();
+        File infDir = tomcatLibjars.getParentFile();
+
+        File agentDir = new File(infDir,"update_agent");
+
+        if(!agentDir.exists())
+            agentDir.mkdir();
+
+               File coreDir = new File(agentDir,"ngrinder-core-"+version);
+
+        if(!coreDir.exists())
+            coreDir.mkdir();
+
+        File coreLibDir = new File(coreDir,"lib");
+        if(!coreLibDir.exists())
+            coreLibDir.mkdir();
+
+        FileUtils.copyDirectory(tomcatLibjars,coreLibDir,new FileFilter() {
+            @Override
+            public boolean accept(File pathName) {
+                for(AgentJars jar:AgentJars.values()){
+                    if(pathName.getName().startsWith(jar.getShortName()))
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        FileUtils.copyDirectory(tomcatLibjars, coreDir, new FileFilter() {
+            @Override
+            public boolean accept(File pathName) {
+                if (pathName.getName().startsWith("ngrinder-core"))
+                    return true;
+                return false;
+            }
+        });
+
+        CompressionUtil.zip(coreDir);
+        FileUtils.deleteDirectory(coreDir);
+        File zipFile = new File(coreDir.getParentFile(),coreDir.getName()+".zip");
+        if(!zipFile.exists()){
+           throw new NGrinderRuntimeException("error while generating latest aget zip file !");
+        }
+        return zipFile;
+    }
+
+    /*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#updateAgentLib
+	 * (java.lang.String)
+	 */
+    @Override
+    public void updateAgentLib(String url) {
+        agentManager.updateAgent(url);
+    }
 }

@@ -13,13 +13,8 @@
  */
 package org.ngrinder.agent.controller;
 
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -31,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 
 /**
  * Agent management controller.
@@ -187,4 +182,16 @@ public class AgentManagerController extends NGrinderBaseController {
 		return toJson(buildMap(JSON_SUCCESS, true, //
 				"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
 	}
+
+    /**
+     * Update the current  agent.
+     *
+     * @return json message
+     */
+    @RequestMapping("/update")
+    @ResponseBody
+    public String updateCurrentMonitorData(){
+        agentManagerService.updateAgentLib(httpContainerContext.getCurrentContextUrlFromUserRequest());
+        return toJson(buildMap(JSON_SUCCESS, true));
+    }
 }

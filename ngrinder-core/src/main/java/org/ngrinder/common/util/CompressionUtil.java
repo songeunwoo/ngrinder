@@ -13,17 +13,18 @@
  */
 package org.ngrinder.common.util;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,18 +33,9 @@ import java.util.Stack;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Compression utility.
@@ -137,37 +129,37 @@ public abstract class CompressionUtil {
 	 * @param charsetName
 	 *            character set name
 	 */
-	public static void unzip(InputStream is, File destDir, String charsetName) {
-		ZipArchiveInputStream zis = null;
-		try {
-			ZipArchiveEntry entry;
-			String name;
-			File target;
-			int nWritten = 0;
-			BufferedOutputStream bos;
-			byte[] buf = new byte[1024 * 8];
-			zis = new ZipArchiveInputStream(is, charsetName, false);
-			while ((entry = zis.getNextZipEntry()) != null) {
-				name = entry.getName();
-				target = new File(destDir, name);
-				if (entry.isDirectory()) {
-					target.mkdirs(); /* does it always work? */
-				} else {
-					target.createNewFile();
-					bos = new BufferedOutputStream(new FileOutputStream(target));
-					while ((nWritten = zis.read(buf)) >= 0) {
-						bos.write(buf, 0, nWritten);
-					}
-					bos.close();
-				}
-			}
-		} catch (Exception e) {
-			throw processException(e);
-		} finally {
-			IOUtils.closeQuietly(is);
-			IOUtils.closeQuietly(zis);
-		}
-	}
+    public static void unzip(InputStream is, File destDir, String charsetName) {
+        byte[] buffer = new byte[1024];
+        ZipInputStream zis = null;
+        try {
+            File folder = destDir;
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+
+            zis = new ZipInputStream(is);
+            ZipEntry ze = zis.getNextEntry();
+
+            while (ze != null) {
+                String fileName = ze.getName();
+                File newFile = new File(destDir.getAbsolutePath() + File.separator + fileName);
+                new File(newFile.getParent()).mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                IOUtils.closeQuietly(fos);
+                ze = zis.getNextEntry();
+            }
+        } catch (Exception e) {
+            throw processException(e);
+        } finally {
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(zis);
+        }
+    }
 
 	/**
 	 * Compresses the given file(or dir) and creates new file under the same

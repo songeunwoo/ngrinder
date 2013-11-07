@@ -13,15 +13,16 @@
  */
 package org.ngrinder.service;
 
-import java.util.List;
-import java.util.Map;
-
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
-
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Agent manager service interface which is used to retrieve the agent info
@@ -131,4 +132,18 @@ public interface IAgentManagerService {
 	 */
 	public abstract SystemDataModel getAgentSystemDataModel(String ip, String name);
 
+    /**
+     * Compress ngrinder-core folder
+     *
+     * @return File
+     */
+    public abstract File compressAgentFolder() throws IOException;
+
+    /**
+     * Upate agent lib
+     *
+     * @param url
+     *            controller request url.
+     */
+    public abstract void updateAgentLib(String url) throws IOException;
 }
