@@ -1668,8 +1668,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			for (int i = 0; i < refinedHeaderlist.length; i++) {
 				StringBuilder dataSB = dataStringBuilderList.get(i);
 				if (dataSB.charAt(dataSB.length() - 1) == ',') {
-					dataSB.deleteCharAt(dataSB.length() - 1).append("]");
+					dataSB.deleteCharAt(dataSB.length() - 1);
 				}
+				dataSB.append("]");
 				returnMap.put(refinedHeaderlist[i], dataSB.toString());
 			}
 		} catch (IOException e) {

@@ -440,7 +440,6 @@
                     <webResources>
 						<resource>
 							<directory>patch</directory>
-                            <directory>target/jnlp/lib/</directory>
 							<targetPath>WEB-INF/lib</targetPath>
 							<includes>
 								<include>**/*.jar</include>
@@ -494,107 +493,6 @@
 				</configuration>
 			</plugin>
 
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>keytool-maven-plugin</artifactId>
-                <version>1.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generateKeyPair</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <keystore>${project.basedir}/keystore</keystore>
-                    <storepass>storepass</storepass>
-                    <keypass>keypass</keypass>
-                    <skipIfExist>true</skipIfExist>
-                    <alias>agent_jnlp</alias>
-                    <dname>cn=nhn, ou=NHN, L=BJ, ST=BJ, o=NHN, c=cn</dname>
-                    <sigalg>SHA1withDSA</sigalg>
-                    <ext></ext>
-                    <validity>100</validity>
-                    <keyalg>DSA</keyalg>
-                    <keysize>1024</keysize>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>webstart-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jnlp</goal> <!-- use jnlp, jnlp-inline or jnlp-single as appropriate -->
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <libPath>lib</libPath>
-                    <resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
-                    <dependencies>
-                        <includes>
-                            <include>org.hibernate:hibernate-entitymanager</include>
-                            <include>org.ngrinder:ngrinder-core</include>
-                            <include>org.ngrinder:ngrinder-dns</include>
-                            <include>antlr:antlr</include>
-                            <include>asm:asm</include>
-                            <include>commons-collections:commons-collections</include>
-                            <include>commons-io:commons-io</include>
-                            <include>commons-lang:commons-lang</include>
-                            <include>dnsjava:dnsjava</include>
-                            <include>net.sf.grinder:grinder</include>
-                            <include>net.sf.grinder:grinder-core</include>
-                            <include>net.sf.grinder:grinder-dcr-agent</include>
-                            <include>net.sf.grinder:grinder-http</include>
-                            <include>net.sf.grinder:grinder-httpclient</include>
-                            <include>org.hibernate.common:hibernate-commons-annotations</include>
-                            <include>org.hibernate:hibernate-core</include>
-                            <include>org.hibernate.javax.persistence:hibernate-jpa-2.0-api</include>
-
-
-                            <include>javassist:javassist</include>
-                            <include>org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec</include>
-                            <include>org.slf4j:jcl-over-slf4j</include>
-                            <include>org.json:json</include>
-                            <include>org.python:jython-standalone</include>
-                            <include>log4j:log4j</include>
-                            <include>ch.qos.logback:logback-classic</include>
-                            <include>ch.qos.logback:logback-core</include>
-                            <include>org.picocontainer:picocontainer</include>
-                            <include>org.fusesource:sigar</include>
-                            <include>org.slf4j:slf4j-api</include>
-                            <include>xml-apis:xml-apis</include>
-                            <!--
-                            <include>org.apache.commons:commons-compress</include>
-                            <include>org.tukaani:xz</include>
-                            <include>native:native</include> -->
-
-                        </includes>
-                    </dependencies>
-                    <!-- JNLP generation -->
-                    <jnlp>
-                        <inputTemplateResourcePath>${basedir}/src/main/jnlp/</inputTemplateResourcePath>
-                        <inputTemplate>template.vm</inputTemplate>
-                        <outputFile>ngrinder-agent.jnlp</outputFile> <!-- defaults to launch.jnlp -->
-                        <mainClass>org.ngrinder.NGrinderStarter</mainClass>
-                    </jnlp>
-
-                    <!-- SIGNING -->
-                    <sign>
-                        <keystore>${project.basedir}/keystore</keystore>
-                        <keypass>keypass</keypass>
-                        <storepass>storepass</storepass>
-                        <alias>agent_jnlp</alias>
-                        <validity>100</validity>
-                    </sign>
-                    <unsignAlreadySignedJars>false</unsignAlreadySignedJars>
-                    <gzip>true</gzip>
-                    <outputJarVersions>true</outputJarVersions>
-                </configuration>
-            </plugin>
 		</plugins>
 
 	</build>
