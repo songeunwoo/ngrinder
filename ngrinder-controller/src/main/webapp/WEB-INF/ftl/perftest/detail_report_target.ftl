@@ -45,18 +45,19 @@
         function drawMonitorChart(currMonitorData) {
             drawChart('cpu_usage_chart', currMonitorData.cpu, formatPercentage, currMonitorData.interval);
             drawChart('mem_usage_chart', currMonitorData.memory, formatMemory, currMonitorData.interval);
+            drawChart("recevied_byte_per_sec_chart", systemData.received, formatNetwork, systemData.interval);
+            drawChart("sent_byte_per_sec_chart", systemData.sent, formatNetwork, systemData.interval);
             drawExtMonitorData(currMonitorData);
             generateImg(imgBtnLabel, imgTitle);
         }
 
         function drawExtMonitorData(systemData) {
-            drawChart("recevied_byte_per_sec_chart", systemData.received, formatNetwork, systemData.interval);
-            drawChart("sent_byte_per_sec_chart", systemData.sent, formatNetwork, systemData.interval);
-            drawChart("custom_monitor_chart_1", systemData.customData1, formatNetwork, systemData.interval);
-            drawChart("custom_monitor_chart_2", systemData.customData2, formatNetwork, systemData.interval);
-            drawChart("custom_monitor_chart_3", systemData.customData3, formatNetwork, systemData.interval);
-            drawChart("custom_monitor_chart_4", systemData.customData4, formatNetwork, systemData.interval);
-            drawChart("custom_monitor_chart_5", systemData.customData5, formatNetwork, systemData.interval);
+            checkDataAndDraw("custom_monitor_chart_1", systemData.customData1, formatNetwork, systemData.interval);
+            checkDataAndDraw("custom_monitor_chart_2", systemData.customData2, formatNetwork, systemData.interval);
+            checkDataAndDraw("custom_monitor_chart_3", systemData.customData3, formatNetwork, systemData.interval);
+            checkDataAndDraw("custom_monitor_chart_4", systemData.customData4, formatNetwork, systemData.interval);
+            checkDataAndDraw("custom_monitor_chart_5", systemData.customData5, formatNetwork, systemData.interval);
         }
+
 
     </script>

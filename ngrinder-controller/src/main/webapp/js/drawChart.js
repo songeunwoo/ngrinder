@@ -1,3 +1,4 @@
+
 // data is in KB
 var formatMemory = function(format, value) {
 	if (value === null) {
@@ -96,6 +97,32 @@ DummyChart.prototype.replot = function() {
 };
 
 var dummyChart = new DummyChart();
+
+// check whether the data is proper
+function checkDataForChart(data) {
+    if (data == null || data == undefined || data.length == 0 ) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function checkDataNotZeroForChart(data) {
+    if (checkDataForChart(data)) {
+        for (value in data) {
+            if (value > 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function checkDataAndDraw(containerId, data, formatYaxis, interval) {
+    if (checkDataNotZeroForChart(data)) {
+        drawChart(containerId, data, formatYaxis, interval)
+    }
+}
 
 function drawChart(containerId, data, formatYaxis, interval) {
 	//title, containerId and data is necessary.

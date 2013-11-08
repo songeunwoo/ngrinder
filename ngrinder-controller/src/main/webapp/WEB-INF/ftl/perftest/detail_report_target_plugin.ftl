@@ -52,7 +52,7 @@
                     dataFormat = null;
                 }
 
-                drawChart(currentHead, currentData, dataFormat, currMonitorData.interval);
+                checkDataAndDraw(currentHead, currentData, dataFormat, currMonitorData.interval);
             }
             generateImg(imgBtnLabel, imgTitle);
         }
