@@ -29,6 +29,7 @@ import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.AgentJars;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -41,13 +42,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 /**
@@ -454,51 +456,66 @@ public class AgentManagerService implements IAgentManagerService {
 
         String tomcatLibUrl = AgentManagerService.class.getClassLoader().getResource("../lib").getFile();
 
-        File tomcatLibjars = new File(tomcatLibUrl);
+        File tomcatLibJars = new File(tomcatLibUrl);
+        File infDir = tomcatLibJars.getParentFile();
 
-        String[] names = tomcatLibjars.list();
-        File infDir = tomcatLibjars.getParentFile();
-
-        File agentDir = new File(infDir,"update_agent");
-
-        if(!agentDir.exists())
+        File agentDir = new File(infDir, "update_agent");
+        if (!agentDir.exists())
             agentDir.mkdir();
 
-               File coreDir = new File(agentDir,"ngrinder-core-"+version);
+        File zipFile = new File(agentDir, "ngrinder-core-" + version + ".zip");
 
-        if(!coreDir.exists())
+        if(zipFile.exists())
+            return zipFile;
+
+        final File shellDir = new File(infDir, "shell");
+        if (!shellDir.exists())
+            shellDir.mkdir();
+
+        File coreDir = new File(agentDir, "ngrinder-core-" + version);
+        if (!coreDir.exists())
             coreDir.mkdir();
 
-        File coreLibDir = new File(coreDir,"lib");
-        if(!coreLibDir.exists())
+        File coreLibDir = new File(coreDir, "lib");
+        if (!coreLibDir.exists())
             coreLibDir.mkdir();
 
-        FileUtils.copyDirectory(tomcatLibjars,coreLibDir,new FileFilter() {
+        FileUtils.copyDirectory(tomcatLibJars, coreLibDir, new FileFilter() {
             @Override
             public boolean accept(File pathName) {
-                for(AgentJars jar:AgentJars.values()){
-                    if(pathName.getName().startsWith(jar.getShortName()))
+                for (AgentJars jar : AgentJars.values()) {
+                    if (pathName.getName().startsWith(jar.getShortName()))
                         return true;
                 }
                 return false;
             }
         });
 
-        FileUtils.copyDirectory(tomcatLibjars, coreDir, new FileFilter() {
+        FileUtils.copyDirectory(tomcatLibJars, coreDir, new FileFilter() {
             @Override
             public boolean accept(File pathName) {
-                if (pathName.getName().startsWith("ngrinder-core"))
+                if (pathName.getName().startsWith("ngrinder-core")){
+                    try {
+                        CompressionUtil.extractJar(pathName,shellDir);
+                    } catch (IOException e) {
+                        throw new NGrinderRuntimeException("error while extract files from ngrinder-core.jar !",e);
+                    }
                     return true;
+                }
                 return false;
             }
         });
 
+        FileUtils.copyDirectory(new File(shellDir,"shell"), coreDir);
+
         CompressionUtil.zip(coreDir);
+
         FileUtils.deleteDirectory(coreDir);
-        File zipFile = new File(coreDir.getParentFile(),coreDir.getName()+".zip");
-        if(!zipFile.exists()){
-           throw new NGrinderRuntimeException("error while generating latest aget zip file !");
-        }
+        FileUtils.deleteDirectory(shellDir);
+
+        checkArgument(zipFile.exists(),
+                " error while generating latest agent zip file !");
+
         return zipFile;
     }
 

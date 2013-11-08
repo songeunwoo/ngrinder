@@ -26,10 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -510,5 +509,35 @@ public abstract class CompressionUtil {
 		}
 		IOUtils.closeQuietly(jin);
 	}
+
+    /**
+     * Extract files from jar.
+     *
+     * @param jarFile jar file
+     * @param destDir destination directory
+     * @throws IOException thrown when having IO problem.
+     */
+    public static void extractJar(File jarFile, File destDir) throws IOException {
+        JarFile jarfile = new JarFile(jarFile);
+        Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
+        while (enu.hasMoreElements()) {
+            JarEntry je = enu.nextElement();
+            File fl = new File(destDir, je.getName());
+            if (!fl.exists()) {
+                fl.getParentFile().mkdirs();
+                fl = new File(destDir, je.getName());
+            }
+            if (je.isDirectory()) {
+                continue;
+            }
+            InputStream is = jarfile.getInputStream(je);
+            FileOutputStream fo = new FileOutputStream(fl);
+            while (is.available() > 0) {
+                fo.write(is.read());
+            }
+            IOUtils.closeQuietly(fo);
+            IOUtils.closeQuietly(is);
+        }
+    }
 
 }
