@@ -21,6 +21,7 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
@@ -28,8 +29,6 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.model.AgentJars;
-import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -42,8 +41,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
@@ -454,11 +455,11 @@ public class AgentManagerService implements IAgentManagerService {
     public  File compressAgentFolder() throws IOException {
         String version = config.getVesion();
 
+        URLClassLoader cl = (URLClassLoader)this.getClass().getClassLoader();
+        String agentLibStr = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
         String tomcatLibUrl = AgentManagerService.class.getClassLoader().getResource("../lib").getFile();
 
-        File tomcatLibJars = new File(tomcatLibUrl);
-        File infDir = tomcatLibJars.getParentFile();
-
+        File infDir = new File(tomcatLibUrl).getParentFile();
         File agentDir = new File(infDir, "update_agent");
         if (!agentDir.exists())
             agentDir.mkdir();
@@ -480,39 +481,48 @@ public class AgentManagerService implements IAgentManagerService {
         if (!coreLibDir.exists())
             coreLibDir.mkdir();
 
-        FileUtils.copyDirectory(tomcatLibJars, coreLibDir, new FileFilter() {
-            @Override
-            public boolean accept(File pathName) {
-                for (AgentJars jar : AgentJars.values()) {
-                    if (pathName.getName().startsWith(jar.getShortName()))
-                        return true;
-                }
-                return false;
-            }
-        });
+        URL[] libUrls = cl.getURLs();
+        final String[] agentLibArray = StringUtils.split(agentLibStr, ",;");
+        for (URL url : libUrls) {
+            try {
 
-        FileUtils.copyDirectory(tomcatLibJars, coreDir, new FileFilter() {
-            @Override
-            public boolean accept(File pathName) {
-                if (pathName.getName().startsWith("ngrinder-core")){
-                    try {
-                        CompressionUtil.extractJar(pathName,shellDir);
-                    } catch (IOException e) {
-                        throw new NGrinderRuntimeException("error while extract files from ngrinder-core.jar !",e);
+                if (StringUtils.contains(url.getFile(), "ngrinder-sh")) {
+                    File coreShell = new File(url.toURI());
+                    CompressionUtil.extractJar(coreShell, shellDir);
+                    continue;
+                }
+
+                if (StringUtils.contains(url.getFile(), "ngrinder-core")) {
+                    File coreShell = new File(url.toURI());
+                    FileUtils.copyFileToDirectory(coreShell, coreDir);
+                    continue;
+                }
+                for (String jarName : agentLibArray) {
+
+                    jarName = jarName.trim();
+                    if (url.getFile().endsWith(jarName)) {
+                        FileUtils.copyFileToDirectory(new File(url.toURI()), coreLibDir);
                     }
-                    return true;
+
                 }
+            } catch (URISyntaxException e) {
+                throw new NGrinderRuntimeException("error while get file from url !", e);
+            }
+        }
+        FileUtils.copyDirectory(shellDir, coreDir, new FileFilter() {
+            @Override
+            public boolean accept(File pathName) {
+                if (pathName.getName().endsWith("sh") || pathName.getName().endsWith("bat"))
+                    return true;
+
                 return false;
             }
         });
-
-        FileUtils.copyDirectory(new File(shellDir,"shell"), coreDir);
 
         CompressionUtil.zip(coreDir);
 
         FileUtils.deleteDirectory(coreDir);
         FileUtils.deleteDirectory(shellDir);
-
         checkArgument(zipFile.exists(),
                 " error while generating latest agent zip file !");
 

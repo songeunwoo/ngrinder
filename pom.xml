@@ -11,6 +11,7 @@
 		<module>ngrinder-core</module>
 		<module>ngrinder-dns</module>
 		<module>ngrinder-groovy</module>
+        <module>ngrinder-sh</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>
