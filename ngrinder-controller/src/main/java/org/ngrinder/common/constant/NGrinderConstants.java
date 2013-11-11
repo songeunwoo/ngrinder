@@ -159,8 +159,8 @@ public interface NGrinderConstants {
 
 	public static final int AGENT_SERVER_DAEMON_PORT = 1011;
 	
-	//GRINDER INITIAL ADMIN USER ID
-	public static final String GRINDER_INITAIL_ADMIN_USERID = "admin";
+	//NGRINDER INITIAL ADMIN USER ID
+	public static final String NGRINDER_INITIAL_ADMIN_USERID = "admin";
 	
 	// GRINDER_PROPERTY_KEY
 	public static final String GRINDER_PROP_AGENTS = "grinder.agents";
@@ -188,8 +188,8 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_SECURITY = "grinder.security";
 	public static final String GRINDER_PROP_USER = "grinder.user";
 	// ngrinder setting.
-	public static final String NGRINDER_PROP_DIST_SAFE_THRESHHOLD_OLD = "ngrinder.dist.safe.threashhold";
-	public static final String NGRINDER_PROP_DIST_SAFE_THRESHHOLD = "ngrinder.dist.safe.threshold";
+	public static final String NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD = "ngrinder.dist.safe.threashhold";
+	public static final String NGRINDER_PROP_DIST_SAFE_THRESHOLD = "ngrinder.dist.safe.threshold";
 
 	public static final String NGRINDER_PROP_DIST_SAFE = "ngrinder.dist.safe";
 	public static final String NGRINDER_PROP_DIST_SAFE_REGION = "ngrinder.dist.safe.region";
@@ -206,7 +206,7 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_USAGE_REPORT = "usage.report";
 	public static final String NGRINDER_USER_SELF_REGISTRATION = "ngrinder.user.self.registration";
 
-	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
+	public static final String NGRINDER_RESOURCE_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";
 	public static final String NGRINDER_QNA_RSS_URL_KEY = "home.qa.rss";
 	public static final String NGRINDER_PROP_REGION = "ngrinder.cluster.region";

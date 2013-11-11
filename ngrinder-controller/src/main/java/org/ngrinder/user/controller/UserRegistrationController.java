@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
- * New User registration controller.
+ * User registration controller.
  * 
  * @author Matt
  * @since 3.3
@@ -50,18 +50,16 @@ public class UserRegistrationController extends NGrinderBaseController {
 	private Config config;
 
 	/**
-	 * New user sing up form login page.
+	 * New user sign up form login page.
 	 * 
-	 * @param user
-	 *            current user
 	 * @param model
 	 *            mode
-	 * @return "user/userDetail"
+	 * @return "user/user_sign_up_modal"
 	 */
 	@RequestMapping("/sign_up")
 	public String getUserForm(ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.of(Role.USER));
-		model.addAttribute("isRegistrationBySelf", config.isUserRegistrationBySelf());
+		model.addAttribute("isSelfRegistration", config.isSelfUserRegistration());
 		return "user/user_sign_up_modal";
 	}
 	
@@ -88,13 +86,12 @@ public class UserRegistrationController extends NGrinderBaseController {
 	 *            model
 	 * @param newUser
 	 *            user to be created.
-	 * @return "redirect:/user/list" if current user change his info, otheriwise
-	 *         return "redirect:/"
+	 * @return "redirect:/home"
 	 */
 	@RequestMapping("/save")
 	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User newUser) {
 		checkArgument(newUser.getRole().equals(Role.USER), "User role must be General user !");
-		userService.saveUser(newUser);
+		userService.createUser(newUser);
 		return "redirect:/home";
 	}
 }
