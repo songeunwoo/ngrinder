@@ -16,6 +16,7 @@ package org.ngrinder.common.util;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -513,8 +514,10 @@ public abstract class CompressionUtil {
     /**
      * Extract files from jar.
      *
-     * @param jarFile jar file
-     * @param destDir destination directory
+     * @param jarFile
+     *                jar file
+     * @param destDir
+     *                destination directory
      * @throws IOException thrown when having IO problem.
      */
     public static void extractJar(File jarFile, File destDir) throws IOException {
@@ -539,5 +542,30 @@ public abstract class CompressionUtil {
             IOUtils.closeQuietly(is);
         }
     }
+
+
+    /**
+     * Add file into tar.
+     *
+     * @param tarStream
+     *              TarArchive outputStream
+     * @param file
+     *              file
+     * @param basePath
+     *              relative path
+     *
+     * @throws IOException thrown when having IO problem.
+     */
+    public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String basePath) throws IOException {
+        TarArchiveEntry entry = new TarArchiveEntry(basePath + file.getName());
+        entry.setSize(file.length());
+        entry.setMode(0100755);
+        tarStream.putArchiveEntry(entry);
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        IOUtils.copy(bis, tarStream);
+        IOUtils.closeQuietly(bis);
+        tarStream.closeArchiveEntry();
+    }
+
 
 }

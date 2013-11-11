@@ -14,10 +14,9 @@
 package org.ngrinder.infra.init;
 
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -29,7 +28,7 @@ import java.io.IOException;
  * @author Matt
  * @since 3.3
  */
-@Component
+@RuntimeOnlyComponent
 public class AgentUpdateInit {
 
     private File agentFile ;
@@ -45,7 +44,6 @@ public class AgentUpdateInit {
         agentFile = agentManagerService.compressAgentFolder();
     }
 
-    @Cacheable(value = "latest_agent")
     public File getAgentFile() {
         return agentFile;
     }

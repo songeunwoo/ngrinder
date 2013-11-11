@@ -20,6 +20,8 @@ import com.google.common.collect.Multimap;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,13 +41,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
@@ -452,36 +453,38 @@ public class AgentManagerService implements IAgentManagerService {
     * org.ngrinder.agent.service.IAgentManagerService#compressAgentFolder
     */
     @Override
-    public  File compressAgentFolder() throws IOException {
+    public File compressAgentFolder() throws IOException {
         String version = config.getVesion();
+        File infDir = config.isCluster() ? config.getExHome().getDirectory() : config.getHome().getDirectory();
 
-        URLClassLoader cl = (URLClassLoader)this.getClass().getClassLoader();
+        URLClassLoader cl = (URLClassLoader) this.getClass().getClassLoader();
+
         String agentLibStr = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
-        String tomcatLibUrl = AgentManagerService.class.getClassLoader().getResource("../lib").getFile();
 
-        File infDir = new File(tomcatLibUrl).getParentFile();
         File agentDir = new File(infDir, "update_agent");
         if (!agentDir.exists())
             agentDir.mkdir();
 
-        File zipFile = new File(agentDir, "ngrinder-core-" + version + ".zip");
+        String agetTarName = "ngrinder-core-" + version;
 
-        if(zipFile.exists())
-            return zipFile;
+        File agentTar = new File(agentDir, agetTarName + ".tar.gz");
+
+        if (agentTar.exists())
+            return agentTar;
+
+        FileOutputStream fos = new FileOutputStream(agentTar);
+        TarArchiveOutputStream taos = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)));
+        taos.putArchiveEntry(new TarArchiveEntry("lib/"));
+        taos.closeArchiveEntry();
+
 
         final File shellDir = new File(infDir, "shell");
         if (!shellDir.exists())
             shellDir.mkdir();
 
-        File coreDir = new File(agentDir, "ngrinder-core-" + version);
-        if (!coreDir.exists())
-            coreDir.mkdir();
-
-        File coreLibDir = new File(coreDir, "lib");
-        if (!coreLibDir.exists())
-            coreLibDir.mkdir();
-
         URL[] libUrls = cl.getURLs();
+
+
         final String[] agentLibArray = StringUtils.split(agentLibStr, ",;");
         for (URL url : libUrls) {
             try {
@@ -493,40 +496,43 @@ public class AgentManagerService implements IAgentManagerService {
                 }
 
                 if (StringUtils.contains(url.getFile(), "ngrinder-core")) {
-                    File coreShell = new File(url.toURI());
-                    FileUtils.copyFileToDirectory(coreShell, coreDir);
+                    File jarFile = new File(url.toURI());
+                    CompressionUtil.addFileToTar(taos, jarFile, "");
                     continue;
                 }
-                for (String jarName : agentLibArray) {
 
+                for (String jarName : agentLibArray) {
                     jarName = jarName.trim();
                     if (url.getFile().endsWith(jarName)) {
-                        FileUtils.copyFileToDirectory(new File(url.toURI()), coreLibDir);
+                        File jarFile = new File(url.toURI());
+                        CompressionUtil.addFileToTar(taos, jarFile, "lib/");
                     }
 
                 }
             } catch (URISyntaxException e) {
-                throw new NGrinderRuntimeException("error while get file from url !", e);
+                throw new NGrinderRuntimeException("Wrong URL Syntax for Libs !", e);
             }
         }
-        FileUtils.copyDirectory(shellDir, coreDir, new FileFilter() {
-            @Override
-            public boolean accept(File pathName) {
-                if (pathName.getName().endsWith("sh") || pathName.getName().endsWith("bat"))
-                    return true;
 
+        File[] fileList = shellDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if (name.endsWith("sh") || name.endsWith("bat"))
+                    return true;
                 return false;
             }
         });
 
-        CompressionUtil.zip(coreDir);
+        for (File script : fileList) {
+            CompressionUtil.addFileToTar(taos, script, "");
+        }
 
-        FileUtils.deleteDirectory(coreDir);
+        IOUtils.closeQuietly(taos);
         FileUtils.deleteDirectory(shellDir);
-        checkArgument(zipFile.exists(),
-                " error while generating latest agent zip file !");
+        checkArgument(agentTar.exists(),
+                " Error while generating agent upgrade tar.gz !");
 
-        return zipFile;
+        return agentTar;
     }
 
     /*

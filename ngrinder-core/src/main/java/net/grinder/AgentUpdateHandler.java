@@ -18,14 +18,12 @@ import net.grinder.util.NetworkUtil;
 import net.grinder.util.VersionNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 
 /**
@@ -70,7 +68,7 @@ public class AgentUpdateHandler {
 
         File downloadFolder = new File(System.getProperty("user.dir"), "download");
         downloadFolder.mkdirs();
-        File dest = new File(downloadFolder, message.getFileName()+".zip");
+        File dest = new File(downloadFolder, message.getFileName()+".tar.gz");
 
         File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
         File updatePackageDir = new File(System.getProperty("user.dir"), "update_package");
@@ -88,31 +86,24 @@ public class AgentUpdateHandler {
         interDir.mkdirs();
         toDir.mkdirs();
 
-        if (FilenameUtils.isExtension(from.getName(), "zip")) {
-            CompressionUtil.unzip(from, interDir);
+        if (FilenameUtils.isExtension(from.getName(), "gz")) {
+            File outFile = new File(toDir, "ngrinder-agent.tar");
+            CompressionUtil.ungzip(from, outFile);
+            CompressionUtil.untar(outFile, interDir);
+            FileUtils.deleteQuietly(outFile);
         } else {
             LOGGER.error("{} is not allowed to be unzipped.", from.getName());
         }
-        // List up only directories.
-        File[] listFiles = interDir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return (pathname.isDirectory());
-            }
-        });
 
-        if (ArrayUtils.isNotEmpty(listFiles)) {
-            try {
-                FileUtils.deleteQuietly(toDir);
-                FileUtils.moveDirectory(listFiles[0], toDir);
-            } catch (IOException e) {
-                LOGGER.error("Error while moving a file ", e);
-            }
-        } else {
-            LOGGER.error("{} is empty.", interDir.getName());
+        try {
+            FileUtils.deleteQuietly(toDir);
+            FileUtils.moveDirectory(interDir, toDir);
+        } catch (IOException e) {
+            LOGGER.error("Error while moving a file ", e);
         }
-        FileUtils.deleteQuietly(from);
-        FileUtils.deleteQuietly(interDir);
+
+        //FileUtils.deleteQuietly(from);
+        //FileUtils.deleteQuietly(interDir);
 
     }
 }
