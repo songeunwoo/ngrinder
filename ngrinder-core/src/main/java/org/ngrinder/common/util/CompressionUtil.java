@@ -30,8 +30,6 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -437,109 +435,45 @@ public abstract class CompressionUtil {
 		return outFile;
 	}
 
-	/**
-	 * Unpack the given jar file.
-	 * 
-	 * @param jarFile
-	 *            file to be uncompressed
-	 * @param destDir
-	 *            destination directory
-	 * @throws IOException
-	 *             thrown when having IO problem.
-	 */
-	public static void unjar(File jarFile, String destDir) throws IOException {
-		File dest = new File(destDir);
-		if (!dest.exists()) {
-			dest.mkdirs();
-		}
-		if (!dest.isDirectory()) {
-			LOGGER.error("Destination must be a directory.");
-			throw new IOException("Destination must be a directory.");
-		}
-		JarInputStream jin = new JarInputStream(new FileInputStream(jarFile));
-		byte[] buffer = new byte[1024];
-
-		ZipEntry entry = jin.getNextEntry();
-		while (entry != null) {
-			String fileName = entry.getName();
-			if (fileName.charAt(fileName.length() - 1) == '/') {
-				fileName = fileName.substring(0, fileName.length() - 1);
-			}
-			if (fileName.charAt(0) == '/') {
-				fileName = fileName.substring(1);
-			}
-			if (File.separatorChar != '/') {
-				fileName = fileName.replace('/', File.separatorChar);
-			}
-			File file = new File(dest, fileName);
-			if (entry.isDirectory()) {
-				// make sure the directory exists
-				file.mkdirs();
-				jin.closeEntry();
-			} else {
-				// make sure the directory exists
-				File parent = file.getParentFile();
-				if (parent != null && !parent.exists()) {
-					parent.mkdirs();
-				}
-
-				// dump the file
-				OutputStream out = new FileOutputStream(file);
-				int len = 0;
-				while ((len = jin.read(buffer, 0, buffer.length)) != -1) {
-					out.write(buffer, 0, len);
-				}
-				out.flush();
-				IOUtils.closeQuietly(out);
-				jin.closeEntry();
-				file.setLastModified(entry.getTime());
-			}
-			entry = jin.getNextEntry();
-		}
-		Manifest mf = jin.getManifest();
-		if (mf != null) {
-			File file = new File(dest, "META-INF/MANIFEST.MF");
-			File parent = file.getParentFile();
-			if (!parent.exists()) {
-				parent.mkdirs();
-			}
-			OutputStream out = new FileOutputStream(file);
-			mf.write(out);
-			out.flush();
-			IOUtils.closeQuietly(out);
-		}
-		IOUtils.closeQuietly(jin);
-	}
-
     /**
-     * Extract files from jar.
+     * Unpack the given jar file.
      *
      * @param jarFile
      *                jar file
-     * @param destDir
+     * @param dest
      *                destination directory
      * @throws IOException thrown when having IO problem.
      */
-    public static void extractJar(File jarFile, File destDir) throws IOException {
+    public static void unjar(File jarFile, File dest) throws IOException {
+        if (!dest.exists()) {
+            dest.mkdirs();
+        }
         JarFile jarfile = new JarFile(jarFile);
         Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
         while (enu.hasMoreElements()) {
             JarEntry je = enu.nextElement();
-            File fl = new File(destDir, je.getName());
+            File fl = new File(dest, je.getName());
             if (!fl.exists()) {
                 fl.getParentFile().mkdirs();
-                fl = new File(destDir, je.getName());
+                fl = new File(dest, je.getName());
             }
             if (je.isDirectory()) {
                 continue;
             }
-            InputStream is = jarfile.getInputStream(je);
-            FileOutputStream fo = new FileOutputStream(fl);
-            while (is.available() > 0) {
-                fo.write(is.read());
+            InputStream is = null;
+            FileOutputStream fo = null;
+            try {
+                is = jarfile.getInputStream(je);
+                fo = new FileOutputStream(fl);
+                IOUtils.copy(is, fo);
+            } catch (IOException e) {
+                LOGGER.error("Error while extracting jar file {} ", jarFile, e.getMessage());
+                LOGGER.debug("Trace is : ", e);
+                throw processException("Error while extracting jar file", e);
+            } finally {
+                IOUtils.closeQuietly(fo);
+                IOUtils.closeQuietly(is);
             }
-            IOUtils.closeQuietly(fo);
-            IOUtils.closeQuietly(is);
         }
     }
 
@@ -557,14 +491,41 @@ public abstract class CompressionUtil {
      * @throws IOException thrown when having IO problem.
      */
     public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String basePath) throws IOException {
+        int mode = file.isDirectory() ? TarArchiveEntry.DEFAULT_DIR_MODE : TarArchiveEntry.DEFAULT_FILE_MODE;
+        addFileToTar(tarStream, file, basePath, mode);
+    }
+
+    /**
+     * Add file into tar.
+     *
+     * @param tarStream
+     *              TarArchive outputStream
+     * @param file
+     *              file
+     * @param basePath
+     *              relative path
+     * @param mode
+     *               mode for this entry
+     *
+     * @throws IOException thrown when having IO problem.
+     */
+    public static void addFileToTar(TarArchiveOutputStream tarStream, File file, String basePath, int mode) throws IOException {
         TarArchiveEntry entry = new TarArchiveEntry(basePath + file.getName());
         entry.setSize(file.length());
-        entry.setMode(0100755);
-        tarStream.putArchiveEntry(entry);
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-        IOUtils.copy(bis, tarStream);
-        IOUtils.closeQuietly(bis);
-        tarStream.closeArchiveEntry();
+        entry.setMode(mode);
+        BufferedInputStream bis = null;
+        try {
+            tarStream.putArchiveEntry(entry);
+            bis = new BufferedInputStream(new FileInputStream(file));
+            IOUtils.copy(bis, tarStream);
+        } catch (IOException e) {
+            LOGGER.error("Error while adding File to Tar {} file by {}", file, e.getMessage());
+            LOGGER.debug("Trace is : ", e);
+            throw processException("Error while adding File to Tar file", e);
+        } finally {
+            IOUtils.closeQuietly(bis);
+            tarStream.closeArchiveEntry();
+        }
     }
 
 
