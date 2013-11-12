@@ -21,6 +21,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
@@ -135,12 +136,14 @@ public interface IAgentManagerService {
     /**
      * Compress ngrinder-core folder
      *
+     * @param classLoader
+     *                   URLClass Loader.
      * @return File
      */
-    public abstract File compressAgentFolder() throws IOException;
+    public abstract File compressAgentFolder(URLClassLoader classLoader) throws IOException;
 
     /**
-     * Upate agent lib
+     * Update agent lib
      *
      * @param url
      *            controller request url.

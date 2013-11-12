@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 
 /**
  * Initialize Agent update zip .
@@ -31,20 +32,21 @@ import java.io.IOException;
 @RuntimeOnlyComponent
 public class AgentUpdateInit {
 
-    private File agentFile ;
+    private static File agentFile ;
 
     @Autowired
     private AgentManagerService agentManagerService;
+
     /**
      * Generate compressed ngrinder-core package.
      */
     @PostConstruct
     @Async
     public void init() throws IOException {
-        agentFile = agentManagerService.compressAgentFolder();
+        agentFile = agentManagerService.compressAgentFolder((URLClassLoader)this.getClass().getClassLoader());
     }
 
-    public File getAgentFile() {
+    public static File getAgentFile() {
         return agentFile;
     }
 }

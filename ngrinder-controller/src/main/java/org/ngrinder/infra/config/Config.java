@@ -13,22 +13,12 @@
  */
 package org.ngrinder.infra.config;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.NetworkUtil;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,9 +36,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Properties;
+
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
@@ -645,5 +642,18 @@ public class Config implements IConfig, NGrinderConstants {
 		return getSystemProperties().getProperty("ngrinder.help.url",
 				"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
+
+    /**
+     * Get ngrinder sub module full name.
+     *
+     * @param moduleName
+     *                  nGrinder sub  module name.
+     * @param fileType
+     *                  file type .
+     * @return String
+     */
+    public String getNGrinderFullName(String moduleName, String fileType) {
+        return moduleName + "-" + getVerionString() + ((fileType != null && fileType.length() != 0) ? "." + fileType : "");
+    }
 
 }

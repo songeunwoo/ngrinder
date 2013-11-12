@@ -38,10 +38,6 @@ public class AgentDownloadController extends NGrinderBaseController {
 	@Autowired
 	private Config config;
 
-    @Autowired
-    private AgentUpdateInit agentUpdateInit;
-
-
 	/**
      * Download agent.
      *
@@ -63,7 +59,7 @@ public class AgentDownloadController extends NGrinderBaseController {
      */
     @RequestMapping(value = "/download_new_agent")
     public void downloadAgent(HttpServletResponse response) {
-        FileDownloadUtil.downloadFile(response, agentUpdateInit.getAgentFile());
+        FileDownloadUtil.downloadFile(response, AgentUpdateInit.getAgentFile());
     }
 
 }

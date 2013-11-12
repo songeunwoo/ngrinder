@@ -460,10 +460,7 @@ public class AgentManagerService implements IAgentManagerService {
     * @see
     * org.ngrinder.agent.service.IAgentManagerService#compressAgentFolder
     */
-    public File compressAgentFolder() throws IOException {
-        String version = config.getVesion();
-
-        URLClassLoader cl = (URLClassLoader) this.getClass().getClassLoader();
+    public File compressAgentFolder(URLClassLoader cl) throws IOException {
 
         String agentLibStr = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
 
@@ -473,9 +470,7 @@ public class AgentManagerService implements IAgentManagerService {
 
         final File shellDir = new File(agentDir.getParentFile(), "shell");
 
-        String agetTarName = "ngrinder-core-" + version;
-
-        File agentTar = new File(agentDir, agetTarName + ".tar.gz");
+        File agentTar = new File(agentDir, config.getNGrinderFullName("ngrinder-core", "tar.gz"));
 
         if (agentTar.exists())
             return agentTar;
@@ -493,13 +488,13 @@ public class AgentManagerService implements IAgentManagerService {
             for (URL url : libUrls) {
                 try {
 
-                    if (StringUtils.contains(url.getFile(), "ngrinder-sh")) {
+                    if (StringUtils.contains(url.getFile(), "ngrinder-sh") && url.getFile().endsWith("jar")) {
                         File coreShell = new File(url.toURI());
                         CompressionUtil.unjar(coreShell, shellDir);
                         continue;
                     }
 
-                    if (StringUtils.contains(url.getFile(), "ngrinder-core")) {
+                    if (StringUtils.contains(url.getFile(), "ngrinder-core") && url.getFile().endsWith("jar")) {
                         File jarFile = new File(url.toURI());
                         CompressionUtil.addFileToTar(taos, jarFile, "");
                         continue;
