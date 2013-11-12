@@ -1,4 +1,4 @@
-#!/bin/sh
+﻿#!/bin/sh
 curpath=`dirname $0`
 cd ${curpath}
 while :
