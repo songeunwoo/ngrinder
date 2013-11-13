@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -29,10 +29,12 @@ import org.ngrinder.common.util.FileWatchdog;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.service.IConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -49,7 +51,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -74,7 +76,8 @@ public class Config implements IConfig, NGrinderConstants {
 	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
 	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<PropertyChangeListener>();
-
+	@Autowired
+	private SpringContext context;
 	/**
 	 * Make it singleton.
 	 */
@@ -83,7 +86,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Add the system configuration change listener.
-	 * 
+	 *
 	 * @param listener
 	 *            listener
 	 */
@@ -93,7 +96,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Initialize the {@link Config} object.
-	 * 
+	 *
 	 * This method mainly resolves ${NGRINDER_HOME} and loads system properties. In addition, the logger is initialized
 	 * and the default configuration files are copied into ${NGRINDER_HOME} if they do not exists.
 	 */
@@ -104,7 +107,7 @@ public class Config implements IConfig, NGrinderConstants {
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
-			loadIntrenalProperties();
+			loadInternalProperties();
 			loadSystemProperties();
 			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
@@ -114,7 +117,7 @@ public class Config implements IConfig, NGrinderConstants {
 			resolveLocalIp();
 			loadDatabaseProperties();
 			setRMIHostName();
-			versionString = getVesion();
+			versionString = getVersion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
 		}
@@ -138,7 +141,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Set the RMI server host name.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	protected void setRMIHostName() {
@@ -157,7 +160,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get if the cluster mode is enable or not.
-	 * 
+	 *
 	 * @return true if the cluster mode is enabled.
 	 * @since 3.1
 	 */
@@ -167,7 +170,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the ngrinder instance IPs consisting of the current cluster from the configuration.
-	 * 
+	 *
 	 * @return ngrinder instance IPs
 	 */
 	public String[] getClusterURIs() {
@@ -177,7 +180,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the current region from the configuration.
-	 * 
+	 *
 	 * @return region. If it's not clustered mode, return "NONE"
 	 */
 	public String getRegion() {
@@ -186,7 +189,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the monitor listener port from the configuration.
-	 * 
+	 *
 	 * @return monitor port
 	 */
 	public int getMonitorPort() {
@@ -196,25 +199,25 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the periodic usage report is enabled.
-	 * 
+	 *
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
 		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_USAGE_REPORT, true);
 	}
-	
+
 	/**
-	 * Check if enable user can created by himself.
-	 * 
+	 * Check if user self-registration is enabled.
+	 *
 	 * @return true if enabled.
 	 */
-	public boolean isUserRegistrationBySelf() {
+	public boolean isSelfUserRegistration() {
 		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_USER_SELF_REGISTRATION, false);
 	}
 
 	/**
 	 * Initialize Logger.
-	 * 
+	 *
 	 * @param forceToVerbose
 	 *            true to force verbose logging.
 	 */
@@ -224,7 +227,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Set up the logger.
-	 * 
+	 *
 	 * @param verbose
 	 *            verbose mode?
 	 */
@@ -257,7 +260,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Copy the default files and create default directories to ${NGRINDER_HOME}.
-	 * 
+	 *
 	 * @throws IOException
 	 *             occurs when there is no such a files.
 	 */
@@ -271,7 +274,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Resolve nGrinder home path.
-	 * 
+	 *
 	 * @return resolved home
 	 */
 	protected Home resolveHome() {
@@ -280,7 +283,7 @@ public class Config implements IConfig, NGrinderConstants {
 		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			CoreLogger.LOGGER.warn("The path to ngrinder-home is ambiguous:");
 			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
-			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
+			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.home=" + userHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
@@ -293,7 +296,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Resolve nGrinder extended home path.
-	 * 
+	 *
 	 * @return resolved home
 	 */
 	protected Home resolveExHome() {
@@ -302,7 +305,7 @@ public class Config implements IConfig, NGrinderConstants {
 		if (!StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
 			CoreLogger.LOGGER.warn("The path to ngrinder-exhome is ambiguous:");
 			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
-			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
+			CoreLogger.LOGGER.warn("    Java System Property:  ngrinder.exhome=" + exHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
 		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
@@ -316,7 +319,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Load internal properties which is not modifiable by user.
 	 */
-	protected void loadIntrenalProperties() {
+	protected void loadInternalProperties() {
 		InputStream inputStream = null;
 		Properties properties = new Properties();
 		try {
@@ -390,7 +393,7 @@ public class Config implements IConfig, NGrinderConstants {
 				loadAnnouncement();
 			}
 		};
-		announcementWatchDog.setName("WatchDog - annoucenment.conf");
+		announcementWatchDog.setName("WatchDog - announcement.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
 		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
@@ -432,17 +435,20 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the database properties.
-	 * 
+	 *
 	 * @return database properties
 	 */
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
+		if (context.isUnitTestContext()) {
+			databaseProperties.addProperty("unittest", "true");
+		}
 		return databaseProperties;
 	}
 
 	/**
 	 * Check if it's test mode.
-	 * 
+	 *
 	 * @return true if test mode
 	 */
 	public boolean isTestMode() {
@@ -451,7 +457,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the user security is enabled.
-	 * 
+	 *
 	 * @return true if user security is enabled.
 	 */
 	public boolean isUserSecurityEnabled() {
@@ -460,7 +466,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if it's the security enabled mode.
-	 * 
+	 *
 	 * @return true if security is enabled.
 	 */
 	public boolean isSecurityEnabled() {
@@ -469,7 +475,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if it is the demo mode.
-	 * 
+	 *
 	 * @return true if demo mode is enabled.
 	 */
 	public boolean isDemo() {
@@ -478,9 +484,9 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the plugin support is enabled.
-	 * 
+	 *
 	 * The reason why we need this configuration is that it takes time to initialize plugin system in unit test context.
-	 * 
+	 *
 	 * @return true if the plugin is supported.
 	 */
 	public boolean isPluginSupported() {
@@ -489,7 +495,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the resolved home folder.
-	 * 
+	 *
 	 * @return home
 	 */
 	public Home getHome() {
@@ -498,7 +504,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the resolved extended home folder.
-	 * 
+	 *
 	 * @since 3.1
 	 * @return home
 	 */
@@ -508,7 +514,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the system properties.
-	 * 
+	 *
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
 	public PropertiesWrapper getSystemProperties() {
@@ -517,7 +523,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the announcement content.
-	 * 
+	 *
 	 * @return loaded from announcement.conf.
 	 */
 	public String getAnnouncement() {
@@ -526,10 +532,10 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the nGrinder version number.
-	 * 
+	 *
 	 * @return nGrinder version number. If not set, return "0.0.1"
 	 */
-	public String getVesion() {
+	public String getVersion() {
 		return getInternalProperties().getProperty("ngrinder.version", "0.0.1");
 	}
 
@@ -540,7 +546,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the content of "process_and_thread_policy.js" file.
-	 * 
+	 *
 	 * @return loaded file content.
 	 */
 	public String getProcessAndThreadPolicyScript() {
@@ -557,7 +563,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the internal properties.
-	 * 
+	 *
 	 * @return internal properties
 	 */
 	public PropertiesWrapper getInternalProperties() {
@@ -566,16 +572,16 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get nGrinder version in static way.
-	 * 
+	 *
 	 * @return nGrinder version.
 	 */
-	public static String getVerionString() {
+	public static String getVersionString() {
 		return versionString;
 	}
 
 	/**
 	 * Check if it's verbose logging mode.
-	 * 
+	 *
 	 * @return true if verbose
 	 */
 	public boolean isVerbose() {
@@ -584,7 +590,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the currently configured controller IP.
-	 * 
+	 *
 	 * @return current IP.
 	 */
 	public String getCurrentIP() {
@@ -593,7 +599,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if the current ngrinder instance is hidden instance from the cluster.
-	 * 
+	 *
 	 * @return true if hidden.
 	 */
 	public boolean isInvisibleRegion() {
@@ -602,7 +608,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if no_more_test.lock to block further test executions exists.
-	 * 
+	 *
 	 * @return true if it exists
 	 */
 	public boolean hasNoMoreTestLock() {
@@ -614,7 +620,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Check if shutdown.lock exists.
-	 * 
+	 *
 	 * @return true if it exists
 	 */
 	public boolean hasShutdownLock() {
@@ -626,7 +632,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get the date of the recent announcement modification.
-	 * 
+	 *
 	 * @return the date of the recent announcement modification.
 	 */
 	public Date getAnnouncementDate() {
@@ -635,7 +641,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get ngrinder help URL.
-	 * 
+	 *
 	 * @return help URL
 	 */
 	public String getHelpUrl() {
@@ -653,7 +659,7 @@ public class Config implements IConfig, NGrinderConstants {
      * @return String
      */
     public String getNGrinderFullName(String moduleName, String fileType) {
-        return moduleName + "-" + getVerionString() + ((fileType != null && fileType.length() != 0) ? "." + fileType : "");
+        return moduleName + "-" + versionString + ((fileType != null && fileType.length() != 0) ? "." + fileType : "");
     }
 
 }

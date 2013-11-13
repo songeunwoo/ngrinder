@@ -74,7 +74,7 @@ public class AgentUpdateHandler {
         File updatePackageDir = new File(System.getProperty("user.dir"), "update_package");
         try {
             NetworkUtil.downloadFile(message.getDownloadUrl(), dest);
-            uncompress(dest, interDir, updatePackageDir);
+            decompress(dest, interDir, updatePackageDir);
             System.exit(10);
         } catch (Exception e) {
             LOGGER.error("Update request was sent. But download was failed {} ", e.getMessage());
@@ -82,7 +82,7 @@ public class AgentUpdateHandler {
         }
     }
 
-    void uncompress(File from, File interDir, File toDir) {
+    void decompress(File from, File interDir, File toDir) {
         interDir.mkdirs();
         toDir.mkdirs();
 
@@ -102,8 +102,8 @@ public class AgentUpdateHandler {
             LOGGER.error("Error while moving a file ", e);
         }
 
-        //FileUtils.deleteQuietly(from);
-        //FileUtils.deleteQuietly(interDir);
+        FileUtils.deleteQuietly(from);
+        FileUtils.deleteQuietly(interDir);
 
     }
 }

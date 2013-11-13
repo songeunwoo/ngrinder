@@ -95,7 +95,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 			writer.write(jsonMessage);
 			response.flushBuffer();
 		} catch (IOException e) {
-			LOGGER.error("Exception occured while processing api exception.", e);
+			LOGGER.error("Exception was occurred while processing api exception.", e);
 		}
 		return new ModelAndView();
 	}

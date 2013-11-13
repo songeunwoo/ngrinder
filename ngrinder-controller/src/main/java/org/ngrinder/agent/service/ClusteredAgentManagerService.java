@@ -22,7 +22,7 @@ import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.agent.model.ClustedAgentRequest;
+import org.ngrinder.agent.model.ClusteredAgentRequest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTask;
@@ -49,8 +49,8 @@ import java.util.Set;
 
 import static net.grinder.message.console.AgentControllerState.INACTIVE;
 import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
-import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL;
-import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.STOP_AGENT;
+import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL;
+import static org.ngrinder.agent.model.ClusteredAgentRequest.RequestType.STOP_AGENT;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
@@ -70,7 +70,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	private Cache agentRequestCache;
 
-	private Cache agentMonioringTargetsCache;
+	private Cache agentMonitoringTargetsCache;
 
 	@Autowired
 	private ScheduledTask scheduledTask;
@@ -83,7 +83,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@PostConstruct
 	public void init() {
-		agentMonioringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
+		agentMonitoringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
 		if (getConfig().isCluster()) {
 			agentRequestCache = cacheManager.getCache("agent_request");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
@@ -95,7 +95,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					for (String each : keysWithExpiryCheck) {
 						try {
 							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
-								ClustedAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
+								ClusteredAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
 								AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
 										agentRequest.getAgentIp(), agentRequest.getAgentName());
 								if (agentIdentity != null) {
@@ -202,7 +202,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Scheduled(fixedDelay = 1000)
 	public void collectAgentSystemData() {
-		Ehcache nativeCache = (Ehcache) agentMonioringTargetsCache.getNativeCache();
+		Ehcache nativeCache = (Ehcache) agentMonitoringTargetsCache.getNativeCache();
 		List<String> keysWithExpiryCheck = cast(nativeCache.getKeysWithExpiryCheck());
 		AgentManagerRepository agentManagerRepository = getAgentManagerRepository();
 		if (keysWithExpiryCheck.isEmpty()) {
@@ -210,7 +210,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 		List<AgentInfo> agentInfos = new ArrayList<AgentInfo>();
 		for (String each : keysWithExpiryCheck) {
-			ValueWrapper value = agentMonioringTargetsCache.get(each);
+			ValueWrapper value = agentMonitoringTargetsCache.get(each);
 			AgentControllerIdentityImplementation agentIdentity = cast(value.get());
 			if (value != null && agentIdentity != null) {
 				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
@@ -344,7 +344,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			return;
 		}
 		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
-				new ClustedAgentRequest(agent.getIp(), agent.getName(), STOP_AGENT));
+				new ClusteredAgentRequest(agent.getIp(), agent.getName(), STOP_AGENT));
 	}
 
 	/**
@@ -360,7 +360,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			return;
 		}
 		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
-				new ClustedAgentRequest(agent.getIp(), agent.getName(), SHARE_AGENT_SYSTEM_DATA_MODEL));
+				new ClusteredAgentRequest(agent.getIp(), agent.getName(), SHARE_AGENT_SYSTEM_DATA_MODEL));
 	}
 
 	/**
@@ -390,7 +390,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 *            agent identity
 	 */
 	public void addAgentMonitoringTarget(AgentControllerIdentityImplementation agentIdentity) {
-		agentMonioringTargetsCache.put(createAgentKey(agentIdentity), agentIdentity);
+		agentMonitoringTargetsCache.put(createAgentKey(agentIdentity), agentIdentity);
 	}
 
 	/**

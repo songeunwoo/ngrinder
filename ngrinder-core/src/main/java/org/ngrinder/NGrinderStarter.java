@@ -76,7 +76,7 @@ public class NGrinderStarter {
 		// Configure log.
 		configureLogging();
 		addClassPath();
-		addLibarayPath();
+        addLibraryPath();
 	}
 
 	private void configureLogging() {
@@ -120,7 +120,7 @@ public class NGrinderStarter {
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
-		LOG.info("* Colllect SYSTEM data. **");
+        LOG.info("* Collect SYSTEM data. **");
 
 		MonitorConstants.init(agentConfig);
 
@@ -212,7 +212,7 @@ public class NGrinderStarter {
 		agentController.shutdown();
 	}
 
-	private void addLibarayPath() {
+	private void addLibraryPath() {
         System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
             + agentConfig.getHome().getNativeDirectory().getAbsolutePath());
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
