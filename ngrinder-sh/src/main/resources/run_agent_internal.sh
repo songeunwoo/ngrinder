@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 controllerIp=""
 if [ $1 ]
 then
