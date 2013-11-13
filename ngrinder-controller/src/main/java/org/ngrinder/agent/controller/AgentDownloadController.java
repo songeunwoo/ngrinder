@@ -53,12 +53,12 @@ public class AgentDownloadController extends NGrinderBaseController {
     }
 
     /**
-     * Download agent.
+     * Download agent's latest version.
      * @param response
      *            response.
      */
     @RequestMapping(value = "/download_new_agent")
-    public void downloadAgent(HttpServletResponse response) {
+    public void downloadLatestAgent(HttpServletResponse response) {
         FileDownloadUtil.downloadFile(response, AgentUpdateInit.getAgentFile());
     }
 

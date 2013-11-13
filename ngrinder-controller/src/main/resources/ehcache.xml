@@ -22,6 +22,4 @@
 	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false"
 		timeToLiveSeconds="5"/>
 
-    <cache name="latest_agent" maxElementsInMemory="1" eternal="true" />
-
 </ehcache>

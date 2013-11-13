@@ -505,7 +505,7 @@ public class AgentManager implements NGrinderConstants {
      *
      */
 	public void updateAgent(String url) {
-		sendAgentUpdateMessage("test-agentFolder", config.getVersion(), url+"/agent/download_new_agent");
+		sendAgentUpdateMessage("test-agentFolder", config.getVersion(), url);
 	}
 
 	/**

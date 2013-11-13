@@ -83,6 +83,4 @@
 		eternal="false" overflowToDisk="false" timeToIdleSeconds="5"
 		timeToLiveSeconds="5" />
 
-    <cache name="latest_agent" maxElementsInMemory="1" eternal="true" />
-
 </ehcache>

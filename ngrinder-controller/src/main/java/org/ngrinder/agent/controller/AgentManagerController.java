@@ -184,14 +184,14 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
     /**
-     * Update the current  agent.
+     * Send update message to agent side
      *
      * @return json message
      */
     @RequestMapping("/update")
     @ResponseBody
-    public String updateCurrentMonitorData(){
-        agentManagerService.updateAgentLib(httpContainerContext.getCurrentContextUrlFromUserRequest());
+    public String updateAgentCoreLib() {
+        agentManagerService.updateAgentLib(httpContainerContext.getCurrentContextUrlFromUserRequest() + "/agent/download_new_agent");
         return toJson(buildMap(JSON_SUCCESS, true));
     }
 }
