@@ -43,7 +43,7 @@ public class AgentUpdateInit {
     @PostConstruct
     @Async
     public void init() throws IOException {
-        agentFile = agentManagerService.compressAgentFolder((URLClassLoader)this.getClass().getClassLoader());
+        agentFile = agentManagerService.compressAgentFolder((URLClassLoader)getClass().getClassLoader());
     }
 
     public static File getAgentFile() {

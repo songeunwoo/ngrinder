@@ -57,8 +57,6 @@ public class NGrinderStarter {
 
 	private ReconfigurableURLClassLoader classLoader;
 
-	private static final String LOCAL_NATIVE_PATH = "./native_lib";
-
 	private static String startMode = "monitor";
 
 	/**
@@ -215,8 +213,6 @@ public class NGrinderStarter {
 	private void addLibraryPath() {
         System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
             + agentConfig.getHome().getNativeDirectory().getAbsolutePath());
-		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path", property + File.pathSeparator + LOCAL_NATIVE_PATH);
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
