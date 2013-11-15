@@ -195,7 +195,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		mockService.setConfig(mockConfig);
 
 		int interval = mockService.getSystemMonitorDataInterval(testId, "127.0.0.1", 700);
-		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsString(testId, "127.0.0.1", interval);
+		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsStrings(testId, "127.0.0.1", interval);
 		String cpuStr = reportDataMap.get("cpu");
 		LOG.debug("CPU monitor string is:{}", cpuStr);
 		assertTrue(cpuStr.length() > 300);

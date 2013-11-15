@@ -122,7 +122,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		sleep(10000);
 
 		int interval = monitorService.getSystemMonitorDataInterval(currentTest.getId(), "127.0.0.1", 700);
-		Map<String, String> systemDataMap = monitorService.getSystemMonitorDataAsString(currentTest.getId(), "127.0.0.1", interval);
+		Map<String, String> systemDataMap = monitorService.getSystemMonitorDataAsStrings(currentTest.getId(), "127.0.0.1", interval);
 		assertTrue(systemDataMap.keySet().size() > 0);
 		// value is like [2,3,4,6,3...]
 		assertTrue(systemDataMap.values().iterator().next().length() > 2);
