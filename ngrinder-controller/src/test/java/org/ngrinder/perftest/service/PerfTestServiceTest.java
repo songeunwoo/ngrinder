@@ -52,7 +52,7 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * {@link PerfTestService} test.
- * 
+ *
  * @author Mavlarn
  * @since 3.0
  */
@@ -79,15 +79,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(candidate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
-		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, null, null, pageable);
+		Page<PerfTest> testList = testService.getPerfTest(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null, null, "F", pageable);
+		testList = testService.getPerfTest(getTestUser(), null, null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
 
 		// test with no paging
-		testList = testService.getPerfTestList(getTestUser(), null, null, null, null);
+		testList = testService.getPerfTest(getTestUser(), null, null, null, null);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null, null, "F", null);
+		testList = testService.getPerfTest(getTestUser(), null, null, "F", null);
 		assertThat(testList.getContent().size(), is(1));
 
 		List<PerfTest> list = testService.getTestingPerfTest();
@@ -105,10 +105,10 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 			testService.markProgress(testTemp, "this test will be TESTING again");
 			testService.markStatusAndProgress(testTemp, Status.TESTING, "this is just test unit");
 
-			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), Status.TESTING);
+			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testingList.size(), is(1));
 
-			Long testCount = testService.getPerfTestCount(getTestUser(), Status.TESTING);
+			Long testCount = testService.getPerfTestCount(getTestUser(), new Status[]{Status.TESTING});
 			assertThat(testCount, is(1L));
 
 			GrinderProperties properties = testService.getGrinderProperties(test);
@@ -129,7 +129,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		createPerfTest("new Test3", Status.START_AGENTS, new Date());
 
-		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), Status.START_AGENTS);
+		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), new Status[]{Status.START_AGENTS});
 		assertThat(errorList.size(), is(1));
 		testService.markAbnormalTermination(errorList.get(0), "this is error test");
 	}
@@ -234,19 +234,19 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testCleanUpRuntimeOnlyData() {
 
 		PerfTest test = createPerfTest("new test", Status.READY, new Date());
-		test.setAgentStatus("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"receivedPerSec\":1874668,\"sentPerSec\":1881129}}");
-		test.setMonitorStatus("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"receivedPerSec\":102718,\"sentPerSec\":135072}}");
+		test.setAgentState("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"receivedPerSec\":1874668,\"sentPerSec\":1881129}}");
+		test.setMonitorState("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"receivedPerSec\":102718,\"sentPerSec\":135072}}");
 		test.setRunningSample("{\"process\":1,\"peakTpsForGraph\":2192.0,\"lastSampleStatistics\":[{\"Peak_TPS\":0.0,\"Tests\":2145.0,\"Mean_time_to_first_byte\":0.3142191142191142,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":62205.0,\"Errors\":0.0,\"TPS\":2145.0,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4205128205128205}],\"thread\":1,\"cumulativeStatistics\":[{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4425539468012273}],\"tpsChartData\":2145.0,\"success\":true,\"totalStatistics\":{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"Mean_Test_Time_(ms)\":0.4425539468012273},\"test_time\":105}");
 		perfTestService.savePerfTest(test);
 
 		PerfTest testInDB = perfTestService.getPerfTest(test.getId());
-		assertTrue(testInDB.getAgentStatus().length() > 0 && testInDB.getMonitorStatus().length() > 0);
-		test.setAgentStatus(null);
-		test.setMonitorStatus(null);
+		assertTrue(testInDB.getAgentState().length() > 0 && testInDB.getMonitorState().length() > 0);
+		test.setAgentState(null);
+		test.setMonitorState(null);
 		test.setRunningSample(null);
 		perfTestService.savePerfTest(test);
 		testInDB = perfTestService.getPerfTest(test.getId());
-		assertTrue(testInDB.getAgentStatus() == null && testInDB.getMonitorStatus() == null);
+		assertTrue(testInDB.getAgentState() == null && testInDB.getMonitorState() == null);
 
 	}
 }

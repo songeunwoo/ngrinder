@@ -27,6 +27,7 @@ import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -50,13 +51,13 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = new PageRequest(1, 10);
 
 		ModelMap model = new ModelMap();
-		userController.getUserList(model, null, page, null);
+		userController.getUsers(model, null, page, null);
 
 		model.clear();
-		userController.getUserList(model, "ADMIN", page, null);
+		userController.getUsers(model, Role.ADMIN, page, null);
 
 		model.clear();
-		userController.getUserList(model, null, page, "user");
+		userController.getUsers(model, null, page, "user");
 
 	}
 
@@ -84,7 +85,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
-		userController.saveOrUpdateUserDetail(currUser, model, currUser, null);
+		userController.saveUser(currUser, model, currUser);
 		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
 		User user = (User) model.get("user");
 		assertThat(user.getUserName(), is("new name"));
@@ -92,11 +93,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 		User admin = getAdminUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
-		userController.saveOrUpdateUserDetail(admin, model, temp, null);
+		userController.saveUser(admin, model, temp);
 		temp = new User("temp2", "temp2", "temp2", "temp@nhn.com", Role.USER);
-		userController.saveOrUpdateUserDetail(admin, model, temp, null);
+		userController.saveUser(admin, model, temp);
 		model.clear();
-		userController.saveOrUpdateUserDetail(currUser, model, currUser, "temp1, temp2");
+		currUser.setFollowersStr("temp1, temp2");
+		userController.saveUser(currUser, model, currUser);
 		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
 		user = (User) model.get("user");
 		assertThat(user.getFollowers().size(), is(2));
@@ -115,7 +117,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
-		userController.saveOrUpdateUserDetail(currUser, model, updatedUser, null);
+		userController.saveUser(currUser, model, updatedUser);
 
 		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
 		User user = (User) model.get("user");
@@ -133,7 +135,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
 		ModelMap model = new ModelMap();
-		userController.saveOrUpdateUserDetail(getAdminUser(), model, newUser, null);
+		userController.saveUser(getAdminUser(), model, newUser);
 	}
 
 	/**
@@ -153,7 +155,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		Pageable page = new PageRequest(1, 10);
 
 		// search
-		userController.getUserList(model, null, page, "NewUserName");
+		userController.getUsers(model, null, page, "NewUserName");
 		List<User> userList = (List<User>) model.get("userList");
 		assertThat(userList.size(), is(3));
 
@@ -161,7 +163,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		model.clear();
 		userController.deleteUser(model, "NewUserId1");
 		model.clear();
-		userController.getUserList(model, "user", page, "NewUserName");
+		userController.getUsers(model, Role.USER, page, "NewUserName");
 		userList = (List<User>) model.get("userList");
 		assertThat(userList.size(), is(2));
 
@@ -169,25 +171,25 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		model.clear();
 		userController.deleteUser(model, "NewUserId2,NewUserId3");
 		model.clear();
-		userController.getUserList(model, "user", page, "NewUserName");
+		userController.getUsers(model, Role.USER, page, "NewUserName");
 		userList = (List<User>) model.get("userList");
 		assertThat(userList.size(), is(0));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#checkUserId(org.springframework.ui.ModelMap, java.lang.String)}
+	 * {@link org.ngrinder.user.controller.UserController#checkDuplication(org.springframework.ui.ModelMap, java.lang.String)}
 	 * .
 	 */
 	@Test
-	public void testCheckUserId() {
-		NGrinderBaseController ngridnerBaseController = new NGrinderBaseController();
+	public void testCheckDuplicatedID() {
+		NGrinderBaseController ngrinderBaseController = new NGrinderBaseController();
 		ModelMap model = new ModelMap();
-		String rtnStr = userController.checkUserId(model, "not-exist");
-		assertThat(rtnStr, is(ngridnerBaseController.returnSuccess()));
+		HttpEntity<String> rtnStr = userController.checkDuplication(model, "not-exist");
+		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
 
-		rtnStr = userController.checkUserId(model, getTestUser().getUserId());
-		assertThat(rtnStr, is(ngridnerBaseController.returnError()));
+		rtnStr = userController.checkDuplication(model, getTestUser().getUserId());
+		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnError()));
 	}
 
 	@Test
@@ -201,7 +203,6 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testSwitchOptions() {
 		ModelMap model = new ModelMap();
 		userController.switchOptions(getTestUser(), model);
-
 		assertThat(model.containsAttribute("shareUserList"), is(true));
 	}
 }

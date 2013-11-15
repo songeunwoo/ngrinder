@@ -13,18 +13,16 @@
  */
 package org.ngrinder.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
+import com.google.gson.annotations.Expose;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+
+import static org.ngrinder.common.util.AccessUtils.getSafe;
 
 /**
  * Agent model.
@@ -43,12 +41,15 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private static final long serialVersionUID = 677610999461391813L;
 
 	/** Agent IP. */
+	@Expose
 	private String ip;
 
 	/**
 	 * agent application port. It's only available when the connection is
 	 * re-established.
 	 */
+
+	@Expose
 	private Integer port;
 
 	@Transient
@@ -57,22 +58,36 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	/**
 	 * Host name of the agent machine.
 	 */
-	private String hostName = "";
 
+	@Expose
+	private String hostName;
+
+	@Expose
 	@Enumerated(EnumType.STRING)
-	private AgentControllerState status;
+	private AgentControllerState state;
 
+
+	@Expose
 	@Column(name = "system_stat", length = 2000)
 	private String systemStat;
 
+
+	@Expose
 	private String region;
 
 	@Transient
-	private int number;
+	private Integer number;
 
+
+	@Expose
 	@Type(type = "true_false")
-	@Column(columnDefinition = "char(1)")
-	private boolean approved = false;
+	@Column(columnDefinition = "char(1) default 'F'")
+	private Boolean approved;
+
+	@PrePersist
+	public void init() {
+		this.approved = getSafe(this.approved, false);
+	}
 
 	public String getIp() {
 		return ip;
@@ -82,12 +97,12 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.ip = ip;
 	}
 
-	public AgentControllerState getStatus() {
-		return status;
+	public AgentControllerState getState() {
+		return state;
 	}
 
-	public void setStatus(AgentControllerState status) {
-		this.status = status;
+	public void setState(AgentControllerState status) {
+		this.state = status;
 	}
 
 	public String getRegion() {
@@ -192,11 +207,11 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 * @deprecated unused now.
 	 * @return the number
 	 */
-	public int getNumber() {
+	public Integer getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(Integer number) {
 		this.number = number;
 	}
 

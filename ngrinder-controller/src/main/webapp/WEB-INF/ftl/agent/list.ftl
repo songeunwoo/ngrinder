@@ -48,7 +48,7 @@
 					<th class="no-click"><@spring.message "agent.table.port"/></th>
 					<th class="ellipsis"><@spring.message "agent.table.name"/></th>
 					<th><@spring.message "agent.table.region"/></th>
-					<th><@spring.message "common.label.status"/></th>
+					<th><@spring.message "agent.table.state"/></th>
 					<th class="no-click"><@spring.message "agent.table.approve"/></th>
 				</tr>
 			</thead>
@@ -61,7 +61,7 @@
 							<td>${(agent.port)!}</td>
 							<td class="ellipsis" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
 							<td>${(agent.region)!}</td>
-							<td>${(agent.status)!}</td>
+							<td>${(agent.state)!}</td>
 							<td>
 								<div class="btn-group" data-toggle="buttons-radio">
 									<button type="button" 
@@ -170,20 +170,16 @@
 			
 			function stopAgents(ids) {
 				$.ajax({
-			  		url: "${req.getContextPath()}/agent/stop",
+			  		url: "${req.getContextPath()}/agent/api/stop",
 			  		type: "POST",
 			  		data: {"ids" : ids},
 			  		cache: false,
 					dataType:'json',
 			    	success: function(res) {
-			    		if (res.success) {
-				    		showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
-							setTimeout(function() {
-								location.reload();
-							}, 2000);
-			    		} else {
-				    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>:" + res.message);
-			    		}
+						showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
+						setTimeout(function() {
+							location.reload();
+						}, 2000);
 			    	},
 			    	error: function() {
 			    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>!");
@@ -193,7 +189,7 @@
 
             function updateAgents() {
                 $.ajax({
-                    url: "${req.getContextPath()}/agent/update",
+                    url: "${req.getContextPath()}/agent/api/update",
                     type: "GET",
                     cache: false,
                     dataType:'json',

@@ -32,6 +32,7 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.ModelMap;
@@ -114,42 +115,42 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		agent.setApproved(false);
 		agent.setName("Test-Host");
 		agent.setIp("127.0.0.1");
-		agent.setStatus(AgentControllerState.READY);
+		agent.setState(AgentControllerState.READY);
 		agentService.saveAgent(agent);
 
 		ModelMap model = new ModelMap();
 		// test get agent
 		agentController.getAgent(agent.getId(), model);
-		AgentInfo agentinDB = (AgentInfo) model.get("agent");
-		assertThat(agentinDB.getName(), is(agent.getName()));
-		assertThat(agentinDB.getIp(), is(agent.getIp()));
-		assertThat(agentinDB.isApproved(), is(false));
+		AgentInfo agentInDB = (AgentInfo) model.get("agent");
+		assertThat(agentInDB.getName(), is(agent.getName()));
+		assertThat(agentInDB.getIp(), is(agent.getIp()));
+		assertThat(agentInDB.isApproved(), is(false));
 
 		// test approve agent
 		model.clear();
-		agentController.approveAgent(agentinDB.getId(), true, "", model);
+		agentController.approveAgent(agentInDB.getId(), true, "", model);
 		agentController.getAgent(agent.getId(), model);
-		agentinDB = (AgentInfo) model.get("agent");
-		assertThat(agentinDB.isApproved(), is(true));
+		agentInDB = (AgentInfo) model.get("agent");
+		assertThat(agentInDB.isApproved(), is(true));
 
 		// test un-approve
 		model.clear();
-		agentController.approveAgent(agentinDB.getId(), false, "", model);
+		agentController.approveAgent(agentInDB.getId(), false, "", model);
 		agentController.getAgent(agent.getId(), model);
-		agentinDB = (AgentInfo) model.get("agent");
-		assertThat(agentinDB.isApproved(), is(false));
+		agentInDB = (AgentInfo) model.get("agent");
+		assertThat(agentInDB.isApproved(), is(false));
 	}
 
 	@Test
 	public void testStopAgent() {
-		agentController.stopAgent("0");
+		agentController.stop("0");
 	}
 
 	@Test
 	public void testGetCurrentMonitorData() {
 		ModelMap model = new ModelMap();
-		String rtnStr = agentController.getCurrentMonitorData(0L, "127.0.0.1", "127.0.0.1", model);
-		assertTrue(rtnStr.contains("systemData"));
+		HttpEntity<String> rtnStr = agentController.getState(0L, "127.0.0.1", "127.0.0.1", model);
+		assertTrue(rtnStr.getBody().contains("systemData"));
 	}
 
 }

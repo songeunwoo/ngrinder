@@ -154,7 +154,7 @@
 		margin-left:-40px;
 	}
 	
-	.monitor_status {
+	.monitor_state {
 		line-height:12px \0/IE8+9;
 	}
 	.span4-5 {
@@ -384,7 +384,7 @@ $(document).ready(function () {
 		}
 
 		$.ajax({
-			url : '${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}</#if>/update_status', 
+			url : '${req.getContextPath()}/perftest/api/<#if test??>${(test.id)?c}</#if>/status',
 			type : 'GET',
 			success : function(perfTestData) {
 				perfTestData = eval(perfTestData);
@@ -986,7 +986,7 @@ function initChartData(size) {
 
 function updateScript() {
 	$.ajax({
-		url : "${req.getContextPath()}/perftest/script",
+		url : "${req.getContextPath()}/perftest/api/script",
 		dataType : 'json',
 		data : {
 			<@security.authorize ifAnyGranted="A, S">
@@ -1030,7 +1030,7 @@ function updateScriptResources(first) {
 	}
 	
 	$.ajax({
-		url : "${req.getContextPath()}/perftest/resource",
+		url : "${req.getContextPath()}/perftest/api/resource",
 		dataType : 'json',
 		data : {
 			'scriptPath' : scriptName,

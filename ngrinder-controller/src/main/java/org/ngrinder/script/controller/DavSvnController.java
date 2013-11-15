@@ -67,7 +67,7 @@ import org.tmatesoft.svn.util.SVNLogType;
 public class DavSvnController implements HttpRequestHandler, ServletConfig, ServletContextAware {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(DavSvnController.class);
-	public static final String XML_CONTENT_TYPE = "text/xml; charset=\"utf-8\"";
+	public static final String XML_CONTENT_TYPE = "text/xml; charset=UTF-8";
 	public static final String DAV_SVN_AUTOVERSIONING_ACTIVITY = "svn-autoversioning-activity";
 
 	@Autowired
@@ -93,6 +93,10 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 
 	protected DAVConfig getDAVConfig() {
 		return myDAVConfig;
+	}
+
+	public void setDAVConfig(DAVConfig davConfig) {
+		this.myDAVConfig = davConfig;
 	}
 
 	/**

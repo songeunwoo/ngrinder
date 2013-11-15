@@ -133,7 +133,7 @@
 					<#assign testList = testListPage.content/>
 					<#if testList?has_content>
 						<#list testList as test>
-							<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
+							<#assign totalVuser = (test.vuserPerAgent!0) * (test.agentCount!0) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
 							<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>
@@ -149,19 +149,19 @@
 										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"  /> 
 									</div>
 								</td>
-								<td class="ellipsis ${test.dateString}">
+								<td class="ellipsis ${test.dateString!""}">
 									<div
 										 rel="popover"
 										 data-html="true" 
 										 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"  
-										 data-title="${test.testName}">
-										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
+										 data-title="${test.testName!""}">
+										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName!""}</a>
 									</div>
 								</td>
 								<td class="ellipsis">
 									<div class="ellipsis"
 										rel="popover"
-										data-html="true"
+										data-html="   "
 										data-content="${test.scriptName}<br/> - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
 										title="<@spring.message "perfTest.table.scriptName"/>">			
 										<#if isAdmin??>
@@ -189,9 +189,15 @@
 								</td>
 								</#if>
 								<td>
-									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
+									<#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
-								<td	<#if test.threshold == "D">	>${(test.durationStr)!}<#else> title="<@spring.message "perfTest.configuration.runCount"/>" >${test.runCount}</#if>
+								<td
+									<#if test.threshhold?? && test.threshold == "D">	>
+									${(test.durationStr)!}
+									<#else>
+									title="<@spring.message "perfTest.configuration.runCount"/>" >
+									${(test.runCount)!}
+									</#if>
 								</td>
 								<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
@@ -289,27 +295,22 @@
 				var errorChartId = "error_chart" + id;
 				
 				if(!$(this).closest('tr').next("table").length){
-					testInfoTable = $("<table id='"+ perftestChartTableId +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td> </tr></table><table id='"+ perftestChartTableId +"2'></table>");
+                    testInfoTable = $("<table id='"+ perftestChartTableId +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td> </tr></table><table id='"+ perftestChartTableId +"2'></table>");
                     testInfoTable.hide();
 					$(this).closest('tr').after(testInfoTable);
 					$.ajax({
-		                url: "${req.getContextPath()}/perftest/"+ id +"/graph",
+		                url: "${req.getContextPath()}/perftest/api/"+ id +"/graph",
 		                dataType:'json',
 		                cache: false,
 		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
 		                success: function(res) {
-		                    if (res.success) {
-		                        drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
-		                        drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-		                        drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
-		                        return true;
-		                    } else {
-		                        showErrorMsg("Get statistics data failed.");
-		                        return false;
-		                    }
+							drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
+							drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+							drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
+							return true;
 		                },
 		                error: function() {
-		                    showErrorMsg("An unknow Error occurred!");
+			                showErrorMsg("Failed to get graph.")
 		                    return false;
 		                }
 		            });
@@ -384,42 +385,34 @@
 		
 		function deleteTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/delete",
+		  		url: "${req.getContextPath()}/perftest/api/delete",
 		  		type: "POST",
 		  		data: {"ids" : ids},
 				dataType:'json',
 		    	success: function(res) {
-		    		if (res.success) {
-			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
-							setTimeout(function() {
-								getList(1);
-							}, 500);
-		    		} else {
-			    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
-		    		}
+					showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
+						setTimeout(function() {
+							getList(1);
+					}, 500);
 		    	},
 		    	error: function() {
-		    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>!");
+	                showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
 		    	}
 		  	});
 		}
 		
 		function stopTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/stop",
+		  		url: "${req.getContextPath()}/perftest/api/stop",
 				type: "POST",
 		  		data: {"ids":ids},
 				dataType:'json',
 		    	success: function(res) {
-		    		if (res.success) {
-			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-		    		} else {
-			    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-		    		}
-		    	},
-		    	error: function() {
-		    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>!");
-		    	}
+			    	showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
+			    },
+				error: function() {
+					showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
+				}
 		  	});
 		}
 		
@@ -463,7 +456,7 @@
 		  	}).get();
 		  	
 		    $.ajax({
-			    url: '${req.getContextPath()}/perftest/update_status', 
+			    url: '${req.getContextPath()}/perftest/api/status',
 			    type: 'POST',
 			    cache: false,
 			    data: {"ids": ids.join(",")},

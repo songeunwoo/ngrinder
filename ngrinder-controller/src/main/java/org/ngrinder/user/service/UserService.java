@@ -14,13 +14,14 @@
 package org.ngrinder.user.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.checkNull;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -36,6 +37,7 @@ import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The Class UserService.
- * 
+ *
  * @author Yubin Mao
  * @author AlexQin
  */
@@ -75,9 +77,8 @@ public class UserService implements IUserService {
 
 	/**
 	 * Get user by user id.
-	 * 
-	 * @param userId
-	 *            user id
+	 *
+	 * @param userId user id
 	 * @return user
 	 */
 	@Transactional
@@ -88,28 +89,9 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Get user by user id without using Cache. The user in cache has no followers and owners
-	 * initialized.
-	 * 
-	 * @param userId
-	 *            user id
-	 * @return user
-	 */
-	@Transactional
-	public User getUserByIdWithoutCache(String userId) {
-		User user = userRepository.findOneByUserId(userId);
-		if (user != null) {
-			Hibernate.initialize(user.getOwners());
-			Hibernate.initialize(user.getFollowers());
-		}
-		return user;
-	}
-
-	/**
 	 * Encoding given user's password.
-	 * 
-	 * @param user
-	 *            user
+	 *
+	 * @param user user
 	 */
 	public void encodePassword(User user) {
 		if (StringUtils.isNotBlank(user.getPassword())) {
@@ -119,61 +101,15 @@ public class UserService implements IUserService {
 		}
 	}
 
-	/**
-	 * Get all user by the given role.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @param pageable
-	 *            pageable
-	 * @return page of user
-	 */
-	public Page<User> getAllUsersByRole(String roleName, Pageable pageable) {
-		if (StringUtils.isBlank(roleName)) {
-			return userRepository.findAll(pageable);
-		} else {
-			return getUsersByRole(getRole(roleName), pageable);
-		}
-	}
-
-	/**
-	 * get all users by role.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @return found user list
-	 */
-	public List<User> getAllUsersByRole(String roleName) {
-		return getAllUsersByRole(roleName, new Sort(Direction.ASC, "userName"));
-	}
-
-	/**
-	 * Get all users by role.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @param sort
-	 *            sort method
-	 * @return found user list
-	 */
-	public List<User> getAllUsersByRole(String roleName, Sort sort) {
-		if (StringUtils.isBlank(roleName)) {
-			return userRepository.findAll(sort);
-		} else {
-			return getUsersByRole(getRole(roleName), sort);
-		}
-	}
 
 	/**
 	 * Save user.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 *
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User saveUser(User user) {
 		encodePassword(user);
@@ -181,126 +117,98 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * create user.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 * Save user.
+	 *
+	 * @param user include id, userID, fullName, role, password.
 	 * @return result
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User saveUserWithoutPasswordEncoding(User user) {
+		user.setFollowers(getFollowUsers(user.getFollowersStr()));
+		final User existing = userRepository.findOneByUserId(user.getUserId());
+		if (existing != null) {
+			user = existing.merge(user);
+		}
 		User createdUser = userRepository.save(user);
 		prepareUserEnv(user);
 		return createdUser;
 	}
-	
+
+
+	@Transactional
+	@CachePut(value = "users", key = "#user.userId")
+	@Override
+	@Deprecated
+	public User saveUser(User user, Role role) {
+		user.setRole(role);
+		return saveUser(user);
+	}
+
 	private void prepareUserEnv(User user) {
 		scriptService.prepare(user);
 	}
 
-	/**
-	 * Add user.
-	 * 
-	 * @param user
-	 *            user
-	 * @param role
-	 *            role
-	 */
-	@CacheEvict(value = "users", key = "#user.userId")
-	public void saveUser(User user, Role role) {
-		encodePassword(user);
-		user.setRole(role);
-		userRepository.save(user);
-	}
 
-	/**
-	 * modify user information.
-	 * 
-	 * @param user
-	 *            user
-	 * @param shareUserIds
-	 *            It is a list of user IDs to share the permission of user
-	 * @return user id
-	 */
-	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
-	public String modifyUser(User user, String shareUserIds) {
-		checkNotNull(user, "user should be not null, when modifying user");
-		checkNotNull(user.getId(), "user id should be provided when modifying user");
-
-		shareUserIds = (String) ObjectUtils.defaultIfNull(shareUserIds, "");
+	private List<User> getFollowUsers(String followersStr) {
 		List<User> newShareUsers = new ArrayList<User>();
-		String[] userIds = shareUserIds.split(",");
+		String[] userIds = StringUtils.split(StringUtils.trimToEmpty(followersStr), ',');
 		for (String userId : userIds) {
 			User shareUser = userRepository.findOneByUserId(userId.trim());
-			newShareUsers.add(shareUser);
+			if (shareUser != null) {
+				newShareUsers.add(shareUser);
+			}
 		}
-		user.setFollowers(newShareUsers);
-
-		encodePassword(user);
-		User targetUser = userRepository.findOne(user.getId());
-		targetUser.merge(user);
-		userRepository.save(targetUser);
-		return user.getUserId();
+		return newShareUsers;
 	}
 
 	/**
 	 * Delete user. All corresponding perftest and directories are deleted as well.
-	 * 
-	 * @param userIds
-	 *            the user id string list
+	 *
+	 * @param userId the user id string list
 	 */
 	@Transactional
-	@CacheEvict(value = "users", allEntries = true)
-	public void deleteUsers(List<String> userIds) {
-		for (String userId : userIds) {
-			User user = getUserById(userId);
-			List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
-			userRepository.delete(user);
-			for (PerfTest perfTest : deletePerfTests) {
-				FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
-			}
-			FileUtils.deleteQuietly(config.getHome().getScriptDirectory(user));
-			FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(user));
+	@CacheEvict(value = "users", key = "#userId")
+	public void deleteUser(String userId) {
+		User user = getUserById(userId);
+		List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
+		userRepository.delete(user);
+		for (PerfTest perfTest : deletePerfTests) {
+			FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
 		}
+		FileUtils.deleteQuietly(config.getHome().getScriptDirectory(user));
+		FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(user));
 	}
 
 	/**
 	 * get the user list by the given role.
-	 * 
-	 * @param role
-	 *            role
-	 * @param sort
-	 *            sort
+	 *
+	 * @param role role
+	 * @param sort sort
 	 * @return found user list
 	 * @throws Exception
 	 */
 	public List<User> getUsersByRole(Role role, Sort sort) {
-		return userRepository.findAllByRole(role, sort);
+		return (role == null) ? userRepository.findAll(sort) : userRepository.findAllByRole(role, sort);
 	}
 
 	/**
 	 * get the user list by the given role.
-	 * 
-	 * @param role
-	 *            role
-	 * @param pageable
-	 *            sort
+	 *
+	 * @param role     role
+	 * @param pageable sort
 	 * @return found user list
 	 * @throws Exception
 	 */
 	public Page<User> getUsersByRole(Role role, Pageable pageable) {
-		return userRepository.findAllByRole(role, pageable);
+		return (role == null) ? userRepository.findAll(pageable) : userRepository.findAllByRole(role, pageable);
 	}
 
 	/**
-	 * get the user list by the given role.
-	 * 
-	 * @param role
-	 *            role
+	 * Get the users by the given role.
+	 *
+	 * @param role role
 	 * @return found user list
 	 * @throws Exception
 	 */
@@ -309,31 +217,9 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * get Role object based on role name.
-	 * 
-	 * @param roleName
-	 *            role name
-	 * @return found Role
-	 */
-	public Role getRole(String roleName) {
-		if (Role.ADMIN.getFullName().equals(roleName)) {
-			return Role.ADMIN;
-		} else if (Role.USER.getFullName().equals(roleName)) {
-			return Role.USER;
-		} else if (Role.SUPER_USER.getFullName().equals(roleName)) {
-			return Role.SUPER_USER;
-		} else if (Role.SYSTEM_USER.getFullName().equals(roleName)) {
-			return Role.SYSTEM_USER;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Get the user list by nameLike spec.
-	 * 
-	 * @param name
-	 *            name of user
+	 * Get the users by nameLike spec.
+	 *
+	 * @param name name of user
 	 * @return found user list
 	 */
 	public List<User> getUsersByKeyWord(String name) {
@@ -342,37 +228,34 @@ public class UserService implements IUserService {
 
 	/**
 	 * Get user page by the given keyword.
-	 * 
-	 * @param namelike
-	 *            keyword to be like search.
-	 * @param pageable
-	 *            page
+	 *
+	 * @param keyword  keyword to be like search.
+	 * @param pageable page
 	 * @return user page
 	 */
-	public Page<User> getUsersByKeyWord(String namelike, Pageable pageable) {
-		return userRepository.findAll(UserSpecification.nameLike(namelike), pageable);
+	public Page<User> getUsersByKeyWord(String keyword, Pageable pageable) {
+		return userRepository.findAll(UserSpecification.nameLike(keyword), pageable);
 	}
-	
+
 	/**
-	 * Create user.
-	 * 
-	 * @param user
-	 *            include id, userID, fullName, role, password.
-	 * 
+	 * Create an user avoiding ModelAspect behavior.
+	 *
+	 * @param user userID, fullName, role, password.
 	 * @return result
 	 */
 	@Transactional
-	@CacheEvict(value = "users", key = "#user.userId")
+	@CachePut(value = "users", key = "#user.userId")
 	@Override
 	public User createUser(User user) {
 		encodePassword(user);
 		Date createdDate = new Date();
 		user.setCreatedDate(createdDate);
 		user.setLastModifiedDate(createdDate);
-		User createdUser = userRepository.findOneByUserId(NGrinderConstants.NGRINDER_INITIAL_ADMIN_USERID);
+		User createdUser = getUserById(NGrinderConstants.NGRINDER_INITIAL_ADMIN_USERID);
 		user.setCreatedUser(createdUser);
 		user.setLastModifiedUser(createdUser);
 		return saveUserWithoutPasswordEncoding(user);
 	}
+
 
 }
