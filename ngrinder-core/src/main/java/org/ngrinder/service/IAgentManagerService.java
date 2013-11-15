@@ -134,19 +134,19 @@ public interface IAgentManagerService {
 	public abstract SystemDataModel getAgentSystemDataModel(String ip, String name);
 
     /**
-     * Compress ngrinder-core folder
+     * Create agent package
      *
      * @param classLoader
      *                   URLClass Loader.
      * @return File
      */
-    public abstract File compressAgentFolder(URLClassLoader classLoader) throws IOException;
+    public abstract File createAgentPackage(URLClassLoader classLoader) throws IOException;
 
     /**
-     * Update agent lib
+     * Update agent
      *
      * @param url
      *            controller request url.
      */
-    public abstract void updateAgentLib(String url) throws IOException;
+    public abstract void updateAgent(String url) throws IOException;
 }

@@ -127,7 +127,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
         URL[] urls = loader.getURLs();
         URL[] allLib = cast(ArrayUtils.addAll(urls, ls));
         URLClassLoader child = new URLClassLoader (allLib, this.getClass().getClassLoader());
-        File agentUpgrade = agentManagerService.compressAgentFolder(child);
+        File agentUpgrade = agentManagerService.createAgentPackage(child);
         FileUtils.deleteQuietly(agentUpgrade);
     }
 

@@ -190,8 +190,8 @@ public class AgentManagerController extends NGrinderBaseController {
      */
     @RequestMapping("/update")
     @ResponseBody
-    public String updateAgentCoreLib() {
-        agentManagerService.updateAgentLib(httpContainerContext.getCurrentContextUrlFromUserRequest() + "/agent/download_new_agent");
+    public String updateAgent() {
+        agentManagerService.updateAgent(httpContainerContext.getCurrentContextUrlFromUserRequest() + "/agent/download_new_agent");
         return toJson(buildMap(JSON_SUCCESS, true));
     }
 }

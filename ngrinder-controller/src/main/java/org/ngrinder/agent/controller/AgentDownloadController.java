@@ -16,7 +16,7 @@ package org.ngrinder.agent.controller;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.init.AgentUpdateInit;
+import org.ngrinder.infra.init.AgentPackagerInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,7 +59,7 @@ public class AgentDownloadController extends NGrinderBaseController {
      */
     @RequestMapping(value = "/download_new_agent")
     public void downloadLatestAgent(HttpServletResponse response) {
-        FileDownloadUtil.downloadFile(response, AgentUpdateInit.getAgentFile());
+        FileDownloadUtil.downloadFile(response, AgentPackagerInitializer.getAgentPackageFile());
     }
 
 }

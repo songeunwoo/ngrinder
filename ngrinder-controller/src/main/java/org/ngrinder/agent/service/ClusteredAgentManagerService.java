@@ -404,9 +404,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
     /**
-     * Get agent binary folder path in cluster model.
+     * Get agent package path in cluster model.
      */
-    public File getAgentBinaryPath() {
+    public File getAgentPackageDir() {
         return getConfig().getExHome().getSubFile("update_agent");
     }
 }

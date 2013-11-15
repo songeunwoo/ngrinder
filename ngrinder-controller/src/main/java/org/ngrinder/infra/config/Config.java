@@ -649,17 +649,4 @@ public class Config implements IConfig, NGrinderConstants {
 				"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
 
-    /**
-     * Get ngrinder sub module full name.
-     *
-     * @param moduleName
-     *                  nGrinder sub  module name.
-     * @param fileType
-     *                  file type .
-     * @return String
-     */
-    public String getNGrinderFullName(String moduleName, String fileType) {
-        return moduleName + "-" + versionString + ((fileType != null && fileType.length() != 0) ? "." + fileType : "");
-    }
-
 }

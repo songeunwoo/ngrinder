@@ -24,29 +24,31 @@ import java.io.IOException;
 import java.net.URLClassLoader;
 
 /**
- * Initialize Agent update zip .
+ * Create Agent Package
+ *
+ * This class is used to create agent package which located at {NGRINDER_HOME}/update_agent folder
+ * when system initialized firstly.
  *
  * @author Matt
  * @since 3.3
  */
 @RuntimeOnlyComponent
-public class AgentUpdateInit {
+public class AgentPackagerInitializer {
 
-    private static File agentFile ;
-
+    private static File agentFile;
     @Autowired
     private AgentManagerService agentManagerService;
 
+    public static File getAgentPackageFile() {
+        return agentFile;
+    }
+
     /**
-     * Generate compressed ngrinder-core package.
+     * Create agent package.
      */
     @PostConstruct
     @Async
     public void init() throws IOException {
-        agentFile = agentManagerService.compressAgentFolder((URLClassLoader)getClass().getClassLoader());
-    }
-
-    public static File getAgentFile() {
-        return agentFile;
+        agentFile = agentManagerService.createAgentPackage((URLClassLoader) getClass().getClassLoader());
     }
 }

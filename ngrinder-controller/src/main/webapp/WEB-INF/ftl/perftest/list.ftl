@@ -213,7 +213,7 @@
 		            				<div>
 		            			</td>
 								<td class="center">
-									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download img-dispaly" sid="${test.id}"></i></a>
+									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download test-display" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>  
@@ -280,18 +280,18 @@
 				});
 			});
 			
-			$("i.img-dispaly").click(function() {
+			$("i.test-display").click(function() {
 				
 				var id = $(this).attr("sid");
-				var img_table_id = "test_" + id;
-				var tps_id = "tps_chart" + id;
-				var mean_time_chart_id = "mean_time_chart" + id;
-				var error_chart_id = "error_chart" + id;
+				var perftestChartTableId = "test_" + id;
+				var tpsId = "tps_chart" + id;
+				var meanTimeChartId = "mean_time_chart" + id;
+				var errorChartId = "error_chart" + id;
 				
 				if(!$(this).closest('tr').next("table").length){
-					imgDisplay = $("<table id='"+ img_table_id +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tps_id +"></div></td> <td><div class='smallChart' id="+ mean_time_chart_id +"></div></td> <td><div class='smallChart' id="+ error_chart_id +"></div></td> </tr></table><table id='"+ img_table_id +"2'></table>");	
-					imgDisplay.hide();
-					$(this).closest('tr').after(imgDisplay);
+					testInfoTable = $("<table id='"+ perftestChartTableId +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td> </tr></table><table id='"+ perftestChartTableId +"2'></table>");
+                    testInfoTable.hide();
+					$(this).closest('tr').after(testInfoTable);
 					$.ajax({
 		                url: "${req.getContextPath()}/perftest/"+ id +"/graph",
 		                dataType:'json',
@@ -299,9 +299,9 @@
 		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
 		                success: function(res) {
 		                    if (res.success) {
-		                        drawListPlotChart(tps_id, res.TPS.data , ["Tps"], res.chartInterval);
-		                        drawListPlotChart(mean_time_chart_id , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-		                        drawListPlotChart(error_chart_id , res.Errors.data, ["Errors"], res.chartInterval);
+		                        drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
+		                        drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+		                        drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
 		                        return true;
 		                    } else {
 		                        showErrorMsg("Get statistics data failed.");
@@ -312,13 +312,13 @@
 		                    showErrorMsg("An unknow Error occurred!");
 		                    return false;
 		                }
-		            }); 
-				
-					imgDisplay.show("slow");
+		            });
+
+                    testInfoTable.show("slow");
 				}else{
-					$("#"+img_table_id).hide("slow");
-					$("#"+img_table_id).remove();
-					$("#"+img_table_id+"2").remove();
+					$("#"+perftestChartTableId).hide("slow");
+					$("#"+perftestChartTableId).remove();
+					$("#"+perftestChartTableId+"2").remove();
 				}
 				
 			});
