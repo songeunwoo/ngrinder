@@ -33,7 +33,7 @@ import java.net.URLClassLoader;
  * @since 3.3
  */
 @RuntimeOnlyComponent
-public class AgentPackagerInitializer {
+public class AgentPackageInitializer {
 
     private static File agentFile;
     @Autowired
