@@ -166,7 +166,7 @@
 						</ul>
 					</li>
 			        </#if>
-                    <#list pluginList as pluginName>
+                    <#list plugins as pluginName>
                     <li><a><i class="icon-tags"></i> ${pluginName}</a></li>
                         <li>
                            <ul class="nav nav-list">

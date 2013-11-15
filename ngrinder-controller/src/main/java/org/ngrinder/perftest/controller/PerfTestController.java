@@ -194,7 +194,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("query", query);
 		model.addAttribute("page", pageable);
 		if (sort != null) {
-			Order sortProp = (Order) sort.iterator().next();
+			Order sortProp = sort.iterator().next();
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
@@ -797,8 +797,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            response
 	 */
 	@RequestMapping(value = "{id}/show_log/**")
-	public void showLog(User user, @PathVariable("id") long id, //
-			@RemainedPath String path, HttpServletResponse response) {
+	public void showLog(User user, @PathVariable("id") long id, @RemainedPath String path,
+						HttpServletResponse response) {
 		getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		response.reset();
@@ -910,7 +910,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = { "{id}/detail_report", "{id}/report" })
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getPerfTest(id));
-		model.addAttribute("pluginList", perfTestService.getPluginsOfTest(id));
+		model.addAttribute("plugins", perfTestService.getAdditionalPluginsOfTest(id));
 		return "perftest/detail_report";
 	}
 
@@ -991,7 +991,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
 		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
-		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
+		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsStrings(id, monitorIP, interval);
 		PerfTest perfTest = perfTestService.getPerfTest(id);
 		sysMonitorMap.put(
 				"interval",
@@ -1016,8 +1016,8 @@ public class PerfTestController extends NGrinderBaseController {
 	@ResponseBody
 	public String getPluginMonitorData(@PathVariable("id") long id, @PathVariable("pluginName") String pluginName,
 									   @RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
-		int interval = perfTestService.getPluginMonitorDataInterval(id, monitorIP, pluginName, imgWidth);
-		Map<String, String> pluginMonitorMap = perfTestService.getPluginMonitorDataAsString(id, monitorIP, pluginName, interval);
+		int interval = perfTestService.getPluginReportDisplayInterval(id, monitorIP, pluginName, imgWidth);
+		Map<String, String> pluginMonitorMap = perfTestService.getPluginMonitorDataAsStrings(id, monitorIP, pluginName, interval);
 		pluginMonitorMap.put("interval",
 				String.valueOf(interval * perfTestService.getPluginMonitorSamplingInterval(id, pluginName)));
 		return toJson(pluginMonitorMap);

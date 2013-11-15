@@ -1413,7 +1413,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
 
-		return getRecordInterval(monitorIP, imageWidth, monitorDataFile);
+		return getRecordInterval(imageWidth, monitorDataFile);
 	}
 
 	/**
@@ -1428,7 +1428,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
-	public Map<String, String> getSystemMonitorDataAsString(long testId, String monitorIP, int dataInterval) {
+	public Map<String, String> getSystemMonitorDataAsStrings(long testId, String monitorIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
@@ -1512,30 +1512,30 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param testId
 	 *            test id
-	 * @param monitorIP
+	 * @param targetIP
 	 *            ip address of monitor target
-	 * @param pluginName
+	 * @param reportCategory
 	 *            plugin name
 	 * @param imageWidth
 	 *            image with of the chart.
 	 * @return interval value.
 	 */
-	public int getPluginMonitorDataInterval(long testId, String monitorIP, String pluginName, int imageWidth) {
-		File monitorDataFile = getPluginMonitorDataFile(testId, monitorIP, pluginName);
-		return getRecordInterval(monitorIP, imageWidth, monitorDataFile);
+	public int getPluginReportDisplayInterval(long testId, String targetIP, String reportCategory, int imageWidth) {
+		File monitorDataFile = getPluginMonitorDataFile(testId, targetIP, reportCategory);
+		return getRecordInterval(imageWidth, monitorDataFile);
 	}
 
 	/**
 	 * Get sampling interval of plugin. It is configured by plugin, so need to get it from plugin directory.
 	 * @param testId
 	 *            test id
-	 * @param pluginName
-	 *            plugin name
+	 * @param reportCategory
+	 *            monitor plugin name
 	 * @return sampling interval value
 	 */
-	public int getPluginMonitorSamplingInterval(long testId, String pluginName) {
+	public int getPluginMonitorSamplingInterval(long testId, String reportCategory) {
 		File reportDir = getReportFileDirectory(testId);
-		File pluginDir = new File(reportDir, pluginName);
+		File pluginDir = new File(reportDir, reportCategory);
 		File monitorDataFile = new File(pluginDir, "interval");
 		try {
 			String intervalStr = FileUtils.readFileToString(monitorDataFile);
@@ -1551,35 +1551,35 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            test id
 	 * @return plugin name list
 	 */
-	public List<String> getPluginsOfTest(long testId) {
-		List<String> rtnList = new ArrayList<String>();
+	public List<String> getAdditionalPluginsOfTest(long testId) {
+		List<String> result = new ArrayList<String>();
 		File reportDir = getReportFileDirectory(testId);
 		File[] fileList = reportDir.listFiles();
 		for (File file : fileList) {
 			if (file.isDirectory()) {
-				rtnList.add(file.getName());
+				result.add(file.getName());
 			}
 		}
-		return rtnList;
+		return result;
 	}
 
 	/*
-	Plugin monitor data should be {TestReportDir}/{pluginName}/{targetIP}.data
+	 * Plugin monitor data should be {TestReportDir}/{categoryName}/{targetIP}.data
 	 */
-	private File getPluginMonitorDataFile(long testId, String monitorIP, String pluginName) {
+	private File getPluginMonitorDataFile(long testId, String monitorIP, String categoryName) {
 		File reportDir = getReportFileDirectory(testId);
-		File pluginDir = new File(reportDir, pluginName);
+		File pluginDir = new File(reportDir, categoryName);
 		checkArgument(pluginDir.exists(), "Plugin:{} doesn't exist!", pluginDir.getPath());
 
 		return new File(pluginDir, monitorIP + ".data");
 	}
 
 	/*
-	 Get the interval value. In the normal, the image width is 700, and if the data count is too big,
-	 there will be too many points in the chart. So we will calculate the interval to get appropriate count of data to
-	 display. For example, interval value "2" means, get one record for every "2" records.
+	 * Get the interval value. In the normal, the image width is 700, and if the data count is too big,
+	 * there will be too many points in the chart. So we will calculate the interval to get appropriate count of data to
+	 * display. For example, interval value "2" means, get one record for every "2" records.
 	 */
-	private int getRecordInterval(String monitorIP, int imageWidth, File monitorDataFile) {
+	private int getRecordInterval(int imageWidth, File monitorDataFile) {
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		FileInputStream in = null;
 		InputStreamReader isr = null;
@@ -1597,7 +1597,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error("Error while getting data file:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(lnr);
@@ -1613,35 +1613,35 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *
 	 * @param testId
 	 *            test id
-	 * @param monitorIP
+	 * @param targetIP
 	 *            ip address of the monitor target
-	 * @param pluginName
+	 * @param reportCategory
 	 *            plugin name
 	 * @param dataInterval
 	 *            interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
-	public Map<String, String> getPluginMonitorDataAsString(long testId, String monitorIP, String pluginName, int dataInterval) {
+	public Map<String, String> getPluginMonitorDataAsStrings(long testId, String targetIP, String reportCategory, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
-		File monitorDataFile = getPluginMonitorDataFile(testId, monitorIP, pluginName);
+		File monitorDataFile = getPluginMonitorDataFile(testId, targetIP, reportCategory);
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			String header = br.readLine();
 
 			StringBuilder headerSB = new StringBuilder("[");
-			String[] headerlist = StringUtils.split(header, ",");
-			String[] refinedHeaderlist = StringUtils.split(header, ",");
-			List<StringBuilder> dataStringBuilderList = new ArrayList<StringBuilder>(headerlist.length);
+			String[] headers = StringUtils.split(header, ",");
+			String[] refinedHeaders = StringUtils.split(header, ",");
+			List<StringBuilder> dataStringBuilderList = new ArrayList<StringBuilder>(headers.length);
 
-			for (int i = 0; i < headerlist.length; i++) {
+			for (int i = 0; i < headers.length; i++) {
 				dataStringBuilderList.add(new StringBuilder("["));
-				String refinedHead = headerlist[i].trim().replaceAll(" ", "_");
-				refinedHeaderlist[i] = refinedHead;
+				String refinedHead = headers[i].trim().replaceAll(" ", "_");
+				refinedHeaders[i] = refinedHead;
 				headerSB.append("'").append(refinedHead).append("'").append(",");
 			}
-			String headerStringInJSList = headerSB.deleteCharAt(headerSB.length() - 1).append("]").toString();
-			returnMap.put("header", headerStringInJSList);
+			String headerStringInJSONList = headerSB.deleteCharAt(headerSB.length() - 1).append("]").toString();
+			returnMap.put("header", headerStringInJSONList);
 
 			String line = br.readLine();
 			int skipCount = dataInterval;
@@ -1652,29 +1652,29 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 					continue;
 				} else {
 					skipCount = 1;
-					String[] datalist = StringUtils.split(line, ",");
-					for (int i = 0; i < datalist.length; i++) {
+					String[] records = StringUtils.split(line, ",");
+					for (int i = 0; i < records.length; i++) {
 						StringBuilder dataSB = dataStringBuilderList.get(i);
-						if ("null".equals(datalist[i]) || "undefined".equals(datalist[i])) {
+						if ("null".equals(records[i]) || "undefined".equals(records[i])) {
 							dataSB.append("null").append(",");
 						} else {
-							dataSB.append(datalist[i]).append(",");
+							dataSB.append(records[i]).append(",");
 						}
 					}
 					line = br.readLine();
 				}
 			}
 
-			for (int i = 0; i < refinedHeaderlist.length; i++) {
+			for (int i = 0; i < refinedHeaders.length; i++) {
 				StringBuilder dataSB = dataStringBuilderList.get(i);
 				if (dataSB.charAt(dataSB.length() - 1) == ',') {
 					dataSB.deleteCharAt(dataSB.length() - 1);
 				}
 				dataSB.append("]");
-				returnMap.put(refinedHeaderlist[i], dataSB.toString());
+				returnMap.put(refinedHeaders[i], dataSB.toString());
 			}
 		} catch (IOException e) {
-			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error("Error while getting monitor:{} data file:{}", targetIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(br);
