@@ -166,12 +166,12 @@
 						</ul>
 					</li>
 			        </#if>
-                    <#list plugins as pluginName>
-                    <li><a><i class="icon-tags"></i> ${pluginName}</a></li>
+                    <#list categories as reportCategory>
+                    <li><a><i class="icon-tags"></i> ${reportCategory}</a></li>
                         <li>
                            <ul class="nav nav-list">
                                <#list test.targetHostIP as targetIp>
-                                   <li><a class="plugin-montor" href="javascript:void(0);" ip="${targetIp}" plugin="${pluginName}">
+                                   <li><a class="plugin-category" href="javascript:void(0);" ip="${targetIp}" category="${reportCategory}">
                                        <i class="icon-chevron-right"></i> ${targetIp}
                                    </a></li>
                                </#list>
@@ -230,10 +230,10 @@
                 changActiveLink($elem);
             });
 
-            $("a.plugin-montor").click(function() {
+            $("a.plugin-category").click(function() {
                 var $elem = $(this);
-                var pluginName = $elem.attr("plugin");
-                generatePluginChart(pluginName, $elem.attr("ip"));
+                var reportCategory = $elem.attr("category");
+                generatePluginChart(reportCategory, $elem.attr("ip"));
                 changActiveLink($elem);
             });
 
@@ -268,11 +268,11 @@
                 });
         }
 
-        function generatePluginChart(pluginName, ip){
-            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_target_plugin?pluginName=" + pluginName, function() {
-                var pluginDataMap = targetPluginData[pluginName];
+        function generatePluginChart(reportCategory, ip){
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_target_plugin?reportCategory=" + reportCategory, function() {
+                var pluginDataMap = targetPluginData[reportCategory];
                 if (!pluginDataMap || !pluginDataMap[ip]) {
-                    getTargetPluginDataAndDraw(${test.id}, pluginName, ip);
+                    getTargetPluginDataAndDraw(${test.id}, reportCategory, ip);
                 } else {
                     drawPluginChart(pluginDataMap[ip]);
                 }

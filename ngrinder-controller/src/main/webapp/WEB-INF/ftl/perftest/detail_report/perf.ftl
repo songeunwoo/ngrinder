@@ -1,5 +1,5 @@
 
-    <#import "../common/spring.ftl" as spring/>
+    <#import "../../common/spring.ftl" as spring/>
     <div class="page-header">
         <span><h4>Performance</h4></span>
         <button id="download_csv" class="btn btn-primary pull-right" style="margin-top: -36px;">

@@ -321,11 +321,11 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
 
-		controller.getMonitorData(model, test.getId(), "127.0.0.1", 0);
+		controller.getMonitorData(test.getId(), "127.0.0.1", 0);
 
 		model.clear();
 		long testId = 123456L;
-		controller.getMonitorData(model, testId, "127.0.0.1", 700);
+		controller.getMonitorData(testId, "127.0.0.1", 700);
 	}
 
 	@Test

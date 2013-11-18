@@ -1,6 +1,6 @@
 
     <div class="page-header">
-        <h4>${pluginName}</h4>
+        <h4>${reportCategory}</h4>
     </div>
 
     <div id="chart_container">
@@ -13,18 +13,18 @@
 
         });
 
-        function getTargetPluginDataAndDraw(testId, pluginName, ip) {
+        function getTargetPluginDataAndDraw(testId, reportCategory, ip) {
             currentTestId = testId;
             $.ajax({
-                url: "${req.getContextPath()}/perftest/"+testId+"/plugin/"+pluginName,
+                url: "${req.getContextPath()}/perftest/"+testId+"/category/"+reportCategory,
                 dataType:'json',
                 cache: true,
-                data: {'monitorIP': ip, 'imgWidth': 700}
+                data: {'targetIP': ip, 'imgWidth': 700}
             }).done(function(result) {
-                if (!targetPluginData[pluginName]) {
-                    targetPluginData[pluginName] = {};
+                if (!targetPluginData[reportCategory]) {
+                    targetPluginData[reportCategory] = {};
                 }
-                var dataMapOfPlugin = targetPluginData[pluginName];
+                var dataMapOfPlugin = targetPluginData[reportCategory];
                 dataMapOfPlugin[ip] = result;
                 drawPluginChart(result);
             }).fail(function() {
