@@ -31,6 +31,9 @@
 				height: 150px; 
 				min-width: 290px; 
 			}
+            td.no-padding {
+                padding: 0px;
+            }
 		</style>
 	</head>
 
@@ -111,7 +114,7 @@
 					<col width="50">
 				</colgroup>
 				<thead>
-					<tr>
+					<tr id="head_tr_id">
 						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
 						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="test_name" name="testName"><@spring.message "perfTest.table.testName"/></th>
@@ -247,14 +250,16 @@
 		</div>
 	<script>
 		$(document).ready(function() {
+
+            var rowCount = $('#head_tr_id th').length;
+
 			$("#tag").select2({
 				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
 				allowClear: true
 			}).change(function() {
 				document.forms.test_list_form.submit();
 			});
-			
-	      	
+
 			$("#nav_test").addClass("active");
 			
 			enableChkboxSelectAll("test_table");
@@ -287,17 +292,14 @@
 			});
 			
 			$("i.test-display").click(function() {
-				
 				var id = $(this).attr("sid");
-				var perftestChartTableId = "test_" + id;
+                var perftestChartTrId = "test_tr_" + id;
 				var tpsId = "tps_chart" + id;
 				var meanTimeChartId = "mean_time_chart" + id;
 				var errorChartId = "error_chart" + id;
-				
-				if(!$(this).closest('tr').next("table").length){
-                    testInfoTable = $("<table id='"+ perftestChartTableId +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td> </tr></table><table id='"+ perftestChartTableId +"2'></table>");
-                    testInfoTable.hide();
-					$(this).closest('tr').after(testInfoTable);
+				if(!$(this).closest('tr').next('#'+perftestChartTrId).length){
+                    testInfoTr = $("<tr id='"+perftestChartTrId+"' style='display:none'><td colspan='"+rowCount+"' class='no-padding'><table style='width:940px'><tr><td><div class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
+					$(this).closest('tr').after(testInfoTr);
 					$.ajax({
 		                url: "${req.getContextPath()}/perftest/api/"+ id +"/graph",
 		                dataType:'json',
@@ -310,17 +312,15 @@
 							return true;
 		                },
 		                error: function() {
-			                showErrorMsg("Failed to get graph.")
+			                showErrorMsg("Failed to get graph.");
 		                    return false;
 		                }
 		            });
-
-                    testInfoTable.show("slow");
+                    testInfoTr.show("slow");
 				}else{
-					$("#"+perftestChartTableId).hide("slow");
-					$("#"+perftestChartTableId).remove();
-					$("#"+perftestChartTableId+"2").remove();
-				}
+                    $("#"+perftestChartTrId).next('tr').remove();
+                    $("#"+perftestChartTrId).remove();
+                }
 				
 			});
 			
