@@ -449,8 +449,8 @@ public class AgentManagerService implements IAgentManagerService {
     /**
      * Get the agent package containing folder.
      */
-    public File getUpdateAgentDir() {
-        return config.getHome().getSubFile("update_agent");
+    public File getAgentPackagesDir() {
+        return config.getHome().getSubFile("update_agents");
     }
 
     /*
@@ -463,20 +463,20 @@ public class AgentManagerService implements IAgentManagerService {
 
         String agentPackageLibs = IOUtils.toString(cl.getResourceAsStream("agentlibs.txt"));
 
-        File updateAgentDir = getUpdateAgentDir();
-        if (!updateAgentDir.exists()) {
-            updateAgentDir.mkdir();
+        File agentPackagesDir = getAgentPackagesDir();
+        if (!agentPackagesDir.exists()) {
+            agentPackagesDir.mkdir();
         }
 
-        File agentTar = new File(updateAgentDir, getDistributePackageName("ngrinder-core", false));
-        File agentZip = new File(updateAgentDir, getDistributePackageName("ngrinder-core", true));
+        File agentTar = new File(agentPackagesDir, getDistributePackageName("ngrinder-core", false));
+        File agentZip = new File(agentPackagesDir, getDistributePackageName("ngrinder-core", true));
 
         if (agentTar.exists()) {
             return agentTar;
         }
 
-        FileUtils.cleanDirectory(updateAgentDir);
-        File agentPackageDir = new File(updateAgentDir, FilenameUtils.getBaseName(agentZip.getName()));
+        FileUtils.cleanDirectory(agentPackagesDir);
+        File agentPackageDir = new File(agentPackagesDir, FilenameUtils.getBaseName(agentZip.getName()));
         File agentSubLibDir = new File(agentPackageDir, "lib");
         agentSubLibDir.mkdirs();
 
@@ -490,33 +490,32 @@ public class AgentManagerService implements IAgentManagerService {
             taos.closeArchiveEntry();
             URL[] libUrls = cl.getURLs();
 
-            final String[] agentPackagesLibs = StringUtils.split(agentPackageLibs, ",;");
-            for (URL url : libUrls) {
+            final String[] libs = StringUtils.split(agentPackageLibs, ",;");
+            for (URL eachUrl : libUrls) {
                 try {
 
-                    if (isMatchingLib(url, "ngrinder-sh")) {
-                        File coreShell = new File(url.toURI());
+                    if (isMatchingLib(eachUrl, "ngrinder-sh")) {
+                        File coreShell = new File(eachUrl.toURI());
                         CompressionUtil.unjar(coreShell, agentPackageDir);
                         continue;
                     }
 
-                    if (isMatchingLib(url, "ngrinder-core")) {
-                        File jarFile = new File(url.toURI());
-                        CompressionUtil.addFileToTar(taos, jarFile, "");
-                        FileUtils.copyFileToDirectory(jarFile, agentPackageDir);
+                    if (isMatchingLib(eachUrl, "ngrinder-core")) {
+                        File eachLib = new File(eachUrl.toURI());
+                        CompressionUtil.addFileToTar(taos, eachLib, "");
+                        FileUtils.copyFileToDirectory(eachLib, agentPackageDir);
                         continue;
                     }
 
-                    for (String jarName : agentPackagesLibs) {
-                        jarName = jarName.trim();
-                        if (url.getFile().endsWith(jarName)) {
-                            File jarFile = new File(url.toURI());
+                    for (String eachLib : libs) {
+                        if (eachUrl.getFile().endsWith(StringUtils.trim(eachLib))) {
+                            File jarFile = new File(eachUrl.toURI());
                             CompressionUtil.addFileToTar(taos, jarFile, "lib/");
                             FileUtils.copyFileToDirectory(jarFile, agentSubLibDir);
                         }
                     }
                 } catch (URISyntaxException e) {
-                    throw new NGrinderRuntimeException("Wrong URL Syntax for " + url, e);
+                    throw new NGrinderRuntimeException("Wrong URL Syntax for " + eachUrl, e);
                 }
             }
 
@@ -529,8 +528,8 @@ public class AgentManagerService implements IAgentManagerService {
                 }
             });
 
-            for (File script : shellScripts) {
-                CompressionUtil.addFileToTar(taos, script, "", 0100755);
+            for (File eachScript : shellScripts) {
+                CompressionUtil.addFileToTar(taos, eachScript, "", 0100755);
             }
 
             CompressionUtil.zip(agentPackageDir);

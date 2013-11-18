@@ -85,13 +85,25 @@ public class AgentHome {
     /**
      * Get agent native directory.
      *
-     * @return agent home directory
+     * @return agent native directory
      */
     public File getNativeDirectory() {
-        File nativeFile = new File(directory.getAbsolutePath(), "native");
+        File nativeFile = getFile("native");
         if (!nativeFile.exists())
             nativeFile.mkdir();
         return nativeFile;
+    }
+
+    /**
+     * Get temp directory.
+     *
+     * @return temp directory
+     */
+    public File getTempDirectory() {
+        File tempFile = getFile("temp");
+        if (!tempFile.exists())
+            tempFile.mkdir();
+        return tempFile;
     }
 
 	/**

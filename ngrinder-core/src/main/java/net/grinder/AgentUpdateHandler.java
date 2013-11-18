@@ -66,9 +66,8 @@ public class AgentUpdateHandler {
             return;
         }
 
-        File downloadFolder = new File(System.getProperty("user.dir"), "download");
-        downloadFolder.mkdirs();
-        File dest = new File(downloadFolder, message.getFileName()+".tar.gz");
+        File tempFolder = agentConfig.getHome().getTempDirectory();
+        File dest = new File(tempFolder, message.getFileName()+".tar.gz");
 
         File interDir = new File(agentConfig.getCurrentDirectory(), "update_package_unzip");
         File updatePackageDir = new File(System.getProperty("user.dir"), "update_package");
