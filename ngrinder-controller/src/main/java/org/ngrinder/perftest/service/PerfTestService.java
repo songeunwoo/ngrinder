@@ -842,7 +842,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
 			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int) (lineNumber / pointCount), 1);
+			interval = Math.max((lineNumber / pointCount), 1);
 		} catch (Exception e) {
 			LOGGER.error("Failed to get report data for {}", dataType, e);
 		} finally {
@@ -1455,7 +1455,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
-					continue;
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
@@ -1551,7 +1550,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            test id
 	 * @return plugin name list
 	 */
-	public List<String> getAdditionalPluginsOfTest(long testId) {
+	public List<String> getAdditionalReportCategoriesOfTest(long testId) {
 		List<String> result = new ArrayList<String>();
 		File reportDir = getReportFileDirectory(testId);
 		File[] fileList = reportDir.listFiles();
@@ -1621,7 +1620,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            interval value to get data. Interval value "2" means, get one record for every "2" records.
 	 * @return return the data in map
 	 */
-	public Map<String, String> getPluginMonitorDataAsStrings(long testId, String targetIP, String reportCategory, int dataInterval) {
+	public Map<String, String> getReportCategoryDataAsStrings(long testId, String targetIP, String reportCategory, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = getPluginMonitorDataFile(testId, targetIP, reportCategory);
 		BufferedReader br = null;
@@ -1649,7 +1648,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
-					continue;
 				} else {
 					skipCount = 1;
 					String[] records = StringUtils.split(line, ",");

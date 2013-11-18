@@ -869,7 +869,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = { "{id}/detail_report", "{id}/report" })
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getPerfTest(id));
-		model.addAttribute("categories", perfTestService.getAdditionalPluginsOfTest(id));
+		model.addAttribute("categories", perfTestService.getAdditionalReportCategoriesOfTest(id));
 		return "perftest/detail_report";
 	}
 
@@ -1015,7 +1015,7 @@ public class PerfTestController extends NGrinderBaseController {
 											  @PathVariable("reportCategory") String reportCategory,
 											  @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
 		int interval = perfTestService.getPluginReportDisplayInterval(id, targetIP, reportCategory, imgWidth);
-		Map<String, String> pluginMonitorData = perfTestService.getPluginMonitorDataAsStrings(id, targetIP,
+		Map<String, String> pluginMonitorData = perfTestService.getReportCategoryDataAsStrings(id, targetIP,
 				reportCategory, interval);
 		pluginMonitorData.put("interval",
 				String.valueOf(interval * perfTestService.getPluginMonitorSamplingInterval(id, reportCategory)));
