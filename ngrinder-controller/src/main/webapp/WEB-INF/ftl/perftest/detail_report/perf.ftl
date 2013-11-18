@@ -38,7 +38,7 @@
         function getPerformanceDataAndDraw(testId) {
             currentTestId = testId;
             $.ajax({
-                url: "${req.getContextPath()}/perftest/"+testId+"/graph",
+                url: "${req.getContextPath()}/perftest/"+testId+"/detail_report/perf/graph",
                 dataType:'json',
                 cache: true,
                 data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700}

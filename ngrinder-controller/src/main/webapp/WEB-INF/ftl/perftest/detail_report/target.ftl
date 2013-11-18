@@ -30,7 +30,7 @@
         function getTargetMonitorDataAndDraw(testId, ip) {
             currentTestId = testId;
             $.ajax({
-                url: "${req.getContextPath()}/perftest/"+testId+"/monitor",
+                url: "${req.getContextPath()}/perftest/"+testId+"/detail_report/target/graph",
                 dataType:'json',
                 cache: true,
                 data: {'monitorIP': ip, 'imgWidth': 700}

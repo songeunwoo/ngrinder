@@ -16,7 +16,7 @@
         function getTargetPluginDataAndDraw(testId, reportCategory, ip) {
             currentTestId = testId;
             $.ajax({
-                url: "${req.getContextPath()}/perftest/"+testId+"/category/"+reportCategory,
+                url: "${req.getContextPath()}/perftest/"+testId+"/detail_report/target/"+reportCategory+"/graph",
                 dataType:'json',
                 cache: true,
                 data: {'targetIP': ip, 'imgWidth': 700}

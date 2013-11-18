@@ -249,7 +249,7 @@
 		}
 
 		function generatePerformanceChart(){
-            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_perf", {},  function() {
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/perf", {},  function() {
                     if (performanceData == undefined) {
                         getPerformanceDataAndDraw(${(test.id)?c});
                     } else {
@@ -259,7 +259,7 @@
         }
 
         function generateMonitorChart(ip){
-            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_target", function() {
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/target", function() {
                     if (!targetMonitorData[ip]) {
                         getTargetMonitorDataAndDraw(${(test.id)?c}, ip);
                     } else {
@@ -269,7 +269,7 @@
         }
 
         function generatePluginChart(reportCategory, ip){
-            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report_target_plugin?reportCategory=" + reportCategory, function() {
+            $("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/target_plugin?reportCategory=" + reportCategory, function() {
                 var pluginDataMap = targetPluginData[reportCategory];
                 if (!pluginDataMap || !pluginDataMap[ip]) {
                     getTargetPluginDataAndDraw(${test.id}, reportCategory, ip);

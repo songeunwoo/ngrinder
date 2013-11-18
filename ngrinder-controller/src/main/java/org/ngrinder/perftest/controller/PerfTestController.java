@@ -680,47 +680,6 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the detailed report graph data for the given perf test id.<br/>
-	 * This method returns the appropriate points based on the given imgWidth.
-	 * 
-	 * @param model
-	 *            model
-	 * @param id
-	 *            test id
-	 * @param dataType
-	 *            which data
-	 * @param imgWidth
-	 *            imageWidth
-	 * @return json string.
-	 */
-	@RequestMapping(value = "{id}/graph")
-	@ResponseBody
-	public String getReportData(ModelMap model, @PathVariable("id") long id,
-			@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
-		String[] dataTypes = StringUtils.split(dataType, ",");
-		if (dataTypes.length <= 0) {
-			return returnError();
-		}
-		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
-		return toJson(getGraphDataString(perfTestService.getPerfTest(id), dataTypes, interval));
-	}
-
-	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
-		Map<String, Object> resultMap = Maps.newHashMap();
-		resultMap.put(JSON_SUCCESS, true);
-		for (String each : dataTypes) {
-			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(perfTest.getId(),
-					each, interval);
-			Map<String, Object> dataMap = Maps.newHashMap();
-			dataMap.put("lables", tpsResult.getFirst());
-			dataMap.put("data", tpsResult.getSecond());
-			resultMap.put(StringUtils.replaceChars(each, "()", ""), dataMap);
-		}
-		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
-		return resultMap;
-	}
-
-	/**
 	 * Get the basic report content in perftest configuration page.
 	 * 
 	 * This method returns the appropriate points based on the given imgWidth.
@@ -864,7 +823,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 			double memUsage = 0;
 			if (totalMemory != 0) {
-				memUsage = (((double) (totalMemory - freeMemory)) / totalMemory) * 100;
+				memUsage = (((totalMemory - freeMemory)) / totalMemory) * 100;
 			}
 			DecimalFormat format = new DecimalFormat("#00.0");
 			if (cpuUsedPercentage > 99.9f) {
@@ -921,7 +880,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test id
 	 * @return perftest/detail_report
 	 */
-	@RequestMapping(value = { "{id}/detail_report_perf"})
+	@RequestMapping(value = { "{id}/detail_report/perf"})
 	public String getDetailReportPerf(@PathVariable("id") long id) {
 		return "perftest/detail_report/perf";
 	}
@@ -933,7 +892,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test id
 	 * @return perftest/detail_report
 	 */
-	@RequestMapping(value = { "{id}/detail_report_target"})
+	@RequestMapping(value = { "{id}/detail_report/target"})
 	public String getDetailReportTargetMonitor(@PathVariable("id") long id) {
 		return "perftest/detail_report/target";
 	}
@@ -949,7 +908,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test report plugin category
 	 * @return perftest/detail_report
 	 */
-	@RequestMapping(value = { "{id}/detail_report_target_plugin"})
+	@RequestMapping(value = { "{id}/detail_report/target_plugin"})
 	public String getDetailReportTargetPlugin(ModelMap model, @PathVariable("id") long id,
 										 @RequestParam("reportCategory") String reportCategory) {
 		model.addAttribute("reportCategory", reportCategory);
@@ -968,6 +927,46 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
+	 * Get the detailed report graph data for the given perf test id.<br/>
+	 * This method returns the appropriate points based on the given imgWidth.
+	 *
+	 * @param model
+	 *            model
+	 * @param id
+	 *            test id
+	 * @param dataType
+	 *            which data
+	 * @param imgWidth
+	 *            imageWidth
+	 * @return json string.
+	 */
+	@RequestMapping(value = "{id}/detail_report/perf/graph")
+	@ResponseBody
+	public String getReportData(ModelMap model, @PathVariable("id") long id,
+								@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
+		String[] dataTypes = StringUtils.split(dataType, ",");
+		if (dataTypes.length <= 0) {
+			return returnError();
+		}
+		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
+		return toJson(getGraphDataString(perfTestService.getPerfTest(id), dataTypes, interval));
+	}
+
+	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
+		Map<String, Object> resultMap = Maps.newHashMap();
+		resultMap.put(JSON_SUCCESS, true);
+		for (String each : dataTypes) {
+			Pair<ArrayList<String>, ArrayList<String>> tpsResult = perfTestService.getReportData(perfTest.getId(),
+					each, interval);
+			Map<String, Object> dataMap = Maps.newHashMap();
+			dataMap.put("lables", tpsResult.getFirst());
+			dataMap.put("data", tpsResult.getSecond());
+			resultMap.put(StringUtils.replaceChars(each, "()", ""), dataMap);
+		}
+		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
+		return resultMap;
+	}
+	/**
 	 * Get the monitor data of the target having the given IP.
 	 *
 	 * @param id
@@ -978,7 +977,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            image width
 	 * @return json message
 	 */
-	@RequestMapping("{id}/monitor")
+	@RequestMapping("{id}/detail_report/target/graph")
 	@ResponseBody
 	public String getMonitorData(@PathVariable("id") long id,
 			@RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
@@ -1010,7 +1009,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            image width
 	 * @return json message
 	 */
-	@RequestMapping("{id}/category/{reportCategory}")
+	@RequestMapping("{id}/detail_report/target/{reportCategory}/graph")
 	@ResponseBody
 	public String getPluginReportCategoryData(@PathVariable("id") long id,
 											  @PathVariable("reportCategory") String reportCategory,
