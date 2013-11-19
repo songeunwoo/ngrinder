@@ -76,6 +76,11 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.4</version>
 		</dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>3.3.1</version>
+        </dependency>
 		<dependency>
 			<groupId>net.sf.grinder</groupId>
 			<artifactId>grinder</artifactId>
@@ -97,6 +102,10 @@
 					<artifactId>jedit-syntax</artifactId>
 					<groupId>net.sf.jedit-syntax</groupId>
 				</exclusion>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>asm</groupId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 
