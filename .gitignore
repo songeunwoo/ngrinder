@@ -23,4 +23,3 @@ target/
 *.iml
 /atlassian-ide-plugin.xml
 
-ngrinder-controller/keystore
