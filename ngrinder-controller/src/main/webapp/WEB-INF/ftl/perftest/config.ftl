@@ -6,31 +6,26 @@
 		<div class="form-horizontal form-horizontal-2">
 
 			<div class="control-group">
-				
-				<div class="row">
-					<div class="span4">
-						<div class="control-group">
-							<label for="agent_count" class="control-label">
-								<@spring.message "perfTest.configuration.agent"/>
-							</label>
-							<div class="controls">
-								<div class="input-append">
-									<input type="text" class="input input-mini" 
-										rel="popover" id="agent_count" name="agentCount"
-										value="${(test.agentCount)!0}" data-html="true"
-										data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-										title='<@spring.message "perfTest.configuration.agent"/>'/>
-									<span class="add-on">
+
+                <div class="row">
+                    <div class="span4">
+                        <div class="control-group">
+                            <label for="agent_count" class="control-label">
+							<@spring.message "perfTest.configuration.agent"/>
+                            </label>
+
+                            <div class="controls">
+							<@input "agent_count","agentCount","${(test.agentCount)!0}",'${springMacroRequestContext.getMessage("perfTest.configuration.agent.help")}','${springMacroRequestContext.getMessage("perfTest.configuration.agent")}',"" >
+                                <span class="add-on">
 										<@spring.message "perfTest.configuration.max"/>
-										<span id="maxAgentCount"></span>
+                                    <span id="maxAgentCount"></span>
 									</span>
-								</div>
-							
-							</div>
-							<div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
-							</div>
-						</div>
-					</div>
+							</@input>
+                            </div>
+                            <div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
+                            </div>
+                        </div>
+                    </div>
 					<div class="span2">
 						<#if clustered == true>
 							<label for="region" class="control-label" style="margin-left:-50px;width:80px">
@@ -59,35 +54,29 @@
 					<@spring.message "perfTest.configuration.vuserPerAgent"/>
 				</label>
 				<div class="controls">
-					<table style="width: 100%">
-						<colgroup>
-							<col width="300px" />
-							<col width="*" />
-						</colgroup>
-						<tr>
-							<td>
-								<div class="input-append">
-									<input type="text" class="input input-mini" id="vuser_per_agent" 
-										name="vuserPerAgent"
-										value="${(test.vuserPerAgent)!1}" 
-										rel="popover" 
-										data-html="true"
-										data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>' 
-										title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"/>
-									<span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
-								</div> 
-								<a href="javascript:void(0)">
-									<i class="expand" id="expand_collapse_btn"></i>
-								</a>
-							</td>
-							<td>
-								<div class="pull-right">
-									<span class="badge badge-info pull-right" style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
-										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="total_vuser"></span>
+                    <table style="width: 100%">
+                        <colgroup>
+                            <col width="300px"/>
+                            <col width="*"/>
+                        </colgroup>
+                        <tr>
+                            <td>
+							<@input "vuser_per_agent","vuserPerAgent","${(test.vuserPerAgent)!1}",'${springMacroRequestContext.getMessage("perfTest.configuration.vuserPerAgent.help")}','${springMacroRequestContext.getMessage("perfTest.configuration.vuserPerAgent")}',"">
+                                <span class="add-on">
+									<@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}
+								</span>
+							</@input>
+
+                            <td>
+                                <div class="pull-right">
+									<span class="badge badge-info pull-right"
+                                          style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
+										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
+                                            id="total_vuser"></span>
 									</span>
-								</div>
-							</td>
-						</tr>
+                                </div>
+                            </td>
+                        </tr>
 						<tr id="process_thread_config_panel" style="display: none;">
 							<td colspan="2">
 								<span>
@@ -186,22 +175,22 @@
 					<input id="hidden_duration_input" class="hide" data-step="1"/>
 				</div>
 			</div>
-			<div class="control-group">
-				<label for="run_count" class="control-label"> 
-					<input type="radio" id="run_count_radio" name="threshold" value="R"<#if test?? && test.threshold == "R" >checked</#if>/>
-					<@spring.message "perfTest.configuration.runCount"/>
-				</label>
-				<div class="controls">
-					<div class="input-append">
-						<input type='text' 
-							rel='popover' data-html='true'
-							title='<@spring.message "perfTest.configuration.runCount"/>'
-							data-content='<@spring.message "perfTest.configuration.runCount.help"/>' 
-							id="run_count" class="input input-mini" number_limit="${(maxRunCount)}" name="runCount" value="${(test.runCount)!0}">
-						<span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxRunCount)}</span>
-					</div>
-				</div>
-			</div>
+            <div class="control-group">
+                <label for="run_count" class="control-label">
+                    <input type="radio" id="run_count_radio" name="threshold" value="R"
+						   <#if test?? && test.threshold == "R" >checked</#if>/>
+				<@spring.message "perfTest.configuration.runCount"/>
+                </label>
+
+                <div class="controls">
+
+				<@input "run_count","runCount","${(test.runCount)!0}",'${springMacroRequestContext.getMessage("perfTest.configuration.runCount.help")}','${springMacroRequestContext.getMessage("perfTest.configuration.runCount")}','number_limit="${(maxRunCount)}"' >
+                    <span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxRunCount)}</span>
+				</@input>
+
+
+                </div>
+            </div>
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
