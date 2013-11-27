@@ -14,7 +14,10 @@
 							<@spring.message "perfTest.configuration.agent"/>
                             </label>
                             <div class="controls">
-							<@input id="agent_count" name="agentCount" value="${(test.agentCount)!0}" message="perfTest.configuration.agent" append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
+							<@input name="agentCount"
+									value="${(test.agentCount)!0}"
+									message="perfTest.configuration.agent"
+									append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
 							</div>
                             <div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
                             </div>
@@ -55,7 +58,10 @@
                         </colgroup>
                         <tr>
                             <td>
-							<@input id="vuser_per_agent" name="vuserPerAgent" value="${(test.vuserPerAgent)!1}" message="perfTest.configuration.vuserPerAgent" append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
+							<@input name="vuserPerAgent"
+									value="${(test.vuserPerAgent)!1}"
+									message="perfTest.configuration.vuserPerAgent"
+									append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
 
                             <td>
                                 <div class="pull-right">
@@ -173,7 +179,11 @@
                 </label>
 
                 <div class="controls">
-				<@input id="run_count" name="runCount" value="${(test.runCount)!0}" message="perfTest.configuration.runCount" others='number_limit="${(maxRunCount)}"' append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
+				<@input  name="runCount"
+						value="${(test.runCount)!0}"
+						message="perfTest.configuration.runCount"
+						others='number_limit="${(maxRunCount)}"'
+						append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
                 </div>
             </div>
 			<div class="control-group">

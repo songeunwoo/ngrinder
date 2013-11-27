@@ -7,21 +7,24 @@
  *
  -->
 
-<#macro input id,name,value,message,others="",append_prefix="",append="">
+<#macro input name,value,message,id="",others="",append="",append_prefix="">
+
+	<#assign inputId = id>
+
+	<#if id==""><#assign inputId=name?replace("[A-Z]", "_$0", 'r')?lower_case></#if>
+
 	<div class="input-append">
 		<input type="text" class="input input-mini"
-			   rel="popover" id="${id}" name="${name}"
+			   rel="popover" id="${inputId}" name="${name}"
 			   value="${value}" data-html="true"
 			   data-content='<@spring.message "${message}.help"/>'
 			   title='<@spring.message "${message}"/>'
-			<#if others?length!=0>${others}</#if> />
+			<#if others!="">${others}</#if> />
 
-		<#if append_prefix?length!=0>
+		<#if append!="">
 			<span class="add-on">
 				<@spring.message "${append_prefix}"/>
-				<#if append?length!=0>
 				${append}
-				</#if>
 			</span>
 		</#if>
 	</div>
