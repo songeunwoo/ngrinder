@@ -13,15 +13,9 @@
                             <label for="agent_count" class="control-label">
 							<@spring.message "perfTest.configuration.agent"/>
                             </label>
-
                             <div class="controls">
-							<@input "agent_count","agentCount","${(test.agentCount)!0}",'${springMacroRequestContext.getMessage("perfTest.configuration.agent.help")}','${springMacroRequestContext.getMessage("perfTest.configuration.agent")}',"" >
-                                <span class="add-on">
-										<@spring.message "perfTest.configuration.max"/>
-                                    <span id="maxAgentCount"></span>
-									</span>
-							</@input>
-                            </div>
+							<@input id="agent_count" name="agentCount" value="${(test.agentCount)!0}" message="perfTest.configuration.agent" append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
+							</div>
                             <div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
                             </div>
                         </div>
@@ -61,11 +55,7 @@
                         </colgroup>
                         <tr>
                             <td>
-							<@input "vuser_per_agent","vuserPerAgent","${(test.vuserPerAgent)!1}",'${springMacroRequestContext.getMessage("perfTest.configuration.vuserPerAgent.help")}','${springMacroRequestContext.getMessage("perfTest.configuration.vuserPerAgent")}',"">
-                                <span class="add-on">
-									<@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}
-								</span>
-							</@input>
+							<@input id="vuser_per_agent" name="vuserPerAgent" value="${(test.vuserPerAgent)!1}" message="perfTest.configuration.vuserPerAgent" append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
 
                             <td>
                                 <div class="pull-right">
@@ -183,12 +173,7 @@
                 </label>
 
                 <div class="controls">
-
-				<@input "run_count","runCount","${(test.runCount)!0}",'${springMacroRequestContext.getMessage("perfTest.configuration.runCount.help")}','${springMacroRequestContext.getMessage("perfTest.configuration.runCount")}','number_limit="${(maxRunCount)}"' >
-                    <span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxRunCount)}</span>
-				</@input>
-
-
+				<@input id="run_count" name="runCount" value="${(test.runCount)!0}" message="perfTest.configuration.runCount" others='number_limit="${(maxRunCount)}"' append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
                 </div>
             </div>
 			<div class="control-group">
