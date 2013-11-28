@@ -14,7 +14,7 @@
 							<@spring.message "perfTest.configuration.agent"/>
                             </label>
                             <div class="controls">
-							<@input name="agentCount"
+							<@input_append name="agentCount"
 									value="${(test.agentCount)!0}"
 									message="perfTest.configuration.agent"
 									append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
@@ -40,7 +40,7 @@
 									</option> 
 								</#list>
 							</select> 
-							<div id="err_aregion">
+							<div id="err_region">
 							</div>
 						</#if>
 					</div>
@@ -58,11 +58,13 @@
                         </colgroup>
                         <tr>
                             <td>
-							<@input name="vuserPerAgent"
+							<@input_append name="vuserPerAgent"
 									value="${(test.vuserPerAgent)!1}"
 									message="perfTest.configuration.vuserPerAgent"
 									append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
-
+							<a href="javascript:void(0)">
+								<i class="expand" id="expand_collapse_btn"></i>
+							</a>
                             <td>
                                 <div class="pull-right">
 									<span class="badge badge-info pull-right"
@@ -179,7 +181,7 @@
                 </label>
 
                 <div class="controls">
-				<@input  name="runCount"
+				<@input_append  name="runCount"
 						value="${(test.runCount)!0}"
 						message="perfTest.configuration.runCount"
 						others='number_limit="${(maxRunCount)}"'
@@ -291,61 +293,25 @@
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
 			<div class="control-group">
+
 				<div class="row">
 					<div class="span3">
-						<div class="control-group">
-							<label for="init_processes" class="control-label"> 
-								<@spring.message "perfTest.configuration.initalProcesses"/> 
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="init_processes" name="initProcesses" 
-									value="${(test.initProcesses)!0}" style="width:40px"/>
-							</div>
-							<div id="err_init_processes" style="margin-bottom: 0px;height: 15px;line-height:15px"></div> 
-						</div>
+						<@input_label name="initProcesses" value="${(test.initProcesses)!0}" message="perfTest.configuration.initalProcesses" />
 					</div>
+
 					<div class="span3">
-						<div class="control-group">
-							<label for="process_increment" class="control-label"> 
-								<@spring.message "perfTest.configuration.rampup"/>
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="process_increment" name="processIncrement"
-									value="${(test.processIncrement)!1}" style="width:40px">
-							</div>
-							<div id="err_process_increment" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>							
-						</div>
+						<@input_label name="processIncrement" value="${(test.processIncrement)!1}" message="perfTest.configuration.rampup" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="span3">
-						<div class="control-group">
-							<label for="init_sleep_time" class="control-label"> <@spring.message
-								"perfTest.configuration.initalSleepTime"/> </label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="init_sleep_time" name="initSleepTime"
-									value="${(test.initSleepTime)!0}" style="width:40px">
-								<code>MS</code>
-							</div>
-							<div id="err_init_sleep_time" style="margin-bottom: 0px;height: 15px;line-height:15px">
-							</div>
-						</div>
+						<@input_label name="initSleepTime" value="${(test.initSleepTime)!0}" message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
 					</div>
 					<div class="span3">
-						<div class="control-group">
-							<label for="process_increment_interval" class="control-label"> 
-								<@spring.message "perfTest.configuration.processesEvery"/>
-							</label>
-							<div class="controls">
-								<input type="text" class="input input-mini" id="process_increment_interval" name="processIncrementInterval"
-									value="${(test.processIncrementInterval)!1000}" style="width:40px">
-								<code>MS</code>
-							</div>
-							<div id="err_process_increment_interval" style="margin-bottom: 0px;height: 15px;line-height:15px">
-							</div>
-						</div>
+						<@input_label name="processIncrementInterval" value="${(test.processIncrementInterval)!1000}" message="perfTest.configuration.processesEvery" others="<code>MS</code>" />
 					</div>
 				</div>
+
 			</div>
 		</div>
 		<legend class="center" style="margin-top:0px;padding-top:0px"> <@spring.message "perfTest.configuration.rampUpDes"/> </legend>
