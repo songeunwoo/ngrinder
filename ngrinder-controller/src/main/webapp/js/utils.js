@@ -249,15 +249,11 @@ function cookie(name,value,expiredays){
 }
 
 function callAjaxAPI(url, success, type, datas, errorMessage) {
-    if (typeof(type) === 'undefined') {
-        type = "GET";
-    }
-    if (typeof(datas) === 'undefined') {
-        datas = {};
-    }
-    if (typeof(errorMessage) === 'undefined') {
-        errorMessage = "common.error.error";
-    }
+
+    type = type || "GET";
+    datas = datas || {};
+    errorMessage = errorMessage || "common.error.error";
+
     $.ajax({
         url: url,
         type: type,
@@ -269,5 +265,6 @@ function callAjaxAPI(url, success, type, datas, errorMessage) {
             return false;
         }
     });
+
 }
 

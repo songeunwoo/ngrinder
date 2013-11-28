@@ -461,35 +461,38 @@
 					return this.value;
 		  	}).get();
 
-		    $.ajax({
-			    url: '${req.getContextPath()}/perftest/api/status',
-			    type: 'POST',
-			    cache: false,
-			    data: {"ids": ids.join(",")},
-			    success: function(data) {
-			    	var perfTestData = eval(data);
-					var status = perfTestData.status;
-			    	var perfTest = perfTestData.perfTestInfo;
-			    	var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
-			    	$("#current_running_status").text(springMessage);
-			    	var testStatus;
-			    	for (var i = 0; i < status.length; i++) {
-					    var each = status[i];
-			    		var statusId = each.status_id;
-			    	    $("#check_" + each.id).attr("status", statusId);
+            $.ajax({
+                url: '${req.getContextPath()}/perftest/api/status',
+                type: 'POST',
+                cache: false,
+                data: {"ids": ids.join(",")},
+                success: function (data) {
+                    var perfTestData = eval(data);
+                    var status = perfTestData.status;
+                    var perfTest = perfTestData.perfTestInfo;
+                    var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
+                    $("#current_running_status").text(springMessage);
+                    for (var i = 0; i < status.length; i++) {
+                        var each = status[i];
+                        var statusId = each.status_id;
+                        $("#check_" + each.id).attr("status", statusId);
 
-			    		if(statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED"){
-			    			location.reload();
-			    		}
-			    		updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
-			    	}
-			    	if (ids.length == 0) {
-		  				return;
-		  			}
-			    	setTimeout(updateStatuses, 2000);
-			    }
-		    });
-	  })();
+                        if (statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED") {
+                            location.reload();
+                        }
+                        updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
+                    }
+                    if (ids.length == 0) {
+                        return;
+                    }
+                    setTimeout(updateStatuses, 2000);
+                },
+                error: function () {
+                    var springMessage = "0 <@spring.message "perfTest.currentRunning.summary"/>";
+                    $("#current_running_status").text(springMessage);
+                }
+        	});
+	    })();
 	</script>
 	</body>
 </html>

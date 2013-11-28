@@ -100,55 +100,47 @@
 				</tr>
 			</thead>
 			<tbody>
-				<#if files?has_content>	
-					<#list files as script>
-						<tr>
-							<td><#if script.fileName != ".."><input type="checkbox" class="checkbox"  value="${script.fileName}"></#if></td>
-							<td>
-								<#if script.fileType.fileCategory.isEditable()>
-									<i class="icon-file"></i>
-								<#elseif script.fileType == "dir">
-									<i class="icon-folder-open"></i>
-								<#else>	
-									<i class="icon-briefcase"></i>
-								</#if>
-							</td>
-							<td class="ellipsis">
-								<#if script.fileType.fileCategory.isEditable()>
-									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
-								<#elseif script.fileType == "dir">
-									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
-								<#else>	
-									<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank" title="${script.path}">${script.fileName}</a>
-								</#if> 
-							</td> 
-							<td class="ellipsis" title="${(script.description)!?html}">${(script.description)!}</td>
-							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
-							<td>${script.revision}</td>
-							<td>
-								<#if script.fileType != "dir">
-									<#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}
-								</#if>
-							</td>
-							<td class="center">
-								<#if script.fileType != "dir">
-									<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}"></i>
-									</a>
-								</#if>
-							</td>
-						</tr>
-					</#list>
-				<#else>
+				<@list list_items=files ; script>
 					<tr>
-						<td colspan="8" class="center">
-							<@spring.message "common.message.noData"/>
+						<td><#if script.fileName != ".."><input type="checkbox" class="checkbox"  value="${script.fileName}"></#if></td>
+						<td>
+							<#if script.fileType.fileCategory.isEditable()>
+								<i class="icon-file"></i>
+							<#elseif script.fileType == "dir">
+								<i class="icon-folder-open"></i>
+							<#else>
+								<i class="icon-briefcase"></i>
+							</#if>
+						</td>
+						<td class="ellipsis">
+							<#if script.fileType.fileCategory.isEditable()>
+								<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
+							<#elseif script.fileType == "dir">
+								<a href="${req.getContextPath()}/script/list/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
+							<#else>
+								<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank" title="${script.path}">${script.fileName}</a>
+							</#if>
+						</td>
+						<td class="ellipsis" title="${(script.description)!?html}">${(script.description)!}</td>
+						<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
+						<td>${script.revision}</td>
+						<td>
+							<#if script.fileType != "dir">
+								<#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}
+							</#if>
+						</td>
+						<td class="center">
+							<#if script.fileType != "dir">
+								<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}"></i>
+								</a>
+							</#if>
 						</td>
 					</tr>
-				</#if>		
-				</tbody>
-				</table>
-				<#include "../common/copyright.ftl">
-			</div>
+				</@list>
+			</tbody>
+		</table>
+	<#include "../common/copyright.ftl">
+	</div>
 	<#if !(query??)>
 	<#include "create_script_modal.ftl">
 	<#include "create_folder_modal.ftl">
