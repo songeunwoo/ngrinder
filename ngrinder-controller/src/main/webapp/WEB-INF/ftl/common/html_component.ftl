@@ -11,13 +11,10 @@
 	<#return camelCase?replace("[A-Z]", "_$0", 'r')?lower_case>
 </#function>
 
-<#macro input_append name,value,message,id="",others="",append="",append_prefix="">
-
-	<#if id==""><#assign inputId=toUnderscore(name)></#if>
-
+<#macro input_append name,value,message,others="",append="",append_prefix="">
 	<div class="input-append">
 		<input type="text" class="input input-mini"
-			   rel="popover" id="${inputId}" name="${name}"
+			   rel="popover" id="${toUnderscore(name)}" name="${name}"
 			   value="${value}" data-html="true"
 			   data-content='<@spring.message "${message}.help"/>'
 			   title='<@spring.message "${message}"/>'
@@ -32,18 +29,31 @@
 	</div>
 </#macro>
 
-<#macro input_label name,value,message,id="",others="">
-
-	<#if id==""><#assign inputId=toUnderscore(name)></#if>
+<#macro input_label name,value,message,others="">
 	<div class="control-group">
-		<label for="${inputId}" class="control-label">
+		<label for="${toUnderscore(name)}" class="control-label">
 			<@spring.message "${message}"/>
 		</label>
 		<div class="controls">
-			<input type="text" class="input input-mini" id="${inputId}" name="${name}"
+			<input type="text" class="input input-mini" id="${toUnderscore(name)}" name="${name}"
 				   value="${value}" style="width:40px"/>
+
+
 			<#if others!="">${others}</#if>
 		</div>
-		<div id="err_${inputId}" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>
+		<div id="err_${toUnderscore(name)}" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>
 	</div>
 </#macro>
+
+<#macro list list_items colspan="8">
+	<#if list_items?has_content>
+		<#list list_items as each>
+			<#nested each>
+		</#list>
+	<#else>
+    <tr>
+        <td colspan="${colspan}" class="center"><@spring.message "common.message.noData"/></td>
+    </tr>
+	</#if>
+</#macro>
+
