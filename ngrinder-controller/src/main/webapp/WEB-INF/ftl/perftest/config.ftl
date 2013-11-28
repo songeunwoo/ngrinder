@@ -293,25 +293,29 @@
 		</fieldset>
 		<div class="form-horizontal form-horizontal-2">
 			<div class="control-group">
-
 				<div class="row">
 					<div class="span3">
-						<@input_label name="initProcesses" value="${(test.initProcesses)!0}" message="perfTest.configuration.initalProcesses" />
+						<@input_label name="initProcesses"
+							value="${(test.initProcesses)!0}" message="perfTest.configuration.initalProcesses" />
 					</div>
 
 					<div class="span3">
-						<@input_label name="processIncrement" value="${(test.processIncrement)!1}" message="perfTest.configuration.rampup" />
+						<@input_label name="processIncrement"
+							value="${(test.processIncrement)!1}" message="perfTest.configuration.rampup" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="span3">
-						<@input_label name="initSleepTime" value="${(test.initSleepTime)!0}" message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
+						<@input_label name="initSleepTime"
+							value="${(test.initSleepTime)!0}"
+							message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
 					</div>
 					<div class="span3">
-						<@input_label name="processIncrementInterval" value="${(test.processIncrementInterval)!1000}" message="perfTest.configuration.processesEvery" others="<code>MS</code>" />
+						<@input_label name="processIncrementInterval"
+							value="${(test.processIncrementInterval)!1000}"
+							message="perfTest.configuration.processesEvery" others="<code>MS</code>" />
 					</div>
 				</div>
-
 			</div>
 		</div>
 		<legend class="center" style="margin-top:0px;padding-top:0px"> <@spring.message "perfTest.configuration.rampUpDes"/> </legend>
