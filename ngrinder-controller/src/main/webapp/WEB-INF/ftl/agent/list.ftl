@@ -219,19 +219,16 @@
             return this.value;
         }).get();
 
+        callAjaxAPI('${req.getContextPath()}/agent/api/states',function (data) {
+            for (var i = 0; i < data.length; i++) {
+                updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
+            }
 
-		<@callAjaxAPI url='${req.getContextPath()}/agent/api/states'
-					success='function (data) {
-								for (var i = 0; i < data.length; i++) {
-									updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
-								}
-
-								if (ids.length == 0) {
-									return;
-								}
-
-								setTimeout(updateStatuses, 2000);
-							}'/>
+            if (ids.length == 0) {
+                return;
+            }
+            setTimeout(updateStatuses, 2000);
+        });
 
     })();
 

@@ -247,3 +247,27 @@ function cookie(name,value,expiredays){
   today.setDate( today.getDate() + expiredays );
   document.cookie = name + "=" + escape( value ) + "; path=/; expires=" + today.toGMTString() + ";";
 }
+
+function callAjaxAPI(url, success, type, datas, errorMessage) {
+    if (typeof(type) === 'undefined') {
+        type = "GET";
+    }
+    if (typeof(datas) === 'undefined') {
+        datas = {};
+    }
+    if (typeof(errorMessage) === 'undefined') {
+        errorMessage = "common.error.error";
+    }
+    $.ajax({
+        url: url,
+        type: type,
+        cache: false,
+        data: datas,
+        success: success,
+        error: function () {
+            showErrorMsg("<@spring.message errorMessage/>");
+            return false;
+        }
+    });
+}
+
