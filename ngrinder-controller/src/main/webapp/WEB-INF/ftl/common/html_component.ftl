@@ -57,3 +57,19 @@
 	</#if>
 </#macro>
 
+<#macro callAjaxAPI url,success,
+					type="GET",
+					cache="false",
+					data="",
+					errorMessage="common.error.error">
+			$.ajax({
+				url:${url},
+				type:${type},
+				cache:${cache},
+				data:{${data}},
+				success:${success},
+				error :	function() {
+						showErrorMsg("<@spring.message "${errorMessage}"/>");
+							return false;}
+			});
+</#macro>

@@ -55,32 +55,32 @@
         </tr>
         </thead>
         <tbody>
-		<@list list_items=agents ; each_item>
+		<@list list_items=agents ; agent>
             <tr>
-                <td class="center"><input type="checkbox" class="agent-state checkbox" status="${(each_item.state)!}"></td>
-                <td class="center" id="row_${each_item.id}">
-                    <div class="ball" id="ball_${each_item.id}"
+                <td class="center"><input type="checkbox" class="agent-state checkbox" status="${(agent.state)!}"></td>
+                <td class="center" id="row_${agent.id}">
+                    <div class="ball" id="ball_${agent.id}"
                          data-html="true"
                          rel="popover">
-                        <img class="status" src="${req.getContextPath()}/img/ball/${each_item.state.iconName}"/>
+                        <img class="status" src="${req.getContextPath()}/img/ball/${agent.state.iconName}"/>
                     </div>
                 </td>
-                <td><a href="${req.getContextPath()}/agent/${each_item.id}" target="_self"
-                       value="${each_item.ip}">${each_item.ip}</a></td>
-                <td id="port_${each_item.id}">${(each_item.port)!}</td>
-                <td class="ellipsis agent-name" title="${(each_item.hostName)!}">${(each_item.hostName)!}</td>
-                <td class="ellipsis">${(each_item.version)!"Prev 3.3"}</td>
-                <td>${(each_item.region)!}</td>
+                <td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self"
+                       value="${agent.ip}">${agent.ip}</a></td>
+                <td id="port_${agent.id}">${(agent.port)!}</td>
+                <td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
+                <td class="ellipsis">${(agent.version)!"Prev 3.3"}</td>
+                <td>${(agent.region)!}</td>
                 <td>
                     <div class="btn-group" data-toggle="buttons-radio">
                         <button type="button"
-                                class="btn btn-mini btn-primary disapproved <#if each_item.isApproved() == false>active</#if>"
-                                sid="${each_item.id}">
+                                class="btn btn-mini btn-primary disapproved <#if agent.isApproved() == false>active</#if>"
+                                sid="${agent.id}">
 							<@spring.message "agent.table.disapproved"/>
                         </button>
                         <button type="button"
-                                class="btn btn-mini btn-primary approved <#if each_item.isApproved() == true>active</#if>"
-                                sid="${each_item.id}">
+                                class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>"
+                                sid="${agent.id}">
 							<@spring.message "agent.table.approved"/>
                         </button>
                     </div>
@@ -218,23 +218,20 @@
         var ids = $('input.agent-state').map(function () {
             return this.value;
         }).get();
-        $.ajax({
-            url: '${req.getContextPath()}/agent/api/states',
-            type: 'GET',
-            cache: false,
-            data: {},
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
-                }
 
-                if (ids.length == 0) {
-                    return;
-                }
 
-                setTimeout(updateStatuses, 2000);
-            }
-        });
+		<@callAjaxAPI url='${req.getContextPath()}/agent/api/states'
+					success='function (data) {
+								for (var i = 0; i < data.length; i++) {
+									updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
+								}
+
+								if (ids.length == 0) {
+									return;
+								}
+
+								setTimeout(updateStatuses, 2000);
+							}'/>
 
     })();
 
