@@ -55,9 +55,11 @@
 		<spring.version>3.1.0.RELEASE</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
 		<jdk-version>1.6</jdk-version>
-		<source-encoding>UTF-8</source-encoding>
 		<ngrinder.version>${project.version}</ngrinder.version>
 		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/releases</altDeploymentRepository>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -193,22 +195,11 @@
 				<version>1.0</version>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>${jdk-version}</source>
-					<target>${jdk-version}</target>
-					<encoding>${source-encoding}</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>3.0.2</version>
 				<configuration>
 					<includesTestSourceRoots>true</includesTestSourceRoots>
-					<encoding>${source-encoding}</encoding>
 					<generateHtml>true</generateHtml>
 					<generateXml>true</generateXml>
 					<jdk>${jdk-version}</jdk>
@@ -231,7 +222,6 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.10</version>
 				<configuration>
-					<encoding>${source-encoding}</encoding>
 					<configLocation>checkstyle.xml</configLocation>
 					<excludes>**/test/java/**/*.java</excludes>
 				</configuration>
@@ -246,7 +236,6 @@
 				<version>3.0.2</version>
 				<configuration>
 					<includesTestSourceRoots>true</includesTestSourceRoots>
-					<encoding>${source-encoding}</encoding>
 					<jdk>${jdk-version}</jdk>
 					<excludes>
 						<exclude>org/ngrinder/*/model/*.java</exclude>
@@ -265,7 +254,6 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.10</version>
 				<configuration>
-					<encoding>${source-encoding}</encoding>
 					<excludes>**/test/java/**/*.java</excludes>
 				</configuration>
 			</plugin>
