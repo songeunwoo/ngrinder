@@ -46,50 +46,51 @@
     	<#include "../common/navigator.ftl">
 
 		<div class="container">
-            <img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
+			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
 
-            <form id="test_list_form" class="well form-inline search-bar" style="margin-top:0px;height:30px;"
-                  action="${req.getContextPath()}/perftest/list" method="POST">
-                <input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
-                <input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
+			<form id="test_list_form" class="well form-inline search-bar" style="margin-top:0px;height:30px;"
+					action="${req.getContextPath()}/perftest/list" method="POST">
+				<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
+				<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
 
-                <div class="left-float">
-                    <select id="tag" name="tag" style="width:150px">
-                        <option value=""></option>
-					<#if availTags?has_content>
+				<div class="left-float">
+					<select id="tag" name="tag" style="width:150px">
+					<option value=""></option>
+						<#if availTags?has_content>
 						<#list availTags as eachTag>
-                            <option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
+						<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
 						</#list>
-					</#if>
-                    </select>
-                    <input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords"
-                           name="query" id="query" value="${query!}">
+						</#if>
+					</select>
+					<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords"
+							name="query" id="query" value="${query!}">
 
-                    <button type="submit" class="btn" id="search_btn"><i
-                            class="icon-search"></i> <@spring.message "common.button.search"/></button>
-                    <label class="checkbox" style="position:relative; margin-left:5px">
-                        <input type="checkbox" id="running_only_checkbox" name="queryFilter"
-							   <#if queryFilter?? && queryFilter == 'R'>checked</#if>
-                               value="R"> <@spring.message "perfTest.formInline.running"/>
-                    </label>
-                    <label class="checkbox" style="position:relative; margin-left:5px">
-                        <input type="checkbox" id="scheduled_only_checkbox" name="queryFilter"
-							   <#if queryFilter?? && queryFilter == 'S'>checked</#if>
-                               value="S"> <@spring.message "perfTest.formInline.scheduled"/>
-                    </label>
-                </div>
-                <div class="right-float">
-                    <a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
-                        <i class="icon-file icon-white"></i>
-					<@spring.message "perfTest.formInline.createTest"/>
-                    </a>
-                    <a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
-                        <i class="icon-file icon-white"></i>
-					<@spring.message "perfTest.formInline.createTest"/>
-                    </a>
-                </div>
+					<button type="submit" class="btn" id="search_btn">
+						<iclass="icon-search"></i> <@spring.message "common.button.search"/></button>
+					<label class="checkbox" style="position:relative; margin-left:5px">
+						<input type="checkbox" id="running_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'R'>checked</#if>
+							value="R">
+							<@spring.message "perfTest.formInline.running"/>
+					</label>
+					<label class="checkbox" style="position:relative; margin-left:5px">
+					<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if>
+							value="S">
+							<@spring.message "perfTest.formInline.scheduled"/>
+					</label>
+				</div>
 
-                <INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
+				<div class="right-float">
+					<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
+					<i class="icon-file icon-white"></i>
+						<@spring.message "perfTest.formInline.createTest"/>
+					</a>
+					<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
+					<i class="icon-file icon-white"></i>
+						<@spring.message "perfTest.formInline.createTest"/>
+					</a>
+				</div>
+
+				<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
 				<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 			</form>
 			<div class="pull-right" style="margin-top:-20px">
