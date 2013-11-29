@@ -39,7 +39,6 @@ public class ArchLoaderInit {
 		FileOutputStream fo = null;
 		InputStream is = null;
 		try {
-			is = getClass().getClassLoader().getResourceAsStream(name);
 			JarFile jarfile = new JarFile(getSigarNativePath());
 			for (Enumeration<JarEntry> en = jarfile.entries(); en.hasMoreElements(); ) {
 				JarEntry je = en.nextElement();
@@ -68,7 +67,7 @@ public class ArchLoaderInit {
 
 	private String getSigarNativePath() throws IOException {
 		for (URL each : ((URLClassLoader) ArchLoaderInit.class.getClassLoader()).getURLs()) {
-			LOGGER.trace(each.getFile());
+			LOGGER.info(each.getFile());
 			if (each.getFile().contains("sigar-native-")) {
 				return each.getFile();
 			}
