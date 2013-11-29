@@ -68,9 +68,9 @@ public class GroovyScriptEngine implements ScriptEngine {
 		} catch (IOException io) {
 			throw new EngineException("Unable to parse groovy script at: " + script.getFile().getAbsolutePath(), io);
 		} catch (InitializationError e) {
-			throw new EngineException("Error while iniialize test runner", e);
+			throw new EngineException("Error while initialize test runner", e);
 		} catch (Throwable e) {
-			throw new EngineException("Error while iniialize test runner", e);
+			throw new EngineException("Error while initialize test runner", e);
 		}
 	}
 

@@ -22,13 +22,12 @@
  */
 package net.grinder.scriptengine.groovy;
 
-import java.io.File;
-
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.process.JUnitThreadContextInitializer;
-
 import org.junit.Test;
+
+import java.io.File;
 
 /**
  * Class description.

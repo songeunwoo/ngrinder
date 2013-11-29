@@ -19,21 +19,20 @@ import HTTPClient.HTTPResponse
 @RunWith(GrinderRunner)
 class TestRunner
 {
-
 	public static GTest test;
-	public static HTTPRequest request;
+	public HTTPRequest request;
 
 	@BeforeProcess
 	public static void beforeProcess() {
 		test = new GTest(1, "Hello");
-		request = new HTTPRequest();
-		test.record(request);
 	}
 
 	@BeforeThread
 	public void beforeThread() {
 		grinder.statistics.delayReports=true
 		grinder.getLogger().info("before thread in MyTest.");
+        request = new HTTPRequest();
+        test.record(request);
 	}
 
 	@Before
