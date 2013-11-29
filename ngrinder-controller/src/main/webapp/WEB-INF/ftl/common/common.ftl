@@ -1,7 +1,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache"/>
-<#include "html_component.ftl">
+<#include "ngrinder_macros.ftl">
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" /> 
 <link href="${req.getContextPath()}/css/bootstrap.min.css?${nGrinderVersion}" rel="stylesheet"/>
 <link href="${req.getContextPath()}/css/ngrinder.css?${nGrinderVersion}" rel="stylesheet"/>

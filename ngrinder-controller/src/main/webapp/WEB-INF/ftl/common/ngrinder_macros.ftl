@@ -1,6 +1,6 @@
-<#ftl strip_whitespace=true>
+<#ftl strip_whitespace = true>
 <#--
- * html_component.ftl
+ * ngrinder_macros.ftl
  *
  * This file consists of a collection of FreeMarker macros aimed at easing
  * some of the common html component blocks.
@@ -11,10 +11,10 @@
 	<#return camelCase?replace("[A-Z]", "_$0", 'r')?lower_case>
 </#function>
 
-<#macro input_append name,value,message,others="",append="",append_prefix="">
+<#macro input_append name, value, message, others = "", append = "", append_prefix = "">
 	<div class="input-append">
 		<input type="text" class="input input-mini"
-			   rel="popover" id="${toUnderscore(name)}" name="${name}"
+			   rel="popover" id ="${toUnderscore(name)}" name="${name}"
 			   value="${value}" data-html="true"
 			   data-content='<@spring.message "${message}.help"/>'
 			   title='<@spring.message "${message}"/>'
@@ -29,7 +29,7 @@
 	</div>
 </#macro>
 
-<#macro input_label name,value,message,others="">
+<#macro input_label name, value, message, others = "">
 	<div class="control-group">
 		<label for="${toUnderscore(name)}" class="control-label">
 			<@spring.message "${message}"/>
@@ -45,7 +45,7 @@
 	</div>
 </#macro>
 
-<#macro list list_items colspan="8">
+<#macro list list_items colspan = "8">
 	<#if list_items?has_content>
 		<#list list_items as each>
 			<#nested each each_index>

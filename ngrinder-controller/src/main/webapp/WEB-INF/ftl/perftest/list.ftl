@@ -138,7 +138,7 @@
 				</thead>
 				<tbody>
 					<#assign testList = testListPage.content/>
-					<@list list_items=testList colspan="12"; test,test_index>
+					<@list list_items = testList colspan = "12"; test, test_index>
 							<#assign totalVuser = (test.vuserPerAgent!0) * (test.agentCount!0) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
