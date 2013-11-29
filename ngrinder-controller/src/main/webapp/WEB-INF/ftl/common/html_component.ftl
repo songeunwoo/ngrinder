@@ -48,7 +48,7 @@
 <#macro list list_items colspan="8">
 	<#if list_items?has_content>
 		<#list list_items as each>
-			<#nested each>
+			<#nested each each_index>
 		</#list>
 	<#else>
     <tr>

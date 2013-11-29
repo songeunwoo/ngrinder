@@ -138,8 +138,7 @@
 				</thead>
 				<tbody>
 					<#assign testList = testListPage.content/>
-					<#if testList?has_content>
-						<#list testList as test>
+					<@list list_items=testList colspan="12"; test,test_index>
 							<#assign totalVuser = (test.vuserPerAgent!0) * (test.agentCount!0) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
@@ -231,14 +230,7 @@
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>
 							</tr>
-						</#list>
-					<#else>
-						<tr>
-							<td colspan="13" class="center">
-								<@spring.message "common.message.noData"/>
-							</td>
-						</tr>
-					</#if>
+					</@list>
 				</tbody>
 			</table>
 			<#if testList?has_content>
