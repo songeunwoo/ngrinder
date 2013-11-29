@@ -118,7 +118,7 @@ public class JUnitThreadContextInitializer {
 								m_statisticsServices, 0, LOGGER);
 				m_threadContexts.threadCreated(threadContext);
 				m_threadContexts.threadStarted(threadContext);
-				threadContext.registerThreadLifeCycleListener(new SkeletonThreadLifeCycleListener() {
+  				threadContext.registerThreadLifeCycleListener(new SkeletonThreadLifeCycleListener() {
 					@Override
 					public void endThread() {
 						threadContext.reportPendingDispatchContext();

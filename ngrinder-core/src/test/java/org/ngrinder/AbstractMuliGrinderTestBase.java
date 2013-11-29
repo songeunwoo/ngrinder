@@ -25,7 +25,7 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.Condition;
 
 import org.junit.Before;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 
 abstract public class AbstractMuliGrinderTestBase {
@@ -46,7 +46,7 @@ abstract public class AbstractMuliGrinderTestBase {
 	 * @param milisecond
 	 */
 	public void sleep(long milisecond) {
-		ThreadUtil.sleep(milisecond);
+		ThreadUtils.sleep(milisecond);
 	}
 
 	protected AgentIdentity getAgentIdentity(Set<AgentIdentity> agentSet, int index) {

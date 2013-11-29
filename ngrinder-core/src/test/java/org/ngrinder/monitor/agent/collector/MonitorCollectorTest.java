@@ -7,7 +7,7 @@ import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
@@ -30,7 +30,7 @@ public class MonitorCollectorTest {
 				assertThat(bandWidth.getReceivedPerSec(), not(0L));
 				assertThat(bandWidth.getSentPerSec(), not(0L));
 			}
-			ThreadUtil.sleep(3000);
+			ThreadUtils.sleep(3000);
 		}
 	}
 }

@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class ThreadUtil {
+public abstract class ThreadUtils {
 
 	private static final int RETRY_MILLISECOND = 2000;
 	private static final int THREAD_WAITING_TIME = 2000;
-	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtils.class);
 
 	/**
 	 * Sleep in give millis without throwing exception.

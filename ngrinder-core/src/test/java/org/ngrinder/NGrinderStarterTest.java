@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 
 public class NGrinderStarterTest {
 
@@ -49,14 +49,14 @@ public class NGrinderStarterTest {
 	public void testStartAgent() {
 		starter.startAgent("127.0.0.1"); // there is no agent properties, it can
 											// be started with default setting
-		ThreadUtil.sleep(3000);
+		ThreadUtils.sleep(3000);
 		starter.stopAgent();
 	}
 
 	@Test
 	public void testStartMonitor() {
 		starter.startMonitor();
-		ThreadUtil.sleep(3000);
+		ThreadUtils.sleep(3000);
 		starter.stopMonitor();
 		starter.stopMonitor();
 	}

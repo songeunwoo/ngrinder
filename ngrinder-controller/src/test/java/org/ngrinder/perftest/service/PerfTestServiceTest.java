@@ -36,7 +36,7 @@ import net.grinder.console.model.ConsoleProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -223,7 +223,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 			info.setCustomValues(random.nextInt() + "," + random.nextInt());
 			SystemDataModel data1 = new SystemDataModel(info, "3.1.2");
 			rtnMap.put("test-" + random.nextInt(), data1);
-			ThreadUtil.sleep(100);
+			ThreadUtils.sleep(100);
 		}
 		String statusString = perfTestService.getProperSizedStatusString(rtnMap);
 		System.out.println("Status string size is:" + statusString.length());

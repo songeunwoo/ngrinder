@@ -19,11 +19,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.perftest.service.monitor.MonitorTask;
 
 /**
  * Class description.
@@ -48,11 +47,11 @@ public class MonitorTaskTest extends AbstractPerfTestTransactionalTest {
 		new Thread(monitorMngr).start();
 		monitorMngr.saveData();
 		
-		ThreadUtil.sleep(3000);
+		ThreadUtils.sleep(3000);
 		// test to add again
 		monitorMngr.add(agents, tempRepo);
 
-		ThreadUtil.sleep(3000);
+		ThreadUtils.sleep(3000);
 		monitorMngr.destroy();
 	}
 
@@ -74,7 +73,7 @@ public class MonitorTaskTest extends AbstractPerfTestTransactionalTest {
 		monitorMngr.add(agents, tempRepo);
 		new Thread(monitorMngr).start();
 		monitorMngr.saveData();
-		ThreadUtil.sleep(3000);
+		ThreadUtils.sleep(3000);
 		monitorMngr.destroy();
 	}
 }

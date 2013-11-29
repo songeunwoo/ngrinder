@@ -21,7 +21,7 @@ import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +195,7 @@ public class AgentDaemon implements Agent {
 			if (agent != null) {
 				agent.shutdown();
 			}
-			ThreadUtil.stopQuietly(thread, "Agent Daemon is not stopped. So force to stop");
+			ThreadUtils.stopQuietly(thread, "Agent Daemon is not stopped. So force to stop");
 			thread = null;
 		} catch (Exception e) {
 			throw processException("Exception occurred while shutting down AgentDaemon", e);

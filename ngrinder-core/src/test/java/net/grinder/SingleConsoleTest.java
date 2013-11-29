@@ -32,7 +32,7 @@ import net.grinder.statistics.StatisticsSet;
 
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 
 public class SingleConsoleTest {
 	double errorCount = 0;
@@ -71,9 +71,9 @@ public class SingleConsoleTest {
 				return new Date().getTime() - current.getTime();
 			}
 		};
-		ThreadUtil.sleep(200);
+		ThreadUtils.sleep(200);
 		assertThat(singleConsole.isCurrentRunningTimeOverDuration(1000), is(false));
-		ThreadUtil.sleep(800);
+		ThreadUtils.sleep(800);
 		assertThat(singleConsole.isCurrentRunningTimeOverDuration(1000), is(true));
 	}
 

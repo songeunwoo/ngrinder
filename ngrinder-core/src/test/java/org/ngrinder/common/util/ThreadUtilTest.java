@@ -26,13 +26,13 @@ import static org.fest.assertions.Assertions.assertThat;
 public class ThreadUtilTest {
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.ThreadUtil#sleep(long)}.
+	 * Test method for {@link ThreadUtils#sleep(long)}.
 	 */
 	@Test
 	public void testSleep() {
 		StopWatch watch = new StopWatch();
 		watch.start();
-		ThreadUtil.sleep(1000);
+		ThreadUtils.sleep(1000);
 		watch.stop();
 		assertThat(watch.getTime()).isGreaterThan(1000);
 		assertThat(watch.getTime()).isLessThan(3000);
@@ -40,7 +40,7 @@ public class ThreadUtilTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.common.util.ThreadUtil#stopQuietly(java.lang.Thread, java.lang.String)}.
+	 * {@link ThreadUtils#stopQuietly(java.lang.Thread, java.lang.String)}.
 	 */
 	@Test
 	public void testStopQuietly() {
@@ -49,15 +49,15 @@ public class ThreadUtilTest {
 			public void run() {
 				int i = 10;
 				while (i > 0) {
-					ThreadUtil.sleep(200);
+					ThreadUtils.sleep(200);
 				}
 			}
 		});
 		newThread.start();
-		ThreadUtil.sleep(500);
+		ThreadUtils.sleep(500);
 		assertThat(newThread.isAlive()).isTrue();
-		ThreadUtil.stopQuietly(newThread, "STOPPED!");
-		ThreadUtil.sleep(1000);
+		ThreadUtils.stopQuietly(newThread, "STOPPED!");
+		ThreadUtils.sleep(1000);
 		assertThat(newThread.isAlive()).isFalse();
 	}
 

@@ -43,7 +43,8 @@ import org.junit.runners.model.InitializationError;
  */
 public class GroovyScriptEngine implements ScriptEngine {
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
-	private Class<?> m_groovyClass;
+	// For unit test, make it package protected.
+	Class<?> m_groovyClass;
 	private GrinderContextExecutor m_grinderRunner;
 	/**
 	 * Construct a GroovyScriptEngine that will use the supplied ScriptLocation.

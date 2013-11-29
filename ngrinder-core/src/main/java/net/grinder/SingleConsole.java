@@ -68,7 +68,6 @@ import net.grinder.util.FileContents;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.collections.MapUtils;
@@ -79,7 +78,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.service.ISingleConsole;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -464,7 +463,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 		}
 		if (mutableBoolean.isFalse()) {
-			ThreadUtil.sleep(1000);
+			ThreadUtils.sleep(1000);
 			checkSafetyWithCacheState(fileDistribution, cacheStateCondition, fileCount);
 		}
 	}

@@ -24,7 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.infra.AgentConfig;
 
 import java.io.File;
@@ -45,7 +45,7 @@ public class GroovyScriptInAgentTest {
 		consolePort = getFreePort();
 		console1 = new SingleConsole(consolePort);
 		console1.start();
-		ThreadUtil.sleep(1000);
+		ThreadUtils.sleep(1000);
 	}
 
 	@After
@@ -61,7 +61,7 @@ public class GroovyScriptInAgentTest {
 		File scriptFile = new File(scriptUrl.getFile());
 		GrinderProperties properties = new GrinderProperties(scriptFile);
 		agent.run(properties);
-		ThreadUtil.sleep(10000);
+		ThreadUtils.sleep(10000);
 	}
 
 	public int getFreePort() {
