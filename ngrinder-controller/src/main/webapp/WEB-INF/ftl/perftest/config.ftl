@@ -51,52 +51,37 @@
 					<@spring.message "perfTest.configuration.vuserPerAgent"/>
 				</label>
 				<div class="controls">
-                    <table style="width: 100%">
-                        <colgroup>
-                            <col width="300px"/>
-                            <col width="*"/>
-                        </colgroup>
-                        <tr>
-                            <td>
-							<@input_append name="vuserPerAgent"
-									value="${(test.vuserPerAgent)!1}"
-									message="perfTest.configuration.vuserPerAgent"
-									append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
-							<a href="javascript:void(0)">
-								<i class="expand" id="expand_collapse_btn"></i>
-							</a>
-                            <td>
-                                <div class="pull-right">
-									<span class="badge badge-info pull-right"
-                                          style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
-										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
-                                            id="total_vuser"></span>
-									</span>
-                                </div>
-                            </td>
-                        </tr>
-						<tr id="process_thread_config_panel" style="display: none;">
-							<td colspan="2">
-								<span>
-									<div class="input-prepend control-group" style="margin-bottom: 0">
-										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'>
-											<@spring.message "perfTest.report.process"/>
-										</span>
-										<input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}" />
-									</div>
-									<div class="input-prepend control-group" style="margin-bottom: 0">
-										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'>
-											<@spring.message "perfTest.report.thread"/>
-										</span>
-										<input class="input span1" type="text" id="threads" name="threads" value="${(test.threads)!1}" />
-									</div>
+					<@input_append name="vuserPerAgent"
+						value="${(test.vuserPerAgent)!1}"
+						message="perfTest.configuration.vuserPerAgent"
+						append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
+					<a href="javascript:void(0)">
+						<i class="expand" id="expand_collapse_btn"></i>
+					</a>
+
+					<div class="pull-right">
+						<span class="badge badge-info pull-right"
+							  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
+							<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
+								id="total_vuser"></span>
+						</span>
+					</div>
+					<div id="process_thread_config_panel" style="display: none;">
+						<span>
+							<div class="input-prepend control-group" style="margin-bottom: 0">
+								<span class="add-on" title='<@spring.message "perfTest.report.process"/>'>
+									<@spring.message "perfTest.report.process"/>
 								</span>
-							</td>
-						</tr>
-						<tr>
-							<td class="vuser-per-agent processes threads"></td>
-						</tr>
-					</table>
+								<input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}" />
+							</div>
+							<div class="input-prepend control-group" style="margin-bottom: 0">
+								<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'>
+									<@spring.message "perfTest.report.thread"/>
+								</span>
+								<input class="input span1" type="text" id="threads" name="threads" value="${(test.threads)!1}" />
+							</div>
+						</span>
+					</div>
 				</div>
 			</div>
 			<div class="control-group" id="script_control">
@@ -104,33 +89,20 @@
 					<@spring.message "perfTest.configuration.script"/>
 				</label>
 				<div class="controls">
-					<table style="width: 100%">
-						<colgroup>
-							<col width="*" />
-							<col width="100px" />
-						</colgroup>
-						<tr>
-							<td>
-								<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>">
-								</select>
-							</td>
-							<td>
-								<input type="hidden" id="script_revision" 
-									name="scriptRevision" 
-									value="${(test.scriptRevision)!-1}"
-									old_revision="${(test.scriptRevision)!-1}"/>
-								<button class="btn btn-mini btn-info pull-right" type="button" 
-									id="show_script_btn"
-									style="margin-top: 3px; display: none;">R 
-									<#if test?? && test.scriptRevision != -1> 
-										${test.scriptRevision} 
-									<#else> 
-										<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if> 
-									</#if>
-								</button>
-							</td>
-						</tr>
-					</table>
+					<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
+					<input type="hidden" id="script_revision"
+						name="scriptRevision"
+						value="${(test.scriptRevision)!-1}"
+						old_revision="${(test.scriptRevision)!-1}"/>
+					<button class="btn btn-mini btn-info pull-right" type="button"
+						id="show_script_btn"
+						style="margin-top: 3px; display: none;">R
+						<#if test?? && test.scriptRevision != -1>
+							${test.scriptRevision}
+						<#else>
+							<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if>
+						</#if>
+					</button>
 				</div>
 			</div>
 			<div class="control-group">
