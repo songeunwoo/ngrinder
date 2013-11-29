@@ -69,7 +69,6 @@ public class ArchLoaderInit {
 		// Current class loader first
 		final ClassLoader classLoader = ArchLoaderInit.class.getClassLoader();
 		for (URL each : ((URLClassLoader) classLoader).getURLs()) {
-			LOGGER.info(each.getFile());
 			if (each.getFile().contains("sigar-native-")) {
 				return each.getFile();
 			}
@@ -79,15 +78,15 @@ public class ArchLoaderInit {
 		final ClassLoader parent = classLoader.getParent();
 		if (parent != null) {
 			for (URL each : ((URLClassLoader) parent).getURLs()) {
-				LOGGER.info(each.getFile());
 				if (each.getFile().contains("sigar-native-")) {
 					return each.getFile();
 				}
 			}
 		}
+
+		// Try with system class path
 		final String property = System.getProperty("java.class.path", "");
 		for (String each : property.split(File.pathSeparator)) {
-			LOGGER.info(each);
 			if (each.contains("sigar-native-")) {
 				return new File(each).getAbsolutePath();
 			}
