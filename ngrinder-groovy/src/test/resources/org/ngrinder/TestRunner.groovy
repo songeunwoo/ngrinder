@@ -41,6 +41,7 @@ class TestRunner
 
 	@Test
 	public void testHello(){
+        callCount1++;
 		grinder.getLogger().info("testHello.");
 		HTTPResponse result = request.GET("http://www.google.com/q?=" + "Hangul");
 		if (result.statusCode != 200) {
@@ -48,10 +49,10 @@ class TestRunner
 		} else {
 			grinder.statistics.forLastTest.success = 1
 		}
-        callCount1++;
 	}
 	@Test
 	public void testHello2() {
+        callCount2++;
 		grinder.getLogger().info("testHello2.");
 		def result = request.GET("http://se.naver.com/");
 		grinder.getLogger().debug("code: {}", result.statusCode);
@@ -60,6 +61,5 @@ class TestRunner
 		} else {
 			grinder.statistics.forLastTest.success = 1
 		}
-        callCount2++;
 	}
 }

@@ -25,12 +25,17 @@ package net.grinder.scriptengine.groovy;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.process.JUnitThreadContextInitializer;
+import net.grinder.plugin.http.HTTPPlugin;
+import net.grinder.plugininterface.GrinderPlugin;
+import net.grinder.plugininterface.PluginRegistry;
 import net.grinder.util.ThreadUtils;
+import org.codehaus.groovy.reflection.ReflectionUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,11 +49,14 @@ public class GroovyScriptEngineTest {
 
 	@Test
 	public void testRunGroovyScript() throws EngineException, NoSuchFieldException, IllegalAccessException {
+
 		JUnitThreadContextInitializer init = new JUnitThreadContextInitializer();
 		init.initialize();
+
 		// for test, used to get groovy source file.
 		String file = getClass().getClassLoader().getResource("org/ngrinder/TestRunner.groovy").getFile();
 		GroovyScriptEngine engine = new GroovyScriptEngine(new ScriptLocation(new File(file).getAbsoluteFile()));
+
 		init.attachWorkerThreadContext();
 		GroovyScriptEngine.GroovyWorkerRunnable worker = (GroovyScriptEngine.GroovyWorkerRunnable) engine
 				.createWorkerRunnable();
@@ -60,6 +68,7 @@ public class GroovyScriptEngineTest {
 		worker.run();
 		assertStaticField(engine.m_groovyClass, "callCount1", 2);
 		assertStaticField(engine.m_groovyClass, "callCount2", 2);
+
 	}
 
 	private void assertStaticField(Class clazz, String fieldName, Object expectedValue) throws IllegalAccessException,
