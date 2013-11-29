@@ -66,6 +66,7 @@ public class ArchLoaderInit {
 	}
 
 	private String getSigarNativePath() throws IOException {
+		LOGGER.info("URLs : {}", ((URLClassLoader) ArchLoaderInit.class.getClassLoader()).getURLs());
 		for (URL each : ((URLClassLoader) ArchLoaderInit.class.getClassLoader()).getURLs()) {
 			LOGGER.info(each.getFile());
 			if (each.getFile().contains("sigar-native-")) {
