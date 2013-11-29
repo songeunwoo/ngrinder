@@ -31,9 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.InetAddress;
 
-import static net.grinder.util.NetworkUtil.getAddressWithSocket;
 import static net.grinder.util.NetworkUtil.getIP;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -64,8 +62,7 @@ public class NGrinderStarter {
 	protected void init() {
 		// Check agent start mode
 		checkRunningDirectory();
-		agentConfig = new AgentConfig();
-		agentConfig.init();
+		this.agentConfig = createAgentConfig();
 		try {
 			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
 		} catch (Exception e) {
@@ -73,6 +70,12 @@ public class NGrinderStarter {
 		}
 		// Configure log.
 		configureLogging();
+	}
+
+	protected AgentConfig createAgentConfig() {
+		AgentConfig agentConfig = new AgentConfig();
+		agentConfig.init();
+		return agentConfig;
 	}
 
 	private void configureLogging() {
@@ -134,32 +137,35 @@ public class NGrinderStarter {
 	 * @param directControllerIP controllerIp to connect directly;
 	 */
 	public void startAgent(String directControllerIP) {
-		LOG.info("***************************************************");
-		LOG.info("   Start nGrinder Agent ...");
-		LOG.info("***************************************************");
+		if (!agentConfig.isSilentMode()) {
+			LOG.info("***************************************************");
+			LOG.info("   Start nGrinder Agent ...");
+			LOG.info("***************************************************");
+		}
 
 		if (StringUtils.isEmpty(System.getenv("JAVA_HOME"))) {
-			LOG.info("Hey!! JAVA_HOME env var was not provided. "
-					+ "Please provide JAVA_HOME env var before running agent."
-					+ "Otherwise you can not execute the agent in the security mode.");
+			if (!agentConfig.isSilentMode()) {
+				LOG.info("Hey!! JAVA_HOME env var was not provided. "
+						+ "Please provide JAVA_HOME env var before running agent."
+						+ "Otherwise you can not execute the agent in the security mode.");
+			}
 		}
 
 		boolean serverMode = agentConfig.isServerMode();
 		if (!serverMode) {
-			LOG.info("JVM server mode is disabled. If you turn on agent.servermode in agent.conf."
-					+ " It will provide the better agent performance.");
+			if (!agentConfig.isSilentMode()) {
+				LOG.info("JVM server mode is disabled. If you turn on agent.servermode in agent.conf."
+						+ " It will provide the better agent performance.");
+			}
 		}
-
 		String controllerIP = getIP(defaultIfBlank(directControllerIP, agentConfig.getControllerIP()));
 		int controllerPort = agentConfig.getControllerPort();
-		agentConfig.setControllerIP(controllerIP);
-
 		String region = agentConfig.getRegion();
+
+		agentConfig.setControllerIP(controllerIP);
 		LOG.info("connecting to controller {}:{}", controllerIP, controllerPort);
 
 		try {
-			InetAddress localAddress = getAddressWithSocket(controllerIP, controllerPort);
-			System.setProperty("java.rmi.server.hostname", localAddress.getHostAddress());
 			agentController = new AgentControllerDaemon(agentConfig);
 			agentController.run();
 		} catch (Exception e) {
@@ -171,6 +177,7 @@ public class NGrinderStarter {
 	/**
 	 * Stop the ngrinder agent.
 	 */
+
 	public void stopAgent() {
 		LOG.info("Stop nGrinder agent!");
 		agentController.shutdown();

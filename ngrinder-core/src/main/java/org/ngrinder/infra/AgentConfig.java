@@ -187,22 +187,19 @@ public class AgentConfig {
 	 */
 	protected AgentHome resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
-		LOGGER.info("    System Environment:  NGRINDER_AGENT_HOME={}", StringUtils.trimToEmpty(userHomeFromEnv));
-
+		printLog("    System Environment:  NGRINDER_AGENT_HOME={}", userHomeFromEnv);
 		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
-		LOGGER.info("    Java System Property:  ngrinder.agent.home={}",
-				StringUtils.trimToEmpty(userHomeFromProperty));
-
+		printLog("    Java System Property:  ngrinder.agent.home={}", userHomeFromEnv);
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
-			LOGGER.warn("The path to ngrinder agent home is ambiguous:");
-			LOGGER.warn("    '{}' is accepted.", userHomeFromProperty);
+			printLog("The path to ngrinder agent home is ambiguous:");
+			printLog("    '{}' is accepted.", userHomeFromProperty);
 		}
 
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		if (StringUtils.isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		}
-		LOGGER.info("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
+		printLog("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
 		File homeDirectory = new File(userHome);
 		try {
 			homeDirectory.mkdirs();
@@ -215,11 +212,18 @@ public class AgentConfig {
 		return new AgentHome(homeDirectory);
 	}
 
+	private void printLog(String template, Object... var) {
+		if (!isSilentMode()) {
+			LOGGER.info(template, var);
+		}
+	}
+
 	/**
 	 * if there is testmode property in system.properties.. return true
 	 *
 	 * @return true is test mode
 	 */
+
 	public boolean isTestMode() {
 		return BooleanUtils.toBoolean(getProperty("testmode", "false"));
 	}
@@ -314,11 +318,19 @@ public class AgentConfig {
 		return getProperty(MONITOR_LISTEN_IP, NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
+	public boolean isSilentMode() {
+		return false;
+	}
+
 	public static class NullAgentConfig extends AgentConfig {
 		public int counter = 0;
 
 		public NullAgentConfig(int i) {
 			counter = i;
+		}
+
+		public boolean isSilentMode() {
+			return true;
 		}
 
 		@Override
