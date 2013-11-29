@@ -184,15 +184,18 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-reactor-plugin</artifactId>
+				<version>1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 				<configuration>
 					<source>${jdk-version}</source>
 					<target>${jdk-version}</target>
@@ -226,6 +229,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.10</version>
 				<configuration>
 					<encoding>${source-encoding}</encoding>
 					<configLocation>checkstyle.xml</configLocation>
@@ -259,6 +263,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.10</version>
 				<configuration>
 					<encoding>${source-encoding}</encoding>
 					<excludes>**/test/java/**/*.java</excludes>
