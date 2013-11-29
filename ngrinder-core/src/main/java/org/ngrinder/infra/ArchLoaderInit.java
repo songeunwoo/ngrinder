@@ -66,11 +66,23 @@ public class ArchLoaderInit {
 	}
 
 	private String getSigarNativePath() throws IOException {
-		LOGGER.info("URLs : {}", ((URLClassLoader) ArchLoaderInit.class.getClassLoader()).getURLs());
-		for (URL each : ((URLClassLoader) ArchLoaderInit.class.getClassLoader()).getURLs()) {
+		// Current class loader first
+		final ClassLoader classLoader = ArchLoaderInit.class.getClassLoader();
+		for (URL each : ((URLClassLoader) classLoader).getURLs()) {
 			LOGGER.info(each.getFile());
 			if (each.getFile().contains("sigar-native-")) {
 				return each.getFile();
+			}
+		}
+
+		// Then parent class loader
+		final ClassLoader parent = classLoader.getParent();
+		if (parent != null) {
+			for (URL each : ((URLClassLoader) parent).getURLs()) {
+				LOGGER.info(each.getFile());
+				if (each.getFile().contains("sigar-native-")) {
+					return each.getFile();
+				}
 			}
 		}
 		throw new IOException("No sigar-native available in the classpath");
