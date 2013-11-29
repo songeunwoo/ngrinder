@@ -84,9 +84,9 @@
 					<i class="icon-file icon-white"></i>
 						<@spring.message "perfTest.formInline.createTest"/>
 					</a>
-					<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
-					<i class="icon-file icon-white"></i>
-						<@spring.message "perfTest.formInline.createTest"/>
+					<a class="btn btn-danger" href="javascript:void(0);" id="delete_btn">
+					<i class="icon-remove icon-white"></i>
+						<@spring.message "perfTest.formInline.deletetSelectedTest"/>
 					</a>
 				</div>
 
