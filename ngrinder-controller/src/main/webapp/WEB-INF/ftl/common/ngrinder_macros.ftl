@@ -11,14 +11,18 @@
 	<#return camelCase?replace("[A-Z]", "_$0", 'r')?lower_case>
 </#function>
 
-<#macro input_append name, value, message, others = "", append = "", append_prefix = "">
-	<div class="input-append">
-		<input type="text" class="input input-mini"
+<#macro input_append name, value, message, data_placement = "right", class = "input input-mini",
+			type = "text", data_content ="", others = "", append = "", append_prefix = "">
+
+	<#if append!=""><div class="input-append"></#if>
+
+		<input type="${type}" class="${class}"
 			   rel="popover" id ="${toUnderscore(name)}" name="${name}"
 			   value="${value}" data-html="true"
-			   data-content='<@spring.message "${message}.help"/>'
+               data-placement='${data_placement}'
+			   data-content=<#if data_content =="">"<@spring.message "${message}.help"/>"<#else>"${data_content}"</#if>
 			   title='<@spring.message "${message}"/>'
-			<#if others!="">${others}</#if> />
+			   <#if others!="">${others}</#if> />
 
 		<#if append!="">
 			<span class="add-on">
@@ -26,7 +30,8 @@
 				${append}
 			</span>
 		</#if>
-	</div>
+
+	<#if append!=""></div></#if>
 </#macro>
 
 <#macro input_label name, value, message, others = "">
@@ -37,8 +42,6 @@
 		<div class="controls">
 			<input type="text" class="input input-mini" id="${toUnderscore(name)}" name="${name}"
 				   value="${value}" style="width:40px"/>
-
-
 			<#if others!="">${others}</#if>
 		</div>
 		<div id="err_${toUnderscore(name)}" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>

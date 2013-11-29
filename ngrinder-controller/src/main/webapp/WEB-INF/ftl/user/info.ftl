@@ -1,4 +1,5 @@
 <#import "../common/spring.ftl" as spring/>
+<#include "../common/ngrinder_macros.ftl">
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form class="form-horizontal form-horizontal-left" id="user_form" method="POST">
 	<#if !(popover_place??)>
@@ -9,17 +10,19 @@
 			<label class="control-label" for="user_id"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
 				<#assign userIdMsg>
-					<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/> 
+					<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
 				</#assign>
-				<input type="text" class="span4"  
-					name="userId" value="${(user.userId)!}"
-					id="user_id"
-				    rel="popover" 
-					data-placement='${popover_place}'
-					data-html="true"
-					data-content="${userIdMsg?html}"
-					title='<@spring.message "user.info.form.userId"/>'
-					<#if user?? && user.userId??>readonly</#if> />
+
+				<#assign others>
+					<#if user?? && user.userId??>readonly</#if>
+				</#assign>
+
+				<@input_append name = "userId" value = "${(user.userId)!}"
+					class="span4" data_content=userIdMsg
+					data_placement='${popover_place}'
+					message="user.info.form.userId"
+					others=others />
+
 				<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
 			</div>
 		</div>
@@ -27,14 +30,11 @@
 		<div class="control-group">
 			<label class="control-label" for="user_name"><@spring.message "user.option.name"/></label>
 			<div class="controls">
-				<input type="text" class="span4" 
-					name="userName" value="${(user.userName)!}"
-					id="user_name" 
-					rel="popover"
-					data-placement="${popover_place}" 
-					data-content='<@spring.message "user.info.warning.userName"/>'
-					data-placement='bottom'
-					title='<@spring.message "user.option.name"/>'/>
+
+				<@input_append name = "userName" value = "${(user.userName)!}"
+					class="span4" data_placement ='${popover_place}'
+					message = "user.option.name"/>
+
 			</div>
 		</div>
 
@@ -54,12 +54,11 @@
 		<div class="control-group">
 			<label class="control-label" for="email"><@spring.message "user.info.form.email"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="email" maxlength="30"
-					name="email" value="${(user.email)!}"
-					rel="popover" 
-					data-content='<@spring.message "user.info.warning.email.required"/>'
-					data-placement='${popover_place}'
-					title='<@spring.message "user.info.form.email"/>'/>
+
+			<@input_append name = "email" value = "${(user.email)!}"
+					class="span4" data_placement ='${popover_place}'
+					message = "user.info.form.email"/>
+
 			</div>
 		</div>
 
@@ -75,12 +74,11 @@
 		<div class="control-group" >
 			<label class="control-label" for="mobile_phone"><@spring.message "user.info.form.phone"/></label>
 			<div class="controls">
-				<input type="text" class="span4"   
-					name="mobilePhone" value="${(user.mobilePhone)!}"
-					id="mobile_phone" rel="popover"
-					data-content='<@spring.message "common.form.rule.phoneNumber"/>'
-					data-placement='${popover_place}'
-					title="<@spring.message "user.info.form.phone"/>">
+
+			<@input_append name = "mobilePhone" value = "${(user.mobilePhone)!}"
+					class="span4" data_placement ='${popover_place}'
+					message = "user.info.form.phone"/>
+
 			</div>
 		</div>
 		<#if user?exists>
@@ -108,24 +106,24 @@
 	           		<div class="control-group" >
 						<label class="control-label" for="password"><@spring.message "user.info.form.pwd"/></label>
 						<div class="controls">
-							<input type="password" class="span4"  
-								name="password" value="${(user.psw)!}"
-								id="password" rel="popover"
-								data-content='<@spring.message "user.info.warning.pwd.rangeLength"/>'
-								data-placement='${popover_place}'
-								title='<@spring.message "user.info.form.pwd"/>'>
+
+							<@input_append name = "password" value = "${(user.psw)!}"
+									class="span4" type = "password"
+									data_placement ='${popover_place}'
+									message = "user.info.form.pwd"/>
+
 						</div>
 					</div>
 						
 					<div class="control-group" >
 						<label class="control-label" for="confirm_password"><@spring.message "user.info.form.cpwd"/></label>
 						<div class="controls">
-							<input type="password" class="span4" 
-								name="cpwd" value="${(user.psw)!}"
-								id="confirm_password" rel="popover"
-								data-content='<@spring.message "user.info.warning.cpwd.equalTo"/>'
-								data-placement='${popover_place}'
-								title='<@spring.message "user.info.form.cpwd"/>'>
+
+							<@input_append name = "confirmPassword" value = "${(user.psw)!}"
+									class="span4" type = "password"
+									data_placement ='${popover_place}'
+									message = "user.info.form.cpwd"/>
+
 						</div>
 					</div>
 	             </div> 
@@ -222,7 +220,7 @@
 	    			</#if>
 	    			rangelength: [6,15]
 	    		},
-	    		cpwd: {
+                confirmPassword: {
 	    			<#if !(user?has_content)>
 	    			required: true,
 	    			</#if>
@@ -234,18 +232,18 @@
 	        		required: "<@spring.message "user.info.warning.userId.required"/>"
 	        	},
 	        	userName: {
-	            	required: "<@spring.message "user.info.warning.userName"/>"
+	            	required: "<@spring.message "user.option.name.help"/>"
 	            },
 	            email: {
-	                required:"<@spring.message "user.info.warning.email.required"/>",
+	                required:"<@spring.message "user.info.form.email.help"/>",
 	                email:"<@spring.message "user.info.warning.email.rule"/>"
 	            },
 	            password: {
 	                required:"<@spring.message "user.info.warning.pwd.required"/>"
 	            },
-	            cpwd: {
+                confirmPassword: {
 	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
-	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
+	                equalTo:"<@spring.message "user.info.form.cpwd.help"/>"
 	            }
 	        },
 	        errorClass: "help-inline",
