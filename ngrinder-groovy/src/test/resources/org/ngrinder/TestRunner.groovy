@@ -17,49 +17,36 @@ import org.junit.runner.RunWith
 import HTTPClient.HTTPResponse
 
 @RunWith(GrinderRunner)
-class TestRunner
-{
-	public static HTTPRequest request;
+class TestRunner {
+    public static HTTPRequest request;
     public static int callCount1 = 0;
     public static int callCount2 = 0;
-	@BeforeProcess
-	public static void beforeProcess() {
+
+    @BeforeProcess
+    public static void beforeProcess() {
         request = new HTTPRequest();
-	}
+    }
 
-	@BeforeThread
-	public void beforeThread() {
-		grinder.statistics.delayReports=true
-		grinder.getLogger().info("before thread in MyTest.");
+    @BeforeThread
+    public void beforeThread() {
+        grinder.statistics.delayReports = true
+        grinder.getLogger().info("before thread in MyTest.");
         new GTest(1, "Hello").record(request);
-	}
+    }
 
-	@Before
-	public void before() {
-		grinder.getLogger().info("before in MyTest.");
-	}
+    @Before
+    public void before() {
+        grinder.getLogger().info("before in MyTest.");
+    }
 
-	@Test
-	public void testHello(){
+    @Test
+    public void testHello() {
         callCount1++;
-		grinder.getLogger().info("testHello.");
-		HTTPResponse result = request.GET("http://www.google.com/q?=" + "Hangul");
-		if (result.statusCode != 200) {
-			grinder.statistics.forLastTest.success = 0
-		} else {
-			grinder.statistics.forLastTest.success = 1
-		}
-	}
-	@Test
-	public void testHello2() {
+        grinder.getLogger().info("testHello.");
+    }
+
+    @Test
+    public void testHello2() {
         callCount2++;
-		grinder.getLogger().info("testHello2.");
-		def result = request.GET("http://se.naver.com/");
-		grinder.getLogger().debug("code: {}", result.statusCode);
-		if (result.getStatusCode() != 200) {
-			grinder.statistics.forLastTest.success = 0
-		} else {
-			grinder.statistics.forLastTest.success = 1
-		}
-	}
+    }
 }
