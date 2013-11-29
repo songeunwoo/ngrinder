@@ -85,6 +85,13 @@ public class ArchLoaderInit {
 				}
 			}
 		}
+		final String property = System.getProperty("java.class.path", "");
+		for (String each : property.split(File.pathSeparator)) {
+			LOGGER.info(each);
+			if (each.contains("sigar-native-")) {
+				return new File(each).getAbsolutePath();
+			}
+		}
 		throw new IOException("No sigar-native available in the classpath");
 	}
 }
