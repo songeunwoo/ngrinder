@@ -6,31 +6,36 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.hyperic.jni.ArchLoaderException;
+import org.hyperic.jni.ArchNotSupportedException;
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.ArchLoaderInit;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 public class MonitorCollectorTest {
+	@Before
+	public void before() throws ArchNotSupportedException, ArchLoaderException {
+		AgentConfig agentConfig = new AgentConfig().init();
+		new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
+	}
 
 	@Test
 	public void test() throws InterruptedException {
-		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path",
-						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
-
 		AgentSystemDataCollector collector = new AgentSystemDataCollector();
 		collector.refresh();
 		int i = 0;
-		while (i++ < 100) {
+		while (i++ < 10) {
 			SystemInfo execute = collector.execute();
 			BandWidth bandWidth = execute.getBandWidth();
-			System.out.println(bandWidth);
 			if (i != 1) {
 				assertThat(bandWidth.getReceivedPerSec(), not(0L));
 				assertThat(bandWidth.getSentPerSec(), not(0L));
 			}
-			ThreadUtils.sleep(3000);
+			ThreadUtils.sleep(1000);
 		}
 	}
 }
