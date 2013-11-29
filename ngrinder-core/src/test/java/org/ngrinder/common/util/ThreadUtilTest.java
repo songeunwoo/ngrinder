@@ -13,12 +13,13 @@
  */
 package org.ngrinder.common.util;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
- * Class description.
+ * Thread Util Unit Test.
  *
  * @author Mavlarn
  */
@@ -29,7 +30,12 @@ public class ThreadUtilTest {
 	 */
 	@Test
 	public void testSleep() {
+		StopWatch watch = new StopWatch();
+		watch.start();
 		ThreadUtil.sleep(1000);
+		watch.stop();
+		assertThat(watch.getTime()).isGreaterThan(1000);
+		assertThat(watch.getTime()).isLessThan(3000);
 	}
 
 	/**
@@ -39,20 +45,19 @@ public class ThreadUtilTest {
 	@Test
 	public void testStopQuietly() {
 		Thread newThread = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				int i = 10;
 				while (i > 0) {
 					ThreadUtil.sleep(200);
 				}
-
 			}
 		});
 		newThread.start();
 		ThreadUtil.sleep(500);
 		assertThat(newThread.isAlive()).isTrue();
 		ThreadUtil.stopQuietly(newThread, "STOPPED!");
+		ThreadUtil.sleep(1000);
 		assertThat(newThread.isAlive()).isFalse();
 	}
 
