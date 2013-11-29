@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -61,6 +62,7 @@ public class AgentConfig {
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper internalProperties;
 	private String agentHostID;
+	private boolean silent = false;
 
 	/**
 	 * Initialize.
@@ -73,6 +75,17 @@ public class AgentConfig {
 		loadAgentProperties();
 		loadInternalProperties();
 		return this;
+	}
+
+	/**
+	 * Initialize.
+	 *
+	 * @param silent true if no log should be printed
+	 * @return initialized AgentConfig
+	 */
+	public AgentConfig init(boolean silent) {
+		this.silent = silent;
+		return init();
 	}
 
 	private void loadInternalProperties() {
@@ -186,9 +199,9 @@ public class AgentConfig {
 	 * @return resolved {@link AgentHome}
 	 */
 	protected AgentHome resolveHome() {
-		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
+		String userHomeFromEnv = trimToEmpty(System.getenv("NGRINDER_AGENT_HOME"));
 		printLog("    System Environment:  NGRINDER_AGENT_HOME={}", userHomeFromEnv);
-		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
+		String userHomeFromProperty = trimToEmpty(System.getProperty("ngrinder.agent.home"));
 		printLog("    Java System Property:  ngrinder.agent.home={}", userHomeFromEnv);
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			printLog("The path to ngrinder agent home is ambiguous:");
@@ -319,7 +332,7 @@ public class AgentConfig {
 	}
 
 	public boolean isSilentMode() {
-		return false;
+		return silent;
 	}
 
 	public static class NullAgentConfig extends AgentConfig {
