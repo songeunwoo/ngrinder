@@ -157,8 +157,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testGetReportDataWithExistingData() throws IOException {
 		long testId = 123456L; // there is sample monitor data in test resources.
 
-		// test resource dir
-
+		// Given
 		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
@@ -167,13 +166,14 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTestService mockService = spy(testService);
 		mockService.setConfig(mockConfig);
 
+		// When
 		// TPS,Errors,Mean_Test_Time_(ms)
 		int interval = mockService.getReportDataInterval(testId, "TPS", 700);
-		String reportDataCPU = mockService.getSingleReportDataAsJson(testId, "TPS", interval);
-		String reportDataMsT = mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval);
 
-		assertTrue(reportDataCPU.length() > 100);
-		assertTrue(reportDataMsT.length() > 100);
+		// Then
+		assertThat(mockService.getSingleReportDataAsJson(testId, "TPS", interval).length(), greaterThan(100));
+		assertThat(mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval).length(),
+				greaterThan(100));
 	}
 
 	@Test
