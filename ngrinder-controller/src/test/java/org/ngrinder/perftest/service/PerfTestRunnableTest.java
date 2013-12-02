@@ -44,6 +44,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
+
 	@Autowired
 	private AgentManager agentManager;
 
@@ -101,14 +102,10 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Test
 	public void testDoTest() throws IOException {
-		for (int i = 0; i < 10; i++) {
-			if (agentManager.getAllFreeApprovedAgents().size() == 1) {
-				break;
-			}
-			sleep(1000);
-		}
+		sleep(5000);
+		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.startTest();
-		sleep(15000);
+		sleep(5000);
 		assertThat(perfTestService.getTestingPerfTest().size(), is(1));
 
 		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
