@@ -248,22 +248,31 @@ function cookie(name,value,expiredays){
   document.cookie = name + "=" + escape( value ) + "; path=/; expires=" + today.toGMTString() + ";";
 }
 
-function callAjaxAPI(url, success, type, datas, errorMessage) {
 
-    type = type || "GET";
-    datas = datas || {};
-    errorMessage = errorMessage || "common.error.error";
+function ajaxObj(errorMessage)  {
+    this.url = "" ,
+    this.type = "GET",
+    this.datas = {} ,
+    this.cache = false ,
+    this.dataType = 'json' ,
+    this.success = function () {} ,
+    this.error = function () {
+        showErrorMsg(errorMessage);
+        return false;
+    }
+};
+
+
+function callAjaxAPI(ajaxObj) {
 
     $.ajax({
-        url: url,
-        type: type,
-        cache: false,
-        data: datas,
-        success: success,
-        error: function () {
-            showErrorMsg("<@spring.message errorMessage/>");
-            return false;
-        }
+        url: ajaxObj.url,
+        type: ajaxObj.type,
+        cache: ajaxObj.cache,
+        data: ajaxObj.datas,
+        dataType: ajaxObj.dataType,
+        success: ajaxObj.success,
+        error: ajaxObj.error
     });
 
 }
