@@ -95,7 +95,7 @@ public class AgentController implements Agent {
 		this.version = agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
 		this.m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		// Set it with the default name
-		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getLocalIP());
+		this.m_agentIdentity = new AgentControllerIdentityImplementation(agentConfig.getAgentHostID(), agentConfig.getControllerIP());
 		this.m_agentIdentity.setRegion(agentConfig.getRegion());
 		this.agentSystemDataCollector = new AgentSystemDataCollector();
 		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
@@ -129,8 +129,8 @@ public class AgentController implements Agent {
 							consoleCommunication.start();
 							LOGGER.info("connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
-							LOGGER.error("Error while connecting to controller {}", connector.getEndpointAsString());
-							LOGGER.debug(e.getMessage(), e);
+							LOGGER.error("Error while connecting to agent controller at {}",
+									connector.getEndpointAsString());
 							return;
 						}
 					}

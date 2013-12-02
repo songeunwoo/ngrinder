@@ -63,6 +63,7 @@ public class AgentConfig {
 	private PropertiesWrapper internalProperties;
 	private String agentHostID;
 	private boolean silent = false;
+	private int controllerPort;
 
 	/**
 	 * Initialize.
@@ -304,7 +305,8 @@ public class AgentConfig {
 	}
 
 	public String getControllerIP() {
-		return getProperty(AGENT_CONTROLLER_IP, getProperty(AGENT_CONSOLE_IP, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST));
+		final String property = getProperty(AGENT_CONSOLE_IP, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_HOST);
+		return getProperty(AGENT_CONTROLLER_IP, property);
 	}
 
 	public void setControllerIP(String ip) {
@@ -335,11 +337,25 @@ public class AgentConfig {
 		return silent;
 	}
 
+
 	public static class NullAgentConfig extends AgentConfig {
 		public int counter = 0;
+		private int controllerPort = 0;
 
 		public NullAgentConfig(int i) {
 			counter = i;
+		}
+
+
+		public int getControllerPort() {
+			if (controllerPort == 0) {
+				return getPropertyInt(AGENT_CONTROLLER_PORT, getPropertyInt(AGENT_CONSOLE_PORT, AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
+			}
+			return controllerPort;
+		}
+
+		public void setControllerPort(int controllerPort) {
+			this.controllerPort = controllerPort;
 		}
 
 		public boolean isSilentMode() {

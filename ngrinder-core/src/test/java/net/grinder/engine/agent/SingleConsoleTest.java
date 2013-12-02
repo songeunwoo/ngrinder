@@ -23,9 +23,9 @@ import net.grinder.console.common.ConsoleException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractMuliGrinderTestBase;
+import org.ngrinder.AbstractMultiGrinderTestBase;
 
-public class SingleConsoleTest extends AbstractMuliGrinderTestBase {
+public class SingleConsoleTest extends AbstractMultiGrinderTestBase {
 
 	AgentDaemon agentThread1;
 	AgentDaemon agentThread2;
@@ -53,7 +53,7 @@ public class SingleConsoleTest extends AbstractMuliGrinderTestBase {
 		agentThread2.shutdown();
 		agentThread3.shutdown();
 		sleep(10000);
-		assertThat("Aftre shutdowning all agents and console, the active thread count should be same",
+		assertThat("After all agents and console shutdown, the active thread count should be same",
 						Thread.activeCount(), is(startThreadCount));
 
 	}

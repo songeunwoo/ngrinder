@@ -19,7 +19,7 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
 public class MonitorCollectorTest {
 	@Before
 	public void before() throws ArchNotSupportedException, ArchLoaderException {
-		AgentConfig agentConfig = new AgentConfig().init();
+		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1).init();
 		new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
 	}
 
@@ -28,9 +28,11 @@ public class MonitorCollectorTest {
 		AgentSystemDataCollector collector = new AgentSystemDataCollector();
 		collector.refresh();
 		int i = 0;
-		while (i++ < 10) {
+		while (i++ < 5) {
 			SystemInfo execute = collector.execute();
+			ThreadUtils.sleep(1000);
 			BandWidth bandWidth = execute.getBandWidth();
+
 			if (i != 1) {
 				assertThat(bandWidth.getReceivedPerSec(), not(0L));
 				assertThat(bandWidth.getSentPerSec(), not(0L));
