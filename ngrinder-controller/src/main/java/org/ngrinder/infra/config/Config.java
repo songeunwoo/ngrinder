@@ -377,7 +377,7 @@ public class Config implements IConfig, NGrinderConstants {
 	private FileWatchdog systemConfWatchDog;
 	private FileWatchdog policyJsWatchDog;
 
-	private void initHomeMonitor() {
+	protected void initHomeMonitor() {
 		checkNotNull(home);
 		this.announcementWatchDog = new FileWatchdog(getHome().getSubFile("announcement.conf").getAbsolutePath()) {
 			@Override

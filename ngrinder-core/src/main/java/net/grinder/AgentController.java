@@ -158,7 +158,7 @@ public class AgentController implements Agent {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
-					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "");
+					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "unknown");
 					LOGGER.info("starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
@@ -220,7 +220,7 @@ public class AgentController implements Agent {
 								retryCount++;
 								agentDownloadGrinderMessage.setNext(message.getNext());
 							} else {
-								throw new CommunicationException("Error while getting agent package binary from controller");
+								throw new CommunicationException("Error while getting agent package from controller");
 							}
 
 						}
@@ -230,7 +230,7 @@ public class AgentController implements Agent {
 						retryCount = 0;
 						IOUtils.closeQuietly(agentUpdateHandler);
 						agentUpdateHandler = null;
-						LOGGER.error("While updating agent, the exception is occurred", e);
+						LOGGER.error("While updating agent, the exception occurred.", e);
 					}
 
 				} else {
