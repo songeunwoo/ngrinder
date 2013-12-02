@@ -43,7 +43,6 @@ public class MonitorCollectorTest {
 			if (bandWidth.getSentPerSec() != 0) {
 				sent = true;
 			}
-			assertThat(systemInfo.getCPUUsedPercentage(), not(0f));
 			assertThat(systemInfo.getFreeMemory(), not(0l));
 			assertThat(systemInfo.getTotalMemory(), not(0l));
 		}
