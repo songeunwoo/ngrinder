@@ -57,10 +57,8 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	protected User testUser = null;
 
 	static {
-
 		System.setProperty("unit-test", "true");
 		LOG.info("* Start nGrinder Agent *");
-
 		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1).init();
 		try {
 			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
