@@ -28,15 +28,15 @@ public class MonitorCollectorTest {
 		AgentSystemDataCollector collector = new AgentSystemDataCollector();
 		collector.refresh();
 		int i = 0;
-		while (i++ < 5) {
+		while (i++ < 3) {
 			SystemInfo execute = collector.execute();
-			ThreadUtils.sleep(1000);
+			ThreadUtils.sleep(2000);
 			BandWidth bandWidth = execute.getBandWidth();
 			if (i != 1) {
 				assertThat(bandWidth.getReceivedPerSec(), not(0L));
 				assertThat(bandWidth.getSentPerSec(), not(0L));
 			}
-			ThreadUtils.sleep(1000);
+			ThreadUtils.sleep(2000);
 		}
 	}
 }
