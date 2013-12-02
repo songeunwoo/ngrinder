@@ -13,6 +13,21 @@
  */
 package net.grinder;
 
+import net.grinder.common.processidentity.WorkerProcessReport;
+import net.grinder.console.communication.ProcessControl.ProcessReports;
+import net.grinder.console.model.SampleModelImplementationEx;
+import net.grinder.statistics.StatisticExpression;
+import net.grinder.statistics.StatisticsSet;
+import org.junit.Test;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtils;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -20,26 +35,33 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import net.grinder.common.processidentity.WorkerProcessReport;
-import net.grinder.console.communication.ProcessControl.ProcessReports;
-import net.grinder.console.model.SampleModelImplementationEx;
-import net.grinder.statistics.StatisticExpression;
-import net.grinder.statistics.StatisticsSet;
-
-import org.junit.Test;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ThreadUtils;
-
 public class SingleConsoleTest {
 	double errorCount = 0;
 
+	/**
+	 * Returns a free port number on localhost, or -1 if unable to find a free port.
+	 *
+	 * @return a free port number on localhost, or -1 if unable to find a free port
+	 */
+	public int getFreePort() {
+		ServerSocket socket = null;
+		try {
+			socket = new ServerSocket(0);
+			return socket.getLocalPort();
+		} catch (IOException e) {
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+		return -1;
+	}
 	@Test
 	public void testSingleConsoleTooManyError() {
-		SingleConsole singleConsole = new SingleConsole(12345) {
+		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
 			@Override
 			public long getCurrentExecutionCount() {
 				return 10;
@@ -65,7 +87,7 @@ public class SingleConsoleTest {
 
 	@Test
 	public void testCurrentRunningTimeOverDuration() {
-		SingleConsole singleConsole = new SingleConsole(11113) {
+		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
 
 			public long getCurrentRunningTime() {
 				return new Date().getTime() - current.getTime();
@@ -81,7 +103,7 @@ public class SingleConsoleTest {
 
 	@Test
 	public void testWaitUnitAgentConnected() {
-		SingleConsole singleConsole = new SingleConsole(11113) {
+		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
 			@Override
 			public boolean isCanceled() {
 				return canceled;
@@ -118,7 +140,7 @@ public class SingleConsoleTest {
 		singleConsole.update(processReports);
 		try {
 			singleConsole.waitUntilAllAgentDisconnected();
-			fail("Shoule throw Exception");
+			fail("Should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 			//
 		}
@@ -126,7 +148,7 @@ public class SingleConsoleTest {
 
 	@Test
 	public void testTpsValue() {
-		SingleConsole singleConsole = new SingleConsole(11114);
+		SingleConsole singleConsole = new SingleConsole(getFreePort());
 		singleConsole.setTpsValue(10);
 		assertThat(singleConsole.getTpsValues(), is(10D));
 		singleConsole.setTpsValue(12);
@@ -139,7 +161,7 @@ public class SingleConsoleTest {
 
 	@Test
 	public void testCurrentExecutionCount() {
-		SingleConsole singleConsole = new SingleConsole(12345) {
+		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
 			@Override
 			public long getCurrentExecutionCount() {
 				return 10;
@@ -160,7 +182,7 @@ public class SingleConsoleTest {
 
 	@Test
 	public void testUpdate() {
-		SingleConsole singleConsole = new SingleConsole(12345) {
+		SingleConsole singleConsole = new SingleConsole(getFreePort()) {
 			@Override
 			public long getCurrentRunningTime() {
 				return 2000;
