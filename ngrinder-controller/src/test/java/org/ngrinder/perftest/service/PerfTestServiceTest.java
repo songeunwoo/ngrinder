@@ -154,11 +154,12 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
-	public void testGetReportDataWithExistData() throws IOException {
+	public void testGetReportDataWithExistingData() throws IOException {
 		long testId = 123456L; // there is sample monitor data in test resources.
 
 		// test resource dir
-		File testHomeDir = new ClassPathResource("").getFile();
+
+		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
 		Config mockConfig = spy(config);
