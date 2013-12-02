@@ -1,11 +1,13 @@
 package org.ngrinder.monitor.agent.collector;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.hamcrest.Matchers;
 import org.hyperic.jni.ArchLoaderException;
 import org.hyperic.jni.ArchNotSupportedException;
 import org.junit.Before;
@@ -24,19 +26,28 @@ public class MonitorCollectorTest {
 	}
 
 	@Test
-	public void test() throws InterruptedException {
+	public void testSystemDataCollection() throws InterruptedException {
 		AgentSystemDataCollector collector = new AgentSystemDataCollector();
 		collector.refresh();
 		int i = 0;
+		boolean sent = false;
+		boolean received = false;
+
 		while (i++ < 3) {
-			SystemInfo execute = collector.execute();
+			SystemInfo systemInfo = collector.execute();
 			ThreadUtils.sleep(2000);
-			BandWidth bandWidth = execute.getBandWidth();
-			if (i != 1) {
-				assertThat(bandWidth.getReceivedPerSec(), not(0L));
-				assertThat(bandWidth.getSentPerSec(), not(0L));
+			BandWidth bandWidth = systemInfo.getBandWidth();
+			if (bandWidth.getReceivedPerSec() != 0) {
+				received = true;
 			}
-			ThreadUtils.sleep(2000);
+			if (bandWidth.getSentPerSec() != 0) {
+				sent = true;
+			}
+			assertThat(systemInfo.getCPUUsedPercentage(), not(0f));
+			assertThat(systemInfo.getFreeMemory(), not(0l));
+			assertThat(systemInfo.getTotalMemory(), not(0l));
 		}
+		assertThat("sent", sent, is(true));
+		assertThat("received", received, is(true));
 	}
 }
