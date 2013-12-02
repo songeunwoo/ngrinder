@@ -20,10 +20,10 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.ngrinder.monitor.share.domain.SystemInfo;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 
 
-public class MonitorInfoStoreTest extends AbstractPerfTestTransactionalTest{
+public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
 	
 	@Test
 	public void test(){

@@ -56,29 +56,6 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 
 	protected User testUser = null;
 
-	static {
-		System.setProperty("unit-test", "true");
-		LOG.info("* Start nGrinder Agent *");
-		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1).init();
-		try {
-			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());
-		} catch (Exception e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
-		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig);
-		agentControllerDaemon.run();
-
-		LOG.info("* Start nGrinder Monitor *");
-		try {
-			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector, agentConfig);
-			AgentMonitorServer.getInstance().start();
-		} catch (Exception e) {
-			LOG.error("ERROR: {}", e.getMessage());
-			LOG.debug("Error while starting Monitor", e);
-		}
-	}
-
 	@Before
 	public void beforeSetSecurity() {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);

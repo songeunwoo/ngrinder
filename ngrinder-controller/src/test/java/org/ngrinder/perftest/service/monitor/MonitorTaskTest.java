@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
+import org.ngrinder.perftest.service.AbstractAgentReadyTest;
 
 /**
  * Class description.
@@ -30,7 +30,7 @@ import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
  * @author Mavlarn
  * @since
  */
-public class MonitorTaskTest extends AbstractPerfTestTransactionalTest {
+public class MonitorTaskTest extends AbstractAgentReadyTest {
 
 	@Test
 	public void testAddMonitor() throws IOException {

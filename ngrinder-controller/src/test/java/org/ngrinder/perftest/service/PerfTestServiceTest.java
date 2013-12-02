@@ -16,7 +16,6 @@ package org.ngrinder.perftest.service;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
@@ -50,7 +49,7 @@ import static org.mockito.Mockito.when;
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
+public class PerfTestServiceTest extends AbstractAgentReadyTest {
 
 	@Autowired
 	private PerfTestService testService;

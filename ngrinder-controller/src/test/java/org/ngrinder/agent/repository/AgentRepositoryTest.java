@@ -43,7 +43,7 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 	@Before
 	public void before() {
 		agentRepository.deleteAll();
-		addAgent("hello", "world");
+		addAgent("hello", "world1");
 
 	}
 
@@ -72,10 +72,10 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testGetByOwner() {
-		addAgent("hello2", "world_owned_hello");
-		addAgent("hello3", "worl2_owned_hello");
+		addAgent("hello2", "world1_owned_hello");
+		addAgent("hello3", "world2_owned_hello");
 		assertThat(agentRepository.findAll().size(), is(3));
-		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("world"));
+		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("world1"));
 		assertThat(findAll.size(), is(2));
 	}
 }

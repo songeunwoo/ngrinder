@@ -40,7 +40,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
+public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGrinderConstants {
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
