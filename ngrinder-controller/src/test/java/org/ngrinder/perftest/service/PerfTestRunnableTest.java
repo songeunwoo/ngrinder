@@ -87,16 +87,15 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			if (agentCount != 0 || checkLoop++ > 20) {
 				break;
 			}
-			System.out.println("WAIT UNTIL AGENT IS CONNECTED - TRY COUNT " + checkLoop);
 			sleep(1000);
 		}
 
 		List<AgentInfo> agentList = agentService.getLocalAgentListFromDB();
+		System.out.println("Agent List : " + agentList.size());
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}
 
-		// agentList = agentService.getLocalAgents();
 		assertThat(agentCount, is(1));
 	}
 
