@@ -255,6 +255,7 @@ function ajaxObj(errorMessage)  {
     this.datas = {} ,
     this.cache = false ,
     this.dataType = 'json' ,
+    this.async = true ,
     this.success = function () {} ,
     this.error = function () {
         showErrorMsg(errorMessage);
@@ -268,6 +269,7 @@ function callAjaxAPI(ajaxObj) {
     $.ajax({
         url: ajaxObj.url,
         type: ajaxObj.type,
+        async: ajaxObj.async,
         cache: ajaxObj.cache,
         data: ajaxObj.datas,
         dataType: ajaxObj.dataType,

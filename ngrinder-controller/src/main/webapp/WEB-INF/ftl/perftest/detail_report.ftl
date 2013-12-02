@@ -169,30 +169,30 @@
 				</ul>
 			</div>
 			<div class="span9">
-			    <table class="table table-bordered" style="margin-bottom:35px">
-			    	<colgroup>
+				<table class="table table-bordered" style="margin-bottom:35px">
+					<colgroup>
 						<col width="120">
 						<col width="220">
 						<col width="120">
 						<col>
 					</colgroup>
-                   <tr>
-                       <th><@spring.message "perfTest.table.startTime"/></th>
-                       <td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}<#else>&nbsp;</#if></span></td>
-                       <th><@spring.message "perfTest.table.finishTime"/></th>
-                       <td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm:ss')}<#else>&nbsp;</#if></span></td>
-                   </tr>
-                   <tr>
-                     	<th><@spring.message "perfTest.report.testcomment"/></th>
-                    	<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
-                   </tr>  
-               </table>
+					<tr>
+						<th><@spring.message "perfTest.table.startTime"/></th>
+						<td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}<#else>&nbsp;</#if></span></td>
+						<th><@spring.message "perfTest.table.finishTime"/></th>
+						<td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm:ss')}<#else>&nbsp;</#if></span></td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.testcomment"/></th>
+						<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
+					</tr>
+				</table>
 			    <div id="test_panel">
 					<legend>
 						Performance
-		                <button id="download_csv" class="btn btn-primary pull-right">
-		                	<i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/>
-		                </button>
+						<button id="download_csv" class="btn btn-primary pull-right">
+							<i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/>
+						</button>
 					</legend>
 					<h6>TPS 
 						<span 

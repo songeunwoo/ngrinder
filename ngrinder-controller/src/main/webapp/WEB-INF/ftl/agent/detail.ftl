@@ -124,27 +124,20 @@
 			}
 
 			function getState(){
-				$.ajax({
-					url: "${req.getContextPath()}/agent/api/${agent.id}/state",
-					async: false,
-					cache: false,
-					dataType:'json',
-					data: {'ip': '${(agent.ip)!}',
-						   'name': '${(agent.hostName)!}',
-						   'imgWidth':700},
-					success: function(res) {
-						getChartData(res);
-						maxCPU = getMax(maxCPU, cpuUsage.aElement);
-						showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
-						maxMemory = getMax(maxMemory, memoryUsage.aElement);
-						showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
-					   return true;
-					},
-					error: function() {
-						showErrorMsg("Error!");
-						return false;
-					}
-				});
+                var obj = new ajaxObj("Error!");
+                obj.url = "${req.getContextPath()}/agent/api/${agent.id}/state";
+                obj.datas = {'ip': '${(agent.ip)!}','name': '${(agent.hostName)!}','imgWidth':700};
+				obj.async = false;
+                obj.success = function(res) {
+                    getChartData(res);
+                    maxCPU = getMax(maxCPU, cpuUsage.aElement);
+                    showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+                    maxMemory = getMax(maxMemory, memoryUsage.aElement);
+                    showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+                    return true;
+                };
+
+                callAjaxAPI(obj);
 			}
 
 			function showChart(containerId, data, index, formatYaxis, maxY) {
