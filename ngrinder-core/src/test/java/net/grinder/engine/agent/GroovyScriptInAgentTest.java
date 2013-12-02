@@ -36,13 +36,15 @@ public class GroovyScriptInAgentTest {
 
 	private SingleConsole console1;
 	private Integer consolePort;
-	private AgentConfig agentConfig;
+	private AgentConfig.NullAgentConfig agentConfig;
 
 	@Before
 	public void before() {
 		GrinderClassPathInitializer.initJUnitContext();
-		agentConfig = new MockAgentConfigInAgentSide().init();
+		agentConfig = new AgentConfig.NullAgentConfig(1);
+		agentConfig.init();
 		consolePort = getFreePort();
+		agentConfig.setControllerPort(consolePort);
 		console1 = new SingleConsole(consolePort);
 		console1.start();
 		ThreadUtils.sleep(1000);

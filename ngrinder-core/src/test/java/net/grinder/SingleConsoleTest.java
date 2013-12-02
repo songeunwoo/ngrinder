@@ -64,7 +64,7 @@ public class SingleConsoleTest {
 	public Date current = new Date();
 
 	@Test
-	public void testCurrenTunningTimeOverDuration() {
+	public void testCurrentRunningTimeOverDuration() {
 		SingleConsole singleConsole = new SingleConsole(11113) {
 
 			public long getCurrentRunningTime() {
@@ -77,14 +77,14 @@ public class SingleConsoleTest {
 		assertThat(singleConsole.isCurrentRunningTimeOverDuration(1000), is(true));
 	}
 
-	public boolean cancelded = false;
+	public boolean canceled = false;
 
 	@Test
 	public void testWaitUnitAgentConnected() {
 		SingleConsole singleConsole = new SingleConsole(11113) {
 			@Override
 			public boolean isCanceled() {
-				return cancelded;
+				return canceled;
 			}
 		};
 		ProcessReports report = mock(ProcessReports.class);
@@ -107,7 +107,7 @@ public class SingleConsoleTest {
 		singleConsole.update(processReports);
 		try {
 			singleConsole.waitUntilAgentConnected(1);
-			fail("Shoule throw Exception");
+			fail("Should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 			//
 		}
@@ -178,7 +178,7 @@ public class SingleConsoleTest {
 
 			@Override
 			protected void updateStatistics(StatisticsSet intervalStatisticsSnapshot,
-							StatisticsSet cumulatedStatisticsSnapshot) {
+							StatisticsSet accumulatedStatisticsSnapshot) {
 			}
 
 			@Override
@@ -195,14 +195,14 @@ public class SingleConsoleTest {
 		singleConsole.setSampleModel(sampleModelMock);
 		StatisticExpression exp = mock(StatisticExpression.class);
 		StatisticsSet statisticMock = mock(StatisticsSet.class);
-		StatisticsSet statisticCumulatedMock = mock(StatisticsSet.class);
+		StatisticsSet statisticAccumulatedMock = mock(StatisticsSet.class);
 		when(statisticMock.snapshot()).thenReturn(statisticMock);
-		when(statisticCumulatedMock.snapshot()).thenReturn(statisticCumulatedMock);
+		when(statisticAccumulatedMock.snapshot()).thenReturn(statisticAccumulatedMock);
 		when(exp.getDoubleValue(any(StatisticsSet.class))).thenReturn(3D);
 		when(sampleModelMock.getTPSExpression()).thenReturn(exp);
 
-		singleConsole.update(statisticMock, statisticCumulatedMock);
-		singleConsole.update(statisticMock, statisticCumulatedMock);
+		singleConsole.update(statisticMock, statisticAccumulatedMock);
+		singleConsole.update(statisticMock, statisticAccumulatedMock);
 
 	}
 }
