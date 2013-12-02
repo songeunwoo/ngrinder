@@ -92,11 +92,11 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener, ISingleConsole {
-	private static final String REOSURCE_CONSOLE = "net.grinder.console.common.resources.Console";
+	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation(REOSURCE_CONSOLE);
-	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
+	public static final Resources RESOURCE = new ResourcesImplementation(RESOURCE_CONSOLE);
+	public static final Logger LOGGER = LoggerFactory.getLogger("console");
 
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
@@ -216,7 +216,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				public void run() {
 					consoleFoundation.run();
 				}
-			}, "SingleConsole on port " + getConsolePort());
+			}, "console on port " + getConsolePort());
 			consoleFoundationThread.setDaemon(true);
 			consoleFoundationThread.start();
 			eventSyncCondition.waitNoInterrruptException(5000);
@@ -246,7 +246,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 
 		} catch (Exception e) {
-			throw processException("Exception occurred while shutting down SingleConsole", e);
+			throw processException("Exception occurred while shutting down console", e);
 		} finally {
 			// close all report file
 			for (BufferedWriter bw : fileWriterMap.values()) {

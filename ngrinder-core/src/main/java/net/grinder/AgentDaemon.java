@@ -40,7 +40,7 @@ public class AgentDaemon implements Agent {
 	private GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceShutdown = false;
-	public static final Logger LOGGER = LoggerFactory.getLogger(AgentDaemon.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger("agent daemon");
 	private final AgentConfig m_agentConfig;
 
 	/**
