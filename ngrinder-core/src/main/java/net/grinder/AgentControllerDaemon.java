@@ -43,12 +43,6 @@ public class AgentControllerDaemon implements Agent {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
 
-	/**
-	 * Constructor for test.
-	 */
-	public AgentControllerDaemon() {
-		this(new AgentConfig().init());
-	}
 
 	/**
 	 * Constructor.

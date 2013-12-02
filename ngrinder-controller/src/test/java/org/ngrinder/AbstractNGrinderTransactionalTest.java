@@ -67,7 +67,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		} catch (Exception e) {
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
-		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon();
+		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon(agentConfig);
 		agentControllerDaemon.run();
 
 		LOG.info("* Start nGrinder Monitor *");
