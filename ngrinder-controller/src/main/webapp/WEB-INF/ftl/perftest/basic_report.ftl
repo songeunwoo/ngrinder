@@ -1,4 +1,5 @@
 <#import "../common/spring.ftl" as spring/>
+<#include "../common/ngrinder_macros.ftl">
 <style>
 	.form-horizontal-3 .control-label-wide {
 		width:170px;
@@ -75,15 +76,14 @@
 			</legend>
 		</fieldSet>
 		<div style="mgin-left: 10px">
-			<#if logs?has_content> 
-				<#list logs as eachLog>
-					<div style="width:100%;" class="ellipsis">
-						<a href="${req.getContextPath()}/perftest/${test.id?c}/show_log/${eachLog}" target="log" title="open the log in the new window"><img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>  <a href="${req.getContextPath()}/perftest/${test.id?c}/download_log/${eachLog}">${eachLog}</a>
-					</div>
-				</#list> 
-			<#else> 
-				<@spring.message "perfTest.report.message.noLog"/>
-			</#if>
+			<@list list_items = logs others = "message" message = "perfTest.report.message.noLog"; eachLog >
+				<div style="width:100%;" class="ellipsis">
+					<a href="${req.getContextPath()}/perftest/${test.id?c}/show_log/${eachLog}" target="log"
+					   title="open the log in the new window">
+					<img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>
+					<a href="${req.getContextPath()}/perftest/${test.id?c}/download_log/${eachLog}">${eachLog}</a>
+				</div>
+			</@list>
 		</div>
 	</div>
 	<div class="span8">

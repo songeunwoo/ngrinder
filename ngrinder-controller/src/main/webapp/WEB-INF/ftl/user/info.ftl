@@ -258,37 +258,35 @@
 	        }
 	    });
 		
-	    <#if !(user?has_content)>
-	    	showPassword();
-	    <#else>
-	    	hidePassword();
-	    </#if>
-	    
-	    $("#change_password_btn").click(function() {
-	    	if ($("#user_password_section").is(":hidden")) {
+		<#if !(user?has_content)>
+			showPassword();
+		<#else>
+			hidePassword();
+		</#if>
+
+		$("#change_password_btn").click(function() {
+			if ($("#user_password_section").is(":hidden")) {
 				showPassword();
 			} else {
 				hidePassword();
 			}
-	    });
+		});
 		
-	    var switchedUsers = [];
-	    <#if followers?has_content>
-	    	<#list followers as user>
-	    		switchedUsers.push("${user.userId}");
-	    	</#list>
-	    </#if>
-	    $("#user_switch_select").val(switchedUsers).select2();
+		var switchedUsers = [];
+		<@list list_items = followers  ; user >
+			switchedUsers.push("${user.userId}");
+		</@list>
+		$("#user_switch_select").val(switchedUsers).select2();
 	    
-	    $("#update_or_create_user_btn").click(function() {
+		$("#update_or_create_user_btn").click(function() {
 			<#if isSelfRegistration?? && isSelfRegistration>
 				url = "${req.getContextPath()}/registration/save";
 			<#else>
 				url = "${req.getContextPath()}/user/save";
-			</#if>	
+			</#if>
 			document.forms.user_form.action = url;
 			if($("#user_form").valid())
-				document.forms.user_form.submit();
+			document.forms.user_form.submit();
 		});
 	    
 	});

@@ -48,14 +48,16 @@
 	</div>
 </#macro>
 
-<#macro list list_items colspan = "8">
+<#macro list list_items others = "table_list" colspan = "8" message = "" >
 	<#if list_items?has_content>
 		<#list list_items as each>
 			<#nested each each_index>
 		</#list>
-	<#else>
-    <tr>
-        <td colspan="${colspan}" class="center"><@spring.message "common.message.noData"/></td>
-    </tr>
+	<#elseif others="table_list">
+		<tr>
+			<td colspan="${colspan}" class="center"><@spring.message "common.message.noData"/></td>
+		</tr>
+	<#elseif others="message">
+		<@spring.message "${message}"/>
 	</#if>
 </#macro>

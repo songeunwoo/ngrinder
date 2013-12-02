@@ -56,11 +56,9 @@
 				<div class="left-float">
 					<select id="tag" name="tag" style="width:150px">
 					<option value=""></option>
-						<#if availTags?has_content>
-						<#list availTags as eachTag>
+						<@list list_items = availTags  ; eachTag >
 						<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
-						</#list>
-						</#if>
+						</@list>
 					</select>
 					<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords"
 							name="query" id="query" value="${query!}">

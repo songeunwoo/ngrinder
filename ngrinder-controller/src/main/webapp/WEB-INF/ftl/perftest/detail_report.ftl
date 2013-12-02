@@ -79,95 +79,94 @@
 	   </form>
 		<div class="row">
 			<div class="span3">
-			   <table class="table table-bordered compactpadding">
-				   <colgroup>
+				<table class="table table-bordered compactpadding">
+					<colgroup>
 						<col width="120px">
-						<col> 
-				   </colgroup>
-			       <tr>
-			       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
-			           <td><strong>${test.vuserPerAgent}</strong></td>
-			       </tr>
-			       <tr>
-                       <th><@spring.message "perfTest.report.agent"/></th>
-                       <td><span>${test.agentCount}</span>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.process"/></th>
-                       <td>${test.processes}</td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.thread"/></th>
-                       <td>${test.threads}</td>
-                   </tr>
-                   <tr>
-                        <td colspan="2" class="divider"></td>
-                   </tr>
-                   <#if test.threshold?? && test.threshold == "D"> 
-	                   <tr> 
-	                       <th><@spring.message "perfTest.configuration.duration"/></th>
-	                       <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
-	                   </tr>
-                   <#else>
-                   		<tr> 
-	                       <th><@spring.message "perfTest.configuration.runCount"/></th>
-	                       <td><span>${test.runCount}</td>
-	                   </tr>
-                   </#if>
-                   <tr> 
-	                   <th><@spring.message "perfTest.configuration.runtime"/></th>
-	                   <td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
-	               </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
-                       <td><span>${test.ignoreSampleCount}</span></td> 
-                   </tr>
-                   <tr>
-                        <td colspan=2></td>
-                   </tr>
-                   <tr>
-                       <th>TPS</th>
-                       <td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.meantime"/></th>
-                       <td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
-                       
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.peakTPS"/></th> 
-                       <td><strong>${test.peakTps!""}</strong></td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.totalTests"/></th>
-                       <td>${(test.tests + test.errors)!""}</td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.successfulTests"/></th> 
-                       <td>${(test.tests)!""}</td>
-                   </tr>
-                   <tr>
-                       <th><@spring.message "perfTest.report.errors"/></th>
-                       <td>${test.errors!""}</td> 
-                   </tr>
-			   </table>
-			   <ul class="nav nav-list">
+						<col>
+					</colgroup>
+					<tr>
+					   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
+					   <td><strong>${test.vuserPerAgent}</strong></td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.agent"/></th>
+					   <td><span>${test.agentCount}</span>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.process"/></th>
+					   <td>${test.processes}</td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.thread"/></th>
+					   <td>${test.threads}</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="divider"></td>
+					</tr>
+					<#if test.threshold?? && test.threshold == "D">
+					   <tr>
+						   <th><@spring.message "perfTest.configuration.duration"/></th>
+						   <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
+					   </tr>
+					<#else>
+						<tr>
+						   <th><@spring.message "perfTest.configuration.runCount"/></th>
+						   <td><span>${test.runCount}</td>
+					   </tr>
+					</#if>
+					<tr>
+					   <th><@spring.message "perfTest.configuration.runtime"/></th>
+					   <td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
+					   <td><span>${test.ignoreSampleCount}</span></td>
+					</tr>
+					<tr>
+						<td colspan=2></td>
+					</tr>
+					<tr>
+					   <th>TPS</th>
+					   <td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.meantime"/></th>
+					   <td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
+
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.peakTPS"/></th>
+					   <td><strong>${test.peakTps!""}</strong></td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.totalTests"/></th>
+					   <td>${(test.tests + test.errors)!""}</td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.successfulTests"/></th>
+					   <td>${(test.tests)!""}</td>
+					</tr>
+					<tr>
+					   <th><@spring.message "perfTest.report.errors"/></th>
+					   <td>${test.errors!""}</td>
+					</tr>
+				</table>
+				<ul class="nav nav-list">
 					<li class="active">
 						<a id="test_btn" href="javascript:void(0);">
 							<i class="icon-tag icon-white"></i> <@spring.message "perfTest.report.performanceReport"/>
 						</a>
 					</li>
 					<li><a><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/></a></li>
-					<#if test.targetHostIP?exists>
-					<li>
-						<ul class="nav nav-list">
-							<#list test.targetHostIP as targetIP>
-							<li><a class="target-montor" href="javascript:void(0);" ip="${targetIP}"><i class="icon-chevron-right"></i> ${targetIP}</a></li>
-							</#list>
-						</ul>
-					</li>
-					</#if>
-			   </ul>
+                    <li>
+                        <ul class="nav nav-list">
+						<@list list_items = test.targetHostIP others = "no_message" ; targetIP >
+                            <li><a class="target-montor" href="javascript:void(0);" ip="${targetIP}"><i
+                                    class="icon-chevron-right"></i> ${targetIP}</a></li>
+						</@list>
+                        </ul>
+                    </li>
+				</ul>
 			</div>
 			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:35px">

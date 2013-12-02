@@ -88,7 +88,7 @@
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 	</div>
 	<div class="modal-body" > 
-		<div class="form-horizontal" style="margin-left:20px">
+		<div class="form-horizontal" style="margin-left:20px;overflow-y:hidden">
 			<fieldset>
 				<div class="control-group">
 					<label class="control-label" style="width:100px"><@spring.message "user.switch.title"/></label>
