@@ -364,7 +364,7 @@ public class AgentController implements Agent {
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
-				LOGGER.error("{}. This error is ignorable if it doesn't occur much.", e.getMessage());
+				LOGGER.error("{}. This error is not critical if it doesn't occur much.", e.getMessage());
 			}
 		}
 
