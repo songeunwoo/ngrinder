@@ -118,7 +118,7 @@ public class AgentDaemon implements Agent {
 				+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);
 		thread.start();
-		LOGGER.info("Agent Daemon {} is started.", thread.getName());
+		LOGGER.info("{} is started.", thread.getName());
 	}
 
 	private GrinderProperties getGrinderProperties() {

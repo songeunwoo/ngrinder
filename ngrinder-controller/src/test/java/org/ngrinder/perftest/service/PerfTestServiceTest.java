@@ -13,26 +13,10 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
@@ -49,6 +33,16 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * {@link PerfTestService} test.
@@ -182,11 +176,10 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
-	public void testGetMonitorDataWithExistData() throws IOException {
+	public void testGetMonitorDataWithExistingData() throws IOException {
+		// Given
 		long testId = 123456L; // there is sample monitor data in test resources.
-
-		// test resource dir
-		File testHomeDir = new ClassPathResource("").getFile();
+		File testHomeDir = new ClassPathResource("world.py").getFile().getParentFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
 		Config mockConfig = spy(config);
@@ -194,14 +187,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTestService mockService = spy(testService);
 		mockService.setConfig(mockConfig);
 
+		// When
 		int interval = mockService.getSystemMonitorDataInterval(testId, "127.0.0.1", 700);
 		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsString(testId, "127.0.0.1", interval);
-		String cpuStr = reportDataMap.get("cpu");
-		LOG.debug("CPU monitor string is:{}", cpuStr);
-		assertTrue(cpuStr.length() > 300);
-		assertTrue(reportDataMap.get("memory").length() > 300);
-		assertTrue(reportDataMap.get("received").length() > 300);
-		assertTrue(reportDataMap.get("sent").length() > 300);
+
+		// Then
+		assertThat(reportDataMap.get("cpu").length(), greaterThanOrEqualTo(300));
+		assertThat(reportDataMap.get("memory").length(), greaterThanOrEqualTo(300));
+		assertThat(reportDataMap.get("received").length(), greaterThanOrEqualTo(300));
+		assertThat(reportDataMap.get("sent").length(), greaterThanOrEqualTo(300));
 	}
 
 	@Test
