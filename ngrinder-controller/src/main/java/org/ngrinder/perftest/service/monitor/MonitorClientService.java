@@ -65,7 +65,6 @@ public class MonitorClientService {
 	 * default constructor, used to debug the non-singleton of this class.
 	 */
 	public MonitorClientService() {
-		LOGGER.debug("Created MonitorClientService.");
 	}
 
 	/**

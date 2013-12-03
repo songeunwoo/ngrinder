@@ -43,7 +43,6 @@ public abstract class AbstractAgentReadyTest extends AbstractPerfTestTransaction
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractAgentReadyTest.class);
 
 	static {
-		System.setProperty("unit-test", "true");
 		AgentConfig agentConfig = new AgentConfig.NullAgentConfig(1).init();
 		try {
 			new ArchLoaderInit().init(agentConfig.getHome().getNativeDirectory());

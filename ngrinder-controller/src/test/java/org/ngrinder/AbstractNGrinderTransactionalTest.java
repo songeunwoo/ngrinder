@@ -45,11 +45,15 @@ import java.util.Set;
  *
  * @author Mavlarn
  */
-@ActiveProfiles("unittest")
+@ActiveProfiles("unit-test")
 @ContextConfiguration({"classpath:applicationContext.xml"})
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
 		NGrinderConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
+
+	static {
+		System.setProperty("unit-test", "true");
+	}
 
 	@Autowired
 	protected UserRepository userRepository;

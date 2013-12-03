@@ -93,7 +93,7 @@ public class JUnitThreadContextInitializer {
 						new NullSender());
 
 		final InternalScriptContext scriptContext = new ScriptContextImplementation(new SimpleWorkerIdentity(
-						"unittest", 0), new SimpleWorkerIdentity("unittest", 0), m_threadContexts, null,
+						"unit-test", 0), new SimpleWorkerIdentity("unit-test", 0), m_threadContexts, null,
 						externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts), scriptStatistics,
 						m_testRegistryImplementation, null, null, null, null);
 		Grinder.grinder = scriptContext;

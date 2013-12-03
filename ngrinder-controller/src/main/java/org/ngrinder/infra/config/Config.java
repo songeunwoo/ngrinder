@@ -434,7 +434,7 @@ public class Config implements IConfig, NGrinderConstants {
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
 		if (context.isUnitTestContext()) {
-			databaseProperties.addProperty("unittest", "true");
+			databaseProperties.addProperty("unit-test", "true");
 		}
 		return databaseProperties;
 	}

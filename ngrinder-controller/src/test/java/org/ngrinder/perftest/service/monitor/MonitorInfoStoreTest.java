@@ -14,13 +14,13 @@
 package org.ngrinder.perftest.service.monitor;
 
 
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.AbstractAgentReadyTest;
+
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 
 public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
@@ -31,6 +31,7 @@ public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
 		MonitorInfoStore monitorStore = applicationContext.getBean(MonitorInfoStore.class);
 		SystemInfo systemInfo = monitorStore.getSystemInfo(ip, 13243);
 		assertThat(systemInfo, not(nullValue()));
+		assertThat(systemInfo.getFreeMemory(), not(0L));
 		monitorStore.remove(ip);
 	}
 }
