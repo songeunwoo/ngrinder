@@ -605,7 +605,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return created {@link GrinderProperties} instance
 	 */
 	public GrinderProperties getGrinderProperties(PerfTest perfTest, ScriptHandler scriptHandler) {
-		FileWriter fileWriter = null;
 		try {
 			// Use default properties first
 			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
@@ -674,8 +673,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			return grinderProperties;
 		} catch (Exception e) {
 			throw processException("error while prepare grinder property for " + perfTest.getTestName(), e);
-		} finally {
-			IOUtils.closeQuietly(fileWriter);
 		}
 	}
 

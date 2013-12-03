@@ -235,14 +235,10 @@ public class ConsoleManager {
 				LOG.error("Exception occurs while console shutdown console in return back process for test {}.",
 						testIdentifier, e);
 			}
-			int consolePort = -1;
+			int consolePort;
 			try {
 				consolePort = console.getConsolePort();
 			} catch (Exception e) {
-				// In case that no console is initialized.
-				noOp();
-			}
-			if (consolePort == -1) {
 				return;
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
