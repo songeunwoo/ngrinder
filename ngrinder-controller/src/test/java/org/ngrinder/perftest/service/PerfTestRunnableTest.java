@@ -21,6 +21,7 @@ import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -104,11 +105,15 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 	@Test
 	public void testDoTest() throws IOException {
 		sleep(5000);
-		for (Object each : agentManager.getAllAgentStatusSet()) {
-			System.out.println("----" + each);
+		for (AgentProcessControlImplementation.AgentStatus each : agentManager.getAllAgentStatusSet()) {
+			System.out.println("----" + ToStringBuilder.reflectionToString(each));
 
 		}
 
+		for (AgentIdentity each : agentManager.getAllAttachedAgents()) {
+			System.out.println("----" + ToStringBuilder.reflectionToString(each));
+
+		}
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.startTest();
 		sleep(5000);
@@ -125,8 +130,13 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 	@Test
 	public void testStartConsole() throws IOException {
-		for (Object each : agentManager.getAllAgentStatusSet()) {
-			System.out.println("----" + each);
+		for (AgentProcessControlImplementation.AgentStatus each : agentManager.getAllAgentStatusSet()) {
+			System.out.println("----" + ToStringBuilder.reflectionToString(each));
+
+		}
+
+		for (AgentIdentity each : agentManager.getAllAttachedAgents()) {
+			System.out.println("----" + ToStringBuilder.reflectionToString(each));
 
 		}
 		// Get perf test
