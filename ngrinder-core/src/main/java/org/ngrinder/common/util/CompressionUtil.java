@@ -129,7 +129,10 @@ public abstract class CompressionUtil {
 
 			while (ze != null) {
 				String fileName = ze.getName();
-				File newFile = new File(destDir.getAbsolutePath() + File.separator + fileName);
+				if (fileName.contains("..")) {
+					throw new IllegalArgumentException("zip entry should not contain .. in the path.");
+				}
+				File newFile = new File(destDir.getAbsolutePath(), fileName);
 				if (ze.isDirectory()) {
 					newFile.mkdirs();
 				} else {

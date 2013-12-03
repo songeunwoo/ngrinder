@@ -20,10 +20,11 @@ import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ScriptValidationSynctaxErrorServiceTest {
+public class ScriptValidationSyntaxErrorTest {
 	public ScriptValidationService scriptValidationService = new ScriptValidationService();
 
-	@Ignore@Test
+	@Ignore
+	@Test
 	public void testSyntaxError() {
 		assertThat(scriptValidationService.checkSyntaxErrors("print 'HELL'.."),
 				notNullValue());

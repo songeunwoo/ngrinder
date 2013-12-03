@@ -294,7 +294,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return the consoleFoundation
 	 */
 	public <T> T getConsoleComponent(Class<T> componentType) {
-		return consoleFoundation.getComponent(componentType);
+		return checkNotNull(consoleFoundation).getComponent(componentType);
 	}
 
 	/**
