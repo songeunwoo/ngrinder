@@ -227,7 +227,13 @@ public abstract class CompressionUtil {
 		if (!zippedFile.exists()) {
 			zippedFile.createNewFile();
 		}
-		zip(src, new FileOutputStream(zippedFile), charSetName, includeSrc);
+		FileOutputStream os = null;
+		try {
+			os = new FileOutputStream(zippedFile);
+			zip(src, os, charSetName, includeSrc);
+		} finally {
+			IOUtils.closeQuietly(os);
+		}
 	}
 
 	/**

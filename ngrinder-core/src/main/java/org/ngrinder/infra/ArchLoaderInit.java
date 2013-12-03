@@ -36,25 +36,28 @@ public class ArchLoaderInit {
 			return;
 		}
 
-		FileOutputStream fo = null;
-		InputStream is = null;
 		try {
 			JarFile jarfile = new JarFile(getSigarNativePath());
 			for (Enumeration<JarEntry> en = jarfile.entries(); en.hasMoreElements(); ) {
 				JarEntry je = en.nextElement();
 				if (name.contains(je.getName())) {
-					is = jarfile.getInputStream(je);
-					fo = new FileOutputStream(fl);
-					IOUtils.copy(is, fo);
+					FileOutputStream fo = null;
+					InputStream is = null;
+					try {
+						is = jarfile.getInputStream(je);
+						fo = new FileOutputStream(fl);
+						IOUtils.copy(is, fo);
+					} finally {
+						IOUtils.closeQuietly(fo);
+						IOUtils.closeQuietly(is);
+					}
 				}
 			}
 		} catch (IOException e) {
 			throw new ArchLoaderException(e.getMessage());
-		} finally {
-			IOUtils.closeQuietly(fo);
-			IOUtils.closeQuietly(is);
 		}
 	}
+
 
 	private void addNativeDirectoryToLibPath(File nativeDirectory) {
 		String existingPath = System.getProperty("java.library.path");

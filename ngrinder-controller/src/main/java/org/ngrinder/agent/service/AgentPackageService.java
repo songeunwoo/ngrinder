@@ -164,8 +164,9 @@ public class AgentPackageService {
 
 	private Set<String> getDependentLibs(URLClassLoader cl) throws IOException {
 		Set<String> libs = new HashSet<String>();
-		final InputStream dependencyStream = cl.getResourceAsStream("dependencies.txt");
+		InputStream dependencyStream = null;
 		try {
+			dependencyStream = cl.getResourceAsStream("dependencies.txt");
 			final String dependencies = IOUtils.toString(dependencyStream);
 			for (String each : StringUtils.split(dependencies, ",;")) {
 				libs.add(each.trim());
