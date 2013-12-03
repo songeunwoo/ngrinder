@@ -758,7 +758,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		int interval = 0;
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
-			LOGGER.warn("Report data for {} in {} does not exist.", dataType, testId);
+			LOGGER.warn("Report {} for test {} does not exist.", dataType, testId);
 			return 0;
 		}
 		LineNumberReader lnr = null;

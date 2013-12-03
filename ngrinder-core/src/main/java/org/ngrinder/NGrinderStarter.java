@@ -110,9 +110,11 @@ public class NGrinderStarter {
 	 * Start the performance monitor.
 	 */
 	public void startMonitor() {
-		LOG.info("***************************************************");
-		LOG.info("* Start nGrinder Monitor... ");
-		LOG.info("***************************************************");
+		if (!agentConfig.isSilentMode()) {
+			LOG.info("***************************************************");
+			LOG.info("* Start nGrinder Monitor... ");
+			LOG.info("***************************************************");
+		}
 		MonitorConstants.init(agentConfig);
 		try {
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);

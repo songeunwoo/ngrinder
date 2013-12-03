@@ -59,6 +59,8 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 	public PerfTest currentTest;
 
+	@Autowired
+	public ConsoleManager consoleManager;
 	@Before
 	public void before() throws IOException {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
@@ -108,6 +110,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		sleep(5000);
 		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
+		assertThat(consoleManager.getConsoleInUse().size(), not(0));
 	}
 
 	boolean ended = false;
@@ -157,7 +160,10 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		// Waiting for termination
 		singleConsole.waitUntilAllAgentDisconnected();
 		perfTestRunnable.finishTest();
+		sleep(5000);
+		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
+		assertThat(consoleManager.getConsoleInUse().size(), not(0));
 	}
 
 	private void prepareUserRepo() throws IOException {
