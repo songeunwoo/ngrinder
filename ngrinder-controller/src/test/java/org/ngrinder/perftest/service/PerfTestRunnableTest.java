@@ -61,6 +61,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 	@Autowired
 	public ConsoleManager consoleManager;
+
 	@Before
 	public void before() throws IOException {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
@@ -102,15 +103,14 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 	public void testDoTest() throws IOException {
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.startTest();
-		sleep(5000);
+		sleep(10000);
 		assertThat(perfTestService.getTestingPerfTest().size(), is(1));
-
 		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
-		perfTestRunnable.finishTest();
 		sleep(5000);
+		perfTestRunnable.finishTest();
 		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
-		assertThat(consoleManager.getConsoleInUse().size(), not(0));
+		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
 	boolean ended = false;
@@ -157,13 +157,16 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
 		sleep(10000);
-		// Waiting for termination
+		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
 		singleConsole.waitUntilAllAgentDisconnected();
 		perfTestRunnable.finishTest();
+		// Waiting for termination
+
+
 		sleep(5000);
 		assertThat(perfTestService.getTestingPerfTest().size(), is(0));
 		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
-		assertThat(consoleManager.getConsoleInUse().size(), not(0));
+		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
 	private void prepareUserRepo() throws IOException {
