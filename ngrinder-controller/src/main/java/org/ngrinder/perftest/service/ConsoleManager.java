@@ -215,7 +215,7 @@ public class ConsoleManager {
 		try {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
-			LOG.error("Exception is occurred while console shutdown in return back process for test {}.",
+			LOG.error("Exception occurred during console return back for test {}.",
 					testIdentifier, e);
 			// But the port is getting back.
 		} finally {
@@ -224,7 +224,7 @@ public class ConsoleManager {
 				// Wait console is completely shutdown...
 				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while console shutdown in return back process for test {}.",
+				LOG.error("Exception occurred during console return back for test {}.",
 						testIdentifier, e);
 				// If it's not disconnected still, stop them by force.
 				agentManager.stopAgent(console.getConsolePort());
@@ -232,7 +232,7 @@ public class ConsoleManager {
 			try {
 				console.shutdown();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while console shutdown console in return back process for test {}.",
+				LOG.error("Exception occurred during console return back for test {}.",
 						testIdentifier, e);
 			}
 			int consolePort;
