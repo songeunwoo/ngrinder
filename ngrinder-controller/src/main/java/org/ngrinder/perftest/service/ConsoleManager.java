@@ -245,7 +245,9 @@ public class ConsoleManager {
 			synchronized (this) {
 				if (!consoleQueue.contains(consoleEntry)) {
 					consoleQueue.add(consoleEntry);
-					if (!getConsoleInUse().contains(console))
+					if (!getConsoleInUse().contains(console)) {
+						LOG.error("Try to return back the not used console on {} port", consolePort);
+					}
 					getConsoleInUse().remove(console);
 				}
 			}

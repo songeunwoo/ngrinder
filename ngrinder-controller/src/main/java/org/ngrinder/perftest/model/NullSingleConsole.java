@@ -18,8 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.grinder.SingleConsole;
+import net.grinder.common.GrinderException;
 import net.grinder.console.ConsoleFoundationEx;
+import net.grinder.console.common.ConsoleException;
+import net.grinder.console.model.ConsoleProperties;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Null Object for {@link SingleConsole}.
@@ -36,6 +42,18 @@ public class NullSingleConsole extends SingleConsole {
 
 	static {
 		EMPTY_RESULT.put("test_time", 0);
+	}
+
+	@Override
+	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
+		try {
+			if (StringUtils.isNotEmpty(ip)) {
+				consoleProperties.setConsoleHost(ip);
+			}
+			consoleProperties.setConsolePort(port);
+		} catch (GrinderException e) {
+			throw processException("Exception occurred while creating SingleConsole", e);
+		}
 	}
 
 	/**
@@ -64,6 +82,7 @@ public class NullSingleConsole extends SingleConsole {
 	public void unregisterSampling() {
 		// Do nothing
 	}
+
 
 	@Override
 	public void sendStopMessageToAgents() {
@@ -108,8 +127,4 @@ public class NullSingleConsole extends SingleConsole {
 		return EMPTY_RESULT;
 	}
 
-	@Override
-	protected ConsoleFoundationEx getConsoleFoundation() {
-		throw new UnsupportedOperationException("getConsoleFoundation() on the NullSingleConsole is prohibited");
-	}
 }

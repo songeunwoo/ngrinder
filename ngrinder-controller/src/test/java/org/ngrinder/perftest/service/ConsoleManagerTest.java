@@ -46,7 +46,6 @@ public class ConsoleManagerTest extends AbstractAgentReadyTest {
 
 	@Test
 	public void testConsoleManagerWhenExceedingLimit() {
-
 		// Get all console
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;

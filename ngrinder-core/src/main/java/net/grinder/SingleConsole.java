@@ -41,6 +41,7 @@ import net.grinder.common.Test;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
+import net.grinder.console.common.ConsoleException;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.ProcessControl;
@@ -173,23 +174,20 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param consoleProperties {@link ConsoleProperties} used.
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
-		// if port is 0, it is Null singleConsole.
-		if (port == 0) {
-			return;
-		}
+		init(ip, port, consoleProperties);
+	}
+
+	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
 		try {
 			if (StringUtils.isNotEmpty(ip)) {
 				consoleProperties.setConsoleHost(ip);
 			}
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, eventSyncCondition);
-
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
-
 		} catch (GrinderException e) {
 			throw processException("Exception occurred while creating SingleConsole", e);
-
 		}
 	}
 
