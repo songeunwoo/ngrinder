@@ -13,27 +13,23 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.List;
-
 import net.grinder.SingleConsole;
 import net.grinder.util.ConsolePropertiesFactory;
-
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
 
-public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+public class ConsoleManagerTest extends AbstractAgentReadyTest {
 	@Autowired
 	private MockConsoleManager manager;
 
