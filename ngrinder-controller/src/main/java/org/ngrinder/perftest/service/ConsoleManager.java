@@ -280,6 +280,10 @@ public class ConsoleManager {
 	 */
 	public SingleConsole getConsoleUsingPort(Integer port) {
 		for (SingleConsole each : consoleInUse) {
+			// Avoid to Klocwork error.
+			if (each instanceof  NullSingleConsole) {
+				continue;
+			}
 			if (each.getConsolePort() == port) {
 				return each;
 			}
