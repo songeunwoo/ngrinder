@@ -43,14 +43,7 @@ public class NullSingleConsole extends SingleConsole {
 
 	@Override
 	protected void init(String ip, int port, ConsoleProperties consoleProperties) {
-		try {
-			if (StringUtils.isNotEmpty(ip)) {
-				consoleProperties.setConsoleHost(ip);
-			}
-			consoleProperties.setConsolePort(port);
-		} catch (GrinderException e) {
-			throw processException("Exception occurred while creating SingleConsole", e);
-		}
+
 	}
 
 	/**
