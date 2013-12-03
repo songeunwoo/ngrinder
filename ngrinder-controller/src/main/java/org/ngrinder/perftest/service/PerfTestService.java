@@ -946,7 +946,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 			}
 			json = gson.toJson(pickAgentStateMap);
-			LOGGER.debug("Agent status string get:{} of:{} agents, new size is: {}.", new Object[]{pickSize,
+			LOGGER.debug("Agent status string get {} outof {} agents, new size is {}.", new Object[]{pickSize,
 					agentStatusMap.size(), json.length()});
 		}
 		return json;

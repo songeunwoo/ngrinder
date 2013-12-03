@@ -16,12 +16,9 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
-import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -39,7 +36,6 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -92,28 +88,16 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 			}
 			sleep(1000);
 		}
-
+		agentService.checkAgentStateRegularly();
 		List<AgentInfo> agentList = agentService.getLocalAgentListFromDB();
-		System.out.println("Agent List : " + agentList.size());
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}
-
-		assertThat(agentCount, is(1));
+		assertThat(agentList.size(), is(1));
 	}
 
 	@Test
 	public void testDoTest() throws IOException {
-		sleep(5000);
-		for (AgentProcessControlImplementation.AgentStatus each : agentManager.getAllAgentStatusSet()) {
-			System.out.println("----" + ToStringBuilder.reflectionToString(each));
-
-		}
-
-		for (AgentIdentity each : agentManager.getAllAttachedAgents()) {
-			System.out.println("----" + ToStringBuilder.reflectionToString(each));
-
-		}
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.startTest();
 		sleep(5000);
@@ -130,15 +114,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 	@Test
 	public void testStartConsole() throws IOException {
-		for (AgentProcessControlImplementation.AgentStatus each : agentManager.getAllAgentStatusSet()) {
-			System.out.println("----" + ToStringBuilder.reflectionToString(each));
-
-		}
-
-		for (AgentIdentity each : agentManager.getAllAttachedAgents()) {
-			System.out.println("----" + ToStringBuilder.reflectionToString(each));
-
-		}
 		// Get perf test
 		PerfTest perfTest = perfTestService.getNextRunnablePerfTestPerfTestCandidate();
 		perfTest.setScriptName("/hello/world.py");
@@ -173,8 +148,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 
@@ -183,6 +156,8 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 		sleep(10000);
 		// Waiting for termination
 		singleConsole.waitUntilAllAgentDisconnected();
+		perfTestRunnable.finishTest();
+		assertThat(perfTestService.getNextRunnablePerfTestPerfTestCandidate(), nullValue());
 	}
 
 	private void prepareUserRepo() throws IOException {
