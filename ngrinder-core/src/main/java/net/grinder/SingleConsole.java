@@ -208,13 +208,13 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * messages.
 	 */
 	public void start() {
-		if (consoleFoundation == null) {
+		if (getConsoleFoundation() == null) {
 			return; // the console is not a valid console.(NullSingleConsole)
 		}
 		synchronized (eventSyncCondition) {
 			consoleFoundationThread = new Thread(new Runnable() {
 				public void run() {
-					consoleFoundation.run();
+					getConsoleFoundation().run();
 				}
 			}, "console on port " + getConsolePort());
 			consoleFoundationThread.setDaemon(true);
@@ -227,7 +227,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * For test.
 	 */
 	public void startSync() {
-		consoleFoundation.run();
+		getConsoleFoundation().run();
 	}
 
 	/**
@@ -237,7 +237,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public void shutdown() {
 		try {
 			synchronized (this) {
-				consoleFoundation.shutdown();
+				getConsoleFoundation().shutdown();
 				if (consoleFoundationThread != null && !consoleFoundationThread.isInterrupted()) {
 					consoleFoundationThread.interrupt();
 					consoleFoundationThread.join(1000);
@@ -262,8 +262,12 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return count of agents
 	 */
 	public int getAllAttachedAgentsCount() {
-		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
+		return ((ProcessControlImplementation) getConsoleFoundation().getComponent(ProcessControl.class))
 				.getNumberOfLiveAgents();
+	}
+
+	protected ConsoleFoundationEx getConsoleFoundation() {
+		return checkNotNull(consoleFoundation);
 	}
 
 	/**
@@ -275,7 +279,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		final List<AgentIdentity> agentIdentities = newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
 				ReflectionUtil.getFieldValue(
-						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						(ProcessControlImplementation) getConsoleFoundation().getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
 				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
@@ -294,7 +298,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return the consoleFoundation
 	 */
 	public <T> T getConsoleComponent(Class<T> componentType) {
-		return checkNotNull(consoleFoundation).getComponent(componentType);
+		return getConsoleFoundation().getComponent(componentType);
 	}
 
 	/**

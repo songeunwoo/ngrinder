@@ -18,12 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.grinder.SingleConsole;
+import net.grinder.console.ConsoleFoundationEx;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 /**
  * Null Object for {@link SingleConsole}.
- * 
+ *
  * This class is to ignore the default {@link SingleConsole} behavior.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -106,5 +108,8 @@ public class NullSingleConsole extends SingleConsole {
 		return EMPTY_RESULT;
 	}
 
-
+	@Override
+	protected ConsoleFoundationEx getConsoleFoundation() {
+		throw new UnsupportedOperationException("getConsoleFoundation() on the NullSingleConsole is prohibited");
+	}
 }

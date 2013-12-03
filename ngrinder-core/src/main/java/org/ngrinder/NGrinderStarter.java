@@ -110,11 +110,9 @@ public class NGrinderStarter {
 	 * Start the performance monitor.
 	 */
 	public void startMonitor() {
-		if (!agentConfig.isSilentMode()) {
-			LOG.info("***************************************************");
-			LOG.info("* Start nGrinder Monitor... ");
-			LOG.info("***************************************************");
-		}
+		printLog("***************************************************");
+		printLog("* Start nGrinder Monitor... ");
+		printLog("***************************************************");
 		MonitorConstants.init(agentConfig);
 		try {
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
@@ -139,27 +137,23 @@ public class NGrinderStarter {
 	 * @param directControllerIP controllerIp to connect directly;
 	 */
 	public void startAgent(String directControllerIP) {
-		if (!agentConfig.isSilentMode()) {
-			LOG.info("***************************************************");
-			LOG.info("   Start nGrinder Agent ...");
-			LOG.info("***************************************************");
-		}
+		printLog("***************************************************");
+		printLog("   Start nGrinder Agent ...");
+		printLog("***************************************************");
 
 		if (StringUtils.isEmpty(System.getenv("JAVA_HOME"))) {
-			if (!agentConfig.isSilentMode()) {
-				LOG.info("Hey!! JAVA_HOME env var was not provided. "
-						+ "Please provide JAVA_HOME env var before running agent."
-						+ "Otherwise you can not execute the agent in the security mode.");
-			}
+			printLog("Hey!! JAVA_HOME env var was not provided. "
+					+ "Please provide JAVA_HOME env var before running agent."
+					+ "Otherwise you can not execute the agent in the security mode.");
 		}
+
 
 		boolean serverMode = agentConfig.isServerMode();
 		if (!serverMode) {
-			if (!agentConfig.isSilentMode()) {
-				LOG.info("JVM server mode is disabled. If you turn on agent.servermode in agent.conf."
-						+ " It will provide the better agent performance.");
-			}
+			printLog("JVM server mode is disabled. If you turn on agent.servermode in agent.conf."
+					+ " It will provide the better agent performance.");
 		}
+
 		String controllerIP = getIP(defaultIfBlank(directControllerIP, agentConfig.getControllerIP()));
 		int controllerPort = agentConfig.getControllerPort();
 		String region = agentConfig.getRegion();
@@ -173,6 +167,13 @@ public class NGrinderStarter {
 		} catch (Exception e) {
 			LOG.error("Error while connecting to : {}:{}", controllerIP, controllerPort);
 			printHelpAndExit("Error while starting Agent", e);
+		}
+
+	}
+
+	private void printLog(String s, Object... args) {
+		if (!agentConfig.isSilentMode()) {
+			LOG.info(s, args);
 		}
 	}
 
