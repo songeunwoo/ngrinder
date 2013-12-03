@@ -139,6 +139,7 @@
 					<plugin>
 						<groupId>com.klocwork.ps</groupId>
 						<artifactId>kwmaven</artifactId>
+						<version>2.1.1</version>
 						<configuration>
 							<buildspec_filename>${KWINJECT_OUT_PATH}</buildspec_filename>
 						</configuration>
