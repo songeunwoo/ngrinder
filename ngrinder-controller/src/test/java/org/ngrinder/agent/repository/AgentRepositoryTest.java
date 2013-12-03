@@ -67,7 +67,7 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(findByIp.isApproved(), is(true));
 		assertThat(findByIp, notNullValue());
 		assertThat(findByIp.getName(), is("hello"));
-		assertThat(findByIp.getRegion(), is("world"));
+		assertThat(findByIp.getRegion(), is("world1"));
 	}
 
 	@Test
