@@ -64,7 +64,11 @@ public class LocalScriptTestDriveService {
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
 					String hostString) {
-		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, DEFAULT_TIMEOUT);
+		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, getDefaultTimeout());
+	}
+
+	protected int getDefaultTimeout() {
+		return DEFAULT_TIMEOUT;
 	}
 
 	/**

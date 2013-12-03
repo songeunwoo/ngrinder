@@ -250,6 +250,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 				builder.append(each).append(File.pathSeparator);
 			}
 		}
+		System.out.println(builder.toString());
 		return filterClassPath(builder.toString(), logger);
 	}
 

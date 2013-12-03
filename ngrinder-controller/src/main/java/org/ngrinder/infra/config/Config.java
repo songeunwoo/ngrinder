@@ -106,7 +106,7 @@ public class Config implements IConfig, NGrinderConstants {
 	@PostConstruct
 	public void init() {
 		try {
-			CoreLogger.LOGGER.info("NGrinder is starting...");
+			CoreLogger.LOGGER.info("nGrinder is starting...");
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
