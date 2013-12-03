@@ -130,7 +130,7 @@ public class MonitorClientService {
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
 			}
-			if (!mbeanClient.isConnected()) {
+			if (mbeanClient == null || !mbeanClient.isConnected()) {
 				// if the monitor client can not be connected, just return, to
 				// avoid error.
 				return null;

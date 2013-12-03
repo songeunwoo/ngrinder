@@ -16,6 +16,8 @@ package org.ngrinder.perftest.service;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -36,6 +38,7 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -61,7 +64,6 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 	@Before
 	public void before() throws IOException {
-
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
@@ -102,6 +104,11 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 	@Test
 	public void testDoTest() throws IOException {
 		sleep(5000);
+		for (Object each : agentManager.getAllAgentStatusSet()) {
+			System.out.println("----" + each);
+
+		}
+
 		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		perfTestRunnable.startTest();
 		sleep(5000);
@@ -118,7 +125,10 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements NGri
 
 	@Test
 	public void testStartConsole() throws IOException {
-		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
+		for (Object each : agentManager.getAllAgentStatusSet()) {
+			System.out.println("----" + each);
+
+		}
 		// Get perf test
 		PerfTest perfTest = perfTestService.getNextRunnablePerfTestPerfTestCandidate();
 		perfTest.setScriptName("/hello/world.py");
