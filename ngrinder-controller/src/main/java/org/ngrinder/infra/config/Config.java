@@ -118,6 +118,7 @@ public class Config implements IConfig, NGrinderConstants {
 			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
 			initLogger(isTestMode());
 			resolveLocalIp();
+			loadAnnouncement();
 			loadDatabaseProperties();
 			versionString = getVersion();
 		} catch (IOException e) {
