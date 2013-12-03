@@ -43,9 +43,9 @@
 
 	function getState() {
 		var result = false;
-		var obj = new ajaxObj();
+		var obj = new AjaxObj();
 		obj.url = "${req.getContextPath()}/monitor/state";
-		obj.datas = {'ip' : '${(targetIP)!}'};
+		obj.params = {'ip' : '${(targetIP)!}'};
 		obj.async = false;
 		obj.success = function(res) {
 			getChartData(res);

@@ -249,10 +249,10 @@ function cookie(name,value,expiredays){
 }
 
 
-function ajaxObj(errorMessage)  {
+function AjaxObj(errorMessage)  {
     this.url = "" ,
     this.type = "GET",
-    this.datas = {} ,
+    this.params = {} ,
     this.cache = false ,
     this.dataType = 'json' ,
     this.async = true ,
@@ -271,7 +271,7 @@ function callAjaxAPI(ajaxObj) {
         type: ajaxObj.type,
         async: ajaxObj.async,
         cache: ajaxObj.cache,
-        data: ajaxObj.datas,
+        data: ajaxObj.params,
         dataType: ajaxObj.dataType,
         success: ajaxObj.success,
         error: ajaxObj.error

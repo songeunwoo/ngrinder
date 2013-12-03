@@ -25,42 +25,23 @@
 				<div class="span3">
 					<table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px;margin-top:14px">
 					<tbody>
-						<tr>
-							<th><@spring.message "agent.table.IP"/></th>
-						</tr>
-						<tr>
-							<td>${(agent.ip)!}</td>
-						</tr>
-						<tr>
-							<th><@spring.message "agent.table.port"/></th>
-						</tr>
-						<tr>
-							<td>${(agent.port)!}</td>
-						</tr>
-						<tr>
-							<th><@spring.message "agent.table.name"/></th>
-						</tr>
-						<tr>
-							<td>${(agent.hostName)!}</td>
-						</tr>
-							<th><@spring.message "agent.table.region"/></th>
-						</tr>
-						<tr>
-							<td>${(agent.region)!}</td>
-						</tr>
-						<tr>
-							<th><@spring.message "agent.table.version"/></th>
-						</tr>
-						<tr>
-							<td>${(agent.version)!"Prev 3.3"}</td>
-						</tr>
-						</tr>
-						<tr>
-							<th><@spring.message "agent.table.state"/></th>
-						</tr>
-						<tr>
-							<td>${(agent.state)!}</td>
-						</tr>
+						<tr><th><@spring.message "agent.table.IP"/></th></tr>
+						<tr><td>${(agent.ip)!}</td></tr>
+
+						<tr><th><@spring.message "agent.table.port"/></th></tr>
+						<tr><td>${(agent.port)!}</td></tr>
+
+						<tr><th><@spring.message "agent.table.name"/></th></tr>
+						<tr><td>${(agent.hostName)!}</td></tr>
+
+						<tr><th><@spring.message "agent.table.region"/></th></tr>
+						<tr><td>${(agent.region)!}</td></tr>
+
+						<tr><th><@spring.message "agent.table.version"/></th></tr>
+						<tr><td>${(agent.version)!"Prev 3.3"}</td></tr>
+
+						<tr><th><@spring.message "agent.table.state"/></th></tr>
+						<tr><td>${(agent.state)!}</td></tr>
 					</tbody>
 					</table>
 					<label><@spring.message "agent.info.refreshInterval"/></label>
@@ -124,9 +105,9 @@
 			}
 
 			function getState(){
-                var obj = new ajaxObj("Error!");
+                var obj = new AjaxObj("Error!");
                 obj.url = "${req.getContextPath()}/agent/api/${agent.id}/state";
-                obj.datas = {'ip': '${(agent.ip)!}','name': '${(agent.hostName)!}','imgWidth':700};
+                obj.params = {'ip': '${(agent.ip)!}','name': '${(agent.hostName)!}','imgWidth':700};
 				obj.async = false;
                 obj.success = function(res) {
                     getChartData(res);

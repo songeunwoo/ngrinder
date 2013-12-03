@@ -178,10 +178,10 @@
 	});
 
 	function stopAgents(ids) {
-		var obj = new ajaxObj("<@spring.message "agent.table.message.error.stop"/>!");
+		var obj = new AjaxObj("<@spring.message "agent.table.message.error.stop"/>!");
 		obj.url = '${req.getContextPath()}/agent/api/stop';
 		obj.type = 'POST';
-		obj.datas = { "ids": ids };
+		obj.params = { "ids": ids };
 		obj.success = function (res) {
 			showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
 			setTimeout(function () {
@@ -193,10 +193,10 @@
 	}
 
 	function updateAgents(ids) {
-		var obj = new ajaxObj("<@spring.message "agent.table.message.error.update"/>");
+		var obj = new AjaxObj("<@spring.message "agent.table.message.error.update"/>");
 		obj.url = '${req.getContextPath()}/agent/api/update';
 		obj.type = 'POST';
-		obj.datas = { "ids": ids };
+		obj.params = { "ids": ids };
 		obj.success = function (res) {
 			showSuccessMsg("<@spring.message "agent.table.message.success.update"/>");
 		};
@@ -209,7 +209,7 @@
 			return this.value;
 		}).get();
 
-		var obj = new ajaxObj();
+		var obj = new AjaxObj();
         obj.url = '${req.getContextPath()}/agent/api/states';
         obj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
