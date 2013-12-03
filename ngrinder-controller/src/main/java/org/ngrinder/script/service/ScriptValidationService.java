@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Script Validation Service.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -133,8 +133,7 @@ public class ScriptValidationService implements IScriptValidationService {
 
 	@Override
 	public String checkSyntaxErrors(String script) {
-
+		// deprecated
 		return null;
 	}
-
 }
