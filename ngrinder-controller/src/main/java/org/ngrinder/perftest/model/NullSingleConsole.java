@@ -89,6 +89,11 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
+	public int getConsolePort() {
+		return 0;
+	}
+
+	@Override
 	public Map<String, Object> getStatisticsData() {
 		if (getCurrentRunningTime() > 0) {
 			return super.getStatisticsData();

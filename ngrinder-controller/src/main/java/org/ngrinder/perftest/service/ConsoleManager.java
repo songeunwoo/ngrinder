@@ -208,7 +208,7 @@ public class ConsoleManager {
 	 */
 	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
-		if (console == null) {
+		if (console == null || console instanceof NullSingleConsole) {
 			LOG.error("Attempt to return back null console for {}.", testIdentifier);
 			return;
 		}

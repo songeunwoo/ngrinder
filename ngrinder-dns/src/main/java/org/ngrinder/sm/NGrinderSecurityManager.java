@@ -369,10 +369,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 		char[] array = new char[size + 2]; // +1 for possible extra slash, +2 for arraycopy
 		filename.getChars(0, filename.length(), array, 0);
 
-		// fix separators throughout
-		char otherSeparator = (SYSTEM_SEPARATOR == SYSTEM_SEPARATOR ? OTHER_SEPARATOR : SYSTEM_SEPARATOR);
 		for (int i = 0; i < array.length; i++) {
-			if (array[i] == otherSeparator) {
+			if (array[i] == OTHER_SEPARATOR) {
 				array[i] = SYSTEM_SEPARATOR;
 			}
 		}

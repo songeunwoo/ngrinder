@@ -260,12 +260,12 @@ public class AgentController implements Agent {
 				return (name.endsWith(".log"));
 			}
 		});
-		Arrays.sort(logFiles);
-		if (ArrayUtils.isEmpty(logFiles)) {
+
+		if (logFiles == null || ArrayUtils.isEmpty(logFiles)) {
 			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());
 			return;
 		}
-
+		Arrays.sort(logFiles);
 		// Take only one file... if agent.send.all.logs is not set.
 		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
 			logFiles = new File[]{logFiles[0]};
