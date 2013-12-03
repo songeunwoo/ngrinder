@@ -260,8 +260,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return count of agents
 	 */
 	public int getAllAttachedAgentsCount() {
-		return ((ProcessControlImplementation) getConsoleFoundation().getComponent(ProcessControl.class))
-				.getNumberOfLiveAgents();
+		return getConsoleFoundation().getComponent(ProcessControl.class).getNumberOfLiveAgents();
 	}
 
 	protected ConsoleFoundationEx getConsoleFoundation() {

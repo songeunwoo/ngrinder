@@ -31,6 +31,7 @@ import java.util.Set;
 
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
@@ -370,6 +371,7 @@ public class AgentConfig {
 			try {
 				FileUtils.forceDeleteOnExit(directory);
 			} catch (IOException e) {
+				noOp();
 			}
 			return resolveHome;
 		}
