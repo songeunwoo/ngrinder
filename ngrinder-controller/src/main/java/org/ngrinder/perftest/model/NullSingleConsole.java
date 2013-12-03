@@ -13,17 +13,14 @@
  */
 package org.ngrinder.perftest.model;
 
+import net.grinder.SingleConsole;
+import net.grinder.common.GrinderException;
+import net.grinder.console.model.ConsoleProperties;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.grinder.SingleConsole;
-import net.grinder.common.GrinderException;
-import net.grinder.console.ConsoleFoundationEx;
-import net.grinder.console.common.ConsoleException;
-import net.grinder.console.model.ConsoleProperties;
-import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
