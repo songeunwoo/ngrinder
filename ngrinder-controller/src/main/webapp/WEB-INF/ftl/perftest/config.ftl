@@ -35,7 +35,7 @@
 							</label> 
 							<select id="region" name="region" class="pull-right" style="width: 110px">
 								<#list regionList as eachRegion>
-									<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected</#if> > 
+									<option value="${eachRegion}" <#if (test.region?? && test.region == eachRegion)>selected</#if> >
 										<@spring.message "${eachRegion}"/>
 									</option> 
 								</#list>
@@ -69,13 +69,13 @@
 								<span class="add-on" title='<@spring.message "perfTest.report.process"/>'>
 									<@spring.message "perfTest.report.process"/>
 								</span>
-								<input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}" />
+								<input class="input span1" type="text" id="processes" name="processes" value="${test.processes}" />
 							</div>
 							<div class="input-prepend control-group" style="margin-bottom: 0">
 								<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'>
 									<@spring.message "perfTest.report.thread"/>
 								</span>
-								<input class="input span1" type="text" id="threads" name="threads" value="${(test.threads)!1}" />
+								<input class="input span1" type="text" id="threads" name="threads" value="${test.threads}" />
 							</div>
 						</span>
 					</div>
@@ -94,7 +94,7 @@
 					<button class="btn btn-mini btn-info pull-right" type="button"
 						id="show_script_btn"
 						style="margin-top: 3px; display: none;">R
-						<#if test?? && test.scriptRevision != -1>
+						<#if test.scriptRevision != -1>
 							${test.scriptRevision}
 						<#else>
 							<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if>
@@ -113,12 +113,10 @@
 			<div class="control-group">
 				<label class="control-label">
 					<@spring.message "perfTest.configuration.targetHost"/></label>
-					<#if test?? && test.targetHosts??>
+					<#if test.targetHosts??>
 						<#assign targetHosts = test.targetHosts>
 					<#elseif targetHostString??>
-						<#assign targetHosts = targetHostString> 
-					<#else>
-						<#assign targetHosts = "">
+						<#assign targetHosts = targetHostString>
 					</#if>
 				<div class="controls">
 					<#include "host.ftl">
@@ -128,7 +126,7 @@
 			<div class="control-group">
 				<label class="control-label"> 
 					<input type="radio" id="duration_ratio" name="threshold" value="D"
-						<#if (test?? && test.threshold == "D")||!(test??) >checked</#if>/> 
+						<#if test.threshold == "D">checked</#if>/>
 					<@spring.message "perfTest.configuration.duration"/>
 				</label>
 				<div class="controls docs-input-sizes">
@@ -145,7 +143,7 @@
             <div class="control-group">
                 <label for="run_count" class="control-label">
                     <input type="radio" id="run_count_radio" name="threshold" value="R"
-						   <#if test?? && test.threshold == "R" >checked</#if>/>
+						   <#if test.threshold == "R" >checked</#if>/>
 				<@spring.message "perfTest.configuration.runCount"/>
                 </label>
 
@@ -169,7 +167,7 @@
 								<select class="select-item" id="sampling_interval" name="samplingInterval"> 
 									<#list samplingIntervalArray as eachInterval>
 										<option value="${eachInterval}"
-											<#if test?? && test.samplingInterval != 0> 
+											<#if test.samplingInterval != 0>
 												<#if eachInterval == test.samplingInterval> selected="selected" </#if> 
 											<#else> 
 												<#if eachInterval == 2>
@@ -213,7 +211,7 @@
 							</label>
 							<div class="controls">
 								<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
-								<#if test?? && test.safeDistribution?default(false) == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> /> 
+								<#if test.safeDistribution == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> />
 								<span style="margin-top: 10px; margin-left: 10px" 
 									rel='popover' data-html='true'
 									data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>' 
@@ -256,7 +254,7 @@
 		<fieldset>
 			<legend>
 				<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
-					<#if test?? && test.useRampUp?default(false) == true>checked</#if> /> 
+					<#if test.useRampUp == true>checked</#if> />
 				<@spring.message "perfTest.configuration.rampEnable"/>
 			</legend>
 		</fieldset>
@@ -265,23 +263,23 @@
 				<div class="row">
 					<div class="span3">
 						<@input_label name="initProcesses"
-							value="${(test.initProcesses)!0}" message="perfTest.configuration.initalProcesses" />
+							value="${test.initProcesses}" message="perfTest.configuration.initalProcesses" />
 					</div>
 
 					<div class="span3">
 						<@input_label name="processIncrement"
-							value="${(test.processIncrement)!1}" message="perfTest.configuration.rampup" />
+							value="${test.processIncrement}" message="perfTest.configuration.rampup" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="span3">
 						<@input_label name="initSleepTime"
-							value="${(test.initSleepTime)!0}"
+							value="${test.initSleepTime}"
 							message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
 					</div>
 					<div class="span3">
 						<@input_label name="processIncrementInterval"
-							value="${(test.processIncrementInterval)!1000}"
+							value="${test.processIncrementInterval}"
 							message="perfTest.configuration.processesEvery" others="<code>MS</code>" />
 					</div>
 				</div>

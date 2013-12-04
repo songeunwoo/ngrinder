@@ -273,7 +273,7 @@
 		});
 		
 		var switchedUsers = [];
-		<@list list_items = followers  ; user >
+		<@list list_items = followers others = "no_message"  ; user >
 			switchedUsers.push("${user.userId}");
 		</@list>
 		$("#user_switch_select").val(switchedUsers).select2();

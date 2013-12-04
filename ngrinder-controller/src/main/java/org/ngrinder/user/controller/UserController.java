@@ -13,14 +13,7 @@
  */
 package org.ngrinder.user.controller;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.controller.RestAPI;
@@ -43,7 +36,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import com.google.common.collect.Lists;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
 import static org.ngrinder.common.util.Preconditions.*;
 
@@ -115,6 +113,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
+		getUserShareList(null, model);
 		return "user/detail";
 	}
 
@@ -142,7 +141,6 @@ public class UserController extends NGrinderBaseController {
 	 * @param user         current user
 	 * @param model        model
 	 * @param updatedUser  user to be updated.
-	 * @param followersStr user Id list that current will share his permission to.
 	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")

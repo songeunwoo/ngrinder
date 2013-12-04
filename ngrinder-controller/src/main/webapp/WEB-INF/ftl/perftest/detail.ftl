@@ -175,7 +175,7 @@
 		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/create" method="POST" 
     		style="margin-bottom: 0px">
 			<div class="well">
-				<input type="hidden" id="test_id" name="id" value="${(test.id)!}"> 
+				<input type="hidden" id="test_id" name="id" value="${(test.id)!}">
 				<div class="form-horizontal" id="query_div">
 					<fieldset>
 						<div class="control-group">
@@ -183,7 +183,7 @@
 								<div class="span4-5">
 									<div class="control-group">
 										<label for="test_name" class="control-label"><@spring.message "perfTest.configuration.testName"/></label>
-										<#if test?? && test.testName??>
+										<#if test.testName??>
 											<#assign initTestName = test.testName>
 										<#elseif testName??> 
 											<#assign initTestName = testName> 
@@ -191,7 +191,7 @@
 				                 	   		<#assign initTestName = "">
 			                    		</#if>
 			                    		<div class="controls" style="margin-left: 120px;">
-											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${(initTestName)!}"/>
+											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${initTestName}"/>
 										</div>  
 									</div>
 								</div>
@@ -199,12 +199,12 @@
 									<div class="control-group">
 										<label for="tag_string" class="control-label" style="width:60px;"><@spring.message "perfTest.configuration.tags"/></label>
 										<div class="controls" style="margin-left: 40px;"> 
-											<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${(test.tagString)!}">
+											<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${test.tagString}">
 										</div> 
 									</div>  
 								</div>
 								<div class="span1">
-									<#if test??> 
+									<#if test.id??>
 										<img id="test_status_img" 
 										src="${req.getContextPath()}/img/ball/${test.status.iconName}"
 										rel='popover'
@@ -215,21 +215,17 @@
 										/>
 									</#if>
 								</div>
-								<#if test??>
-									<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
-										<#assign isClone = true/>
-									<#else>
-										<#assign isClone = false/> 
-									</#if>
+								<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
+									<#assign isClone = true/>
 								<#else>
-									<#assign isClone = false/> 
+									<#assign isClone = false/>
 								</#if>
 								
 								<div class="span2-3" style="margin-left:0px"> 
 									<div class="control-group">
 										<input type="hidden" name="isClone" value="${isClone?string}"/>
 										<#--  Save/Clone is available only when the test owner is current user.   -->
-										<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
+										<#if test.createdUser.userId != currentUser.factualUser.userId>
 											<#assign disabled = "disabled">
 										</#if>
 										<button type="submit" class="btn btn-success" id="save_test_btn" style="width:55px" ${disabled!}>
@@ -249,7 +245,7 @@
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label"><@spring.message "common.label.description"/></label>
 							<div class="controls" style="margin-left: 120px;">
-								<textarea id="description" name="description" style="resize: none; width:751px; height:36px">${(test.description)!}</textarea>
+								<textarea id="description" name="description" style="resize: none; width:751px; height:36px">${test.description}</textarea>
 							</div>
 						</div>
 					</fieldset>
@@ -257,7 +253,7 @@
 			</div>
 			<!-- end well -->
 			<@security.authorize ifAnyGranted="A, S">
-				<#if test?? && test.createdUser?? && currentUser.userId != test.createdUser.userId>
+				<#if test.createdUser?? && currentUser.userId != test.createdUser.userId>
 					<div class="pull-right">
 						<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})		
 					</div>
@@ -298,7 +294,7 @@
 			</div>
 			<!-- end tabbable -->
 			<input type="hidden" id="scheduled_time" name="scheduledTime" /> 
-			<#if test??> 
+			<#if test.id??>
 				<input type="hidden" id="test_status" name="status" value="${(test.status)}">
 				<input type="hidden" id="test_status_type" name="statusType" value="${(test.status.category)}"> 
 			<#else>
@@ -364,26 +360,24 @@ $(document).ready(function () {
 	updateTotalVuser();
 	updateRampupChart();
 	
-	<#if test??>
-		<#assign category = test.status.category>
-		<#if category == "TESTING"> 
-  			displayConfigAndRunningSection(); 
-		<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR"> 
-			finished = true;
-			displayConfigAndReportSection();
-		<#else>
-			displayConfigOnly(); 
-		</#if>
+
+	<#assign category = test.status.category>
+	<#if category == "TESTING">
+		displayConfigAndRunningSection();
+	<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR">
+		finished = true;
+		displayConfigAndReportSection();
 	<#else>
 		displayConfigOnly();
 	</#if>
+
 	(function refreshContent() {
 		if (!testId || finished == true) {
 			return;
 		}
 
 		var obj = new AjaxObj("Error!");
-		obj.url = '${req.getContextPath()}/perftest/api/<#if test??>${(test.id)?c}</#if>/status';
+		obj.url = '${req.getContextPath()}/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status';
 		obj.success = function(perfTestData) {
 			perfTestData = eval(perfTestData);
 			data = perfTestData.status;
@@ -885,8 +879,8 @@ function bindEvent() {
 		if (currentScript) {
 			var ownerId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
-				<#if test??>
-					ownerId = "&ownerId=${(test.createdUser.userId)!}";
+				<#if test.id??>
+					ownerId = "&ownerId=${test.createdUser.userId}";
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#script_revision").val();
@@ -989,7 +983,7 @@ function updateScript() {
 	obj.url = "${req.getContextPath()}/perftest/api/script";
 	obj.params = {
 				<@security.authorize ifAnyGranted="A, S">
-						<#if test??>'ownerId' : '${test.createdUser.userId}'</#if>
+						<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
 				</@security.authorize>
 	};
 	obj.success = function(res) {
@@ -1031,7 +1025,7 @@ function updateScriptResources(first) {
         'scriptPath' : scriptName,
         'r' : $("#script_revision").val()
 		<@security.authorize ifAnyGranted="A, S">
-			<#if test??>,'ownerId' : '${test.createdUser.userId}'</#if>
+			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>
     };
     obj.success = function(res) {
@@ -1105,7 +1099,7 @@ function getOption(cnt) {
 }
 
 function openReportDiv(onFinishHook) {
-	$("#report_section").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
+	$("#report_section").load("${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
 		function() {
 			if (onFinishHook !== undefined) {
 				onFinishHook();

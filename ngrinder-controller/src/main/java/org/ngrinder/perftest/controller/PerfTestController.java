@@ -213,16 +213,19 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping("/{id}")
 	public String getPerfTestDetail(User user, @PathVariable("id") Long id, ModelMap model) {
 		PerfTest test = null;
+
 		if (id != null) {
 			test = getPerfTestWithPermissionCheck(user, id, true);
+		} else {
+			test = new PerfTest(user);
+			test.init();
 		}
 
 		model.addAttribute(PARAM_TEST, test);
 		// Retrieve the agent count map based on create user, if the test is
 		// created by the others.
-		if (test != null) {
-			user = test.getCreatedUser();
-		}
+		user = test.getCreatedUser() != null ? test.getCreatedUser() : user;
+
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
