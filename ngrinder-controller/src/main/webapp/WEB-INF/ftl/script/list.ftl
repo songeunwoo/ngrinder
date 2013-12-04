@@ -63,7 +63,7 @@
 									</#if>
 								</td>
 								<td>
-									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="delete_script_button">
+									<a class="pointer-cursor btn btn-danger pull-right" id="delete_script_button">
 										<i class="icon-remove icon-white"></i>
 										<@spring.message "script.list.button.delete"/>
 									</a>
@@ -131,8 +131,7 @@
 						</td>
 						<td class="center">
 							<#if script.fileType != "dir">
-								<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}"></i>
-								</a>
+								<i class="pointer-cursor icon-download-alt script-download" spath="${script.path}"></i>
 							</#if>
 						</td>
 					</tr>

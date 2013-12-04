@@ -26,8 +26,8 @@
 		            		<#if (currentUser.ownerUser)?exists>
 			            		<li><a href="${req.getContextPath()}/user/switch?to="><@spring.message "common.button.return"/></a></li>
 		            		<#else>
-			                	<li><a id="user_profile_menu" href="javascript:void(0)"><@spring.message "navigator.dropdown.profile"/></a></li>
-			                	<li><a id="switch_user_menu" href="javascript:void(0)"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+			                	<li><a id="user_profile_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.profile"/></a></li>
+			                	<li><a id="switch_user_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.switchUser"/></a></li>
 		                	</#if>
 		                	 
 			            	<@security.authorize ifAnyGranted="A">

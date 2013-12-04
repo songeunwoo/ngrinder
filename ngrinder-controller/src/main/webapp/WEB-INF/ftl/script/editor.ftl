@@ -62,10 +62,10 @@
 											</td>
 											<td>
 											<#if scriptHandler.isValidatable()>
-												<a class="btn btn-success" href="javascript:void(0);" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
-												<a class="btn btn-primary" href="javascript:void(0);" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="pointer-cursor btn btn-primary" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
 											<#else>
-												<a class="btn btn-success" href="javascript:void(0);" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="pointer-cursor btn btn-success" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
 											</#if>
 											</td>
 										</tr> 
@@ -126,7 +126,7 @@
 		<div id="validation_result_panel" style="display:none;">
 			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
 			</pre>
-			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a href="javascript:void(0)" id="expand_btn"><code>+</code></a></div>
+			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
 		</div>		 
 		<#include "../common/copyright.ftl"> 
 	</div>

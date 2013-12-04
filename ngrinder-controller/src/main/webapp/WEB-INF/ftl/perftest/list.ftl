@@ -82,7 +82,7 @@
 					<i class="icon-file icon-white"></i>
 						<@spring.message "perfTest.formInline.createTest"/>
 					</a>
-					<a class="btn btn-danger" href="javascript:void(0);" id="delete_btn">
+					<a class="pointer-cursor btn btn-danger" id="delete_btn">
 					<i class="icon-remove icon-white"></i>
 						<@spring.message "perfTest.formInline.deletetSelectedTest"/>
 					</a>
@@ -223,9 +223,9 @@
 		            				<div>
 		            			</td>
 								<td class="center">
-									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download test-display" sid="${test.id}"></i></a>
-									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
-									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
+									<a class="pointer-cursor" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download test-display" sid="${test.id}"></i></a>
+									<a class="pointer-cursor" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
+									<a class="pointer-cursor" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>
 							</tr>
 					</@list>

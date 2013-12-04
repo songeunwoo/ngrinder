@@ -153,7 +153,7 @@
 				</table>
 				<ul class="nav nav-list">
 					<li class="active">
-						<a id="test_btn" href="javascript:void(0);">
+						<a id="test_btn" class="pointer-cursor">
 							<i class="icon-tag icon-white"></i> <@spring.message "perfTest.report.performanceReport"/>
 						</a>
 					</li>
@@ -161,7 +161,7 @@
                     <li>
                         <ul class="nav nav-list">
 						<@list list_items = test.targetHostIP others = "no_message" ; targetIP >
-                            <li><a class="target-montor" href="javascript:void(0);" ip="${targetIP}"><i
+                            <li><a class="pointer-cursor target-montor" ip="${targetIP}"><i
                                     class="icon-chevron-right"></i> ${targetIP}</a></li>
 						</@list>
                         </ul>

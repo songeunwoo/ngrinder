@@ -147,7 +147,7 @@
 	function hostItem(content) {
 		return "<p class='host'><a id='hostID' href='#target_info_modal' data-toggle='modal'> "
 				+ content
-				+ " </a> <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
+				+ " </a> <a class='pointer-cursor'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
 	}
 
 	function initHosts(newHosts) {

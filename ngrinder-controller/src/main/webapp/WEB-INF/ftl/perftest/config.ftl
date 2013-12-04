@@ -55,7 +55,7 @@
 						value="${(test.vuserPerAgent)!1}"
 						message="perfTest.configuration.vuserPerAgent"
 						append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
-					<i class="hand-over expand" id="expand_collapse_btn"></i>
+					<i class="pointer-cursor expand" id="expand_collapse_btn"></i>
 					<div class="pull-right">
 						<span class="badge badge-info pull-right"
 							  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">

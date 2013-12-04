@@ -13,7 +13,7 @@
 					<fieldset>
 						<legend class="header">
 							<@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
-							<a id="test_btn" class="btn btn-primary pull-right" href="javascript:void(0);">
+							<a id="test_btn" class="pointer-cursor btn btn-primary pull-right">
 								<@spring.message "common.button.test"/>
 							</a>
 							<button id="save_btn" class="btn btn-success pull-right" style="margin-right:5px">
