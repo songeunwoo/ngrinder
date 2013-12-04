@@ -257,6 +257,7 @@ function AjaxObj(errorMessage)  {
     this.dataType = 'json' ,
     this.async = true ,
     this.success = function () {} ,
+    this.complete = function () {} ,
     this.error = function () {
         showErrorMsg(errorMessage);
         return false;
@@ -274,6 +275,7 @@ function callAjaxAPI(ajaxObj) {
         data: ajaxObj.params,
         dataType: ajaxObj.dataType,
         success: ajaxObj.success,
+        complete : ajaxObj.complete,
         error: ajaxObj.error
     });
 

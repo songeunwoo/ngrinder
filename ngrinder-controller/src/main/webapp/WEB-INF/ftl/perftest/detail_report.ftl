@@ -288,40 +288,37 @@
 		        return;
 		    }
 		    performanceInit = true;
-            $.ajax({
-                url: "${req.getContextPath()}/perftest/api/${(test.id)?c}/graph",
-                dataType:'json',
-                cache: true,
-                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
-                success: function(res) {
-					var result = drawMultiPlotChart('tps_chart', res.TPS.data, res.TPS.lables, res.chartInterval);
-					if (result !== undefined){ result.replot(); }
-					result = drawMultiPlotChart('mean_time_chart', res.Mean_Test_Time_ms.data, res.Mean_Test_Time_ms.lables, res.chartInterval);
-					if (result !== undefined){ result.replot(); }
 
-					if (res.Mean_time_to_first_byte !== undefined &&
-							res.Mean_time_to_first_byte.data !== '[ ]') {
-						drawMultiPlotChart('min_time_first_byte_chart', res.Mean_time_to_first_byte.data, res.Mean_time_to_first_byte.lables, res.chartInterval).replot();
-					} else {
-						$("#min_time_first_byte_chart").hide();
-						$("#min_time_first_byte_header").hide();
-					}
-					if (res.User_defined !== undefined &&
-							res.User_defined.lables !== undefined && res.User_defined.lables.length != 0) {
-						drawMultiPlotChart('user_defined_chart', res.User_defined.data, res.User_defined.lables, res.chartInterval).replot();
-					} else {
-						$("#user_defined_chart").hide();
-						$("#user_defined_header").hide();
-					}
-					drawMultiPlotChart('error_chart', res.Errors.data, res.Errors.lables, res.chartInterval);
-					generateImg(imgBtnLabel, imgTitle);
-					return true;
-                },
-                error: function() {
-                    showErrorMsg("Failed to get graph!");
-                    return false;
-                }
-            }); 
+			var obj = new AjaxObj("Failed to get graph!");
+			obj.url = "${req.getContextPath()}/perftest/api/${(test.id)?c}/graph";
+			obj.cache = true;
+			obj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
+			obj.success = function(res) {
+				var result = drawMultiPlotChart('tps_chart', res.TPS.data, res.TPS.lables, res.chartInterval);
+				if (result !== undefined){ result.replot(); }
+				result = drawMultiPlotChart('mean_time_chart', res.Mean_Test_Time_ms.data, res.Mean_Test_Time_ms.lables, res.chartInterval);
+				if (result !== undefined){ result.replot(); }
+
+				if (res.Mean_time_to_first_byte !== undefined &&
+						res.Mean_time_to_first_byte.data !== '[ ]') {
+					drawMultiPlotChart('min_time_first_byte_chart', res.Mean_time_to_first_byte.data, res.Mean_time_to_first_byte.lables, res.chartInterval).replot();
+				} else {
+					$("#min_time_first_byte_chart").hide();
+					$("#min_time_first_byte_header").hide();
+				}
+				if (res.User_defined !== undefined &&
+						res.User_defined.lables !== undefined && res.User_defined.lables.length != 0) {
+					drawMultiPlotChart('user_defined_chart', res.User_defined.data, res.User_defined.lables, res.chartInterval).replot();
+				} else {
+					$("#user_defined_chart").hide();
+					$("#user_defined_header").hide();
+				}
+				drawMultiPlotChart('error_chart', res.Errors.data, res.Errors.lables, res.chartInterval);
+				generateImg(imgBtnLabel, imgTitle);
+				return true;
+			};
+
+			callAjaxAPI(obj);
         }
 		
 		function clearPrePlot() {
@@ -377,22 +374,18 @@
         		drawPlot(ip);
 				return;
         	}
-        	
-            $.ajax({
-                url: "${req.getContextPath()}/perftest/api/${(test.id)?c}/monitor",
-                dataType:'json',
-                cache: true,
-                data: {'targetIP': ip, 'imgWidth': 700},
-                success: function(res) {
-					targetMonitorData[ip] = res;
-					drawPlot(ip);
-					return true;
-                },
-                error: function() {
-                    showErrorMsg("Failed to get monitor graph data!");
-                    return false;
-                }
-            });
+
+            var obj = new AjaxObj("Failed to get monitor graph data!");
+            obj.url = "${req.getContextPath()}/perftest/api/${(test.id)?c}/monitor";
+            obj.cache = true;
+            obj.params = {'targetIP': ip, 'imgWidth': 700};
+            obj.success = function(res) {
+                targetMonitorData[ip] = res;
+                drawPlot(ip);
+                return true;
+            };
+
+            callAjaxAPI(obj);
         }
               
 

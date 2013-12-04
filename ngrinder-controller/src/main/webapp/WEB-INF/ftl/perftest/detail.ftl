@@ -378,25 +378,25 @@ $(document).ready(function () {
 		displayConfigOnly();
 	</#if>
 	(function refreshContent() {
-		var ids = [];
 		if (!testId || finished == true) {
 			return;
 		}
 
-		$.ajax({
-			url : '${req.getContextPath()}/perftest/api/<#if test??>${(test.id)?c}</#if>/status',
-			type : 'GET',
-			success : function(perfTestData) {
-				perfTestData = eval(perfTestData);
-				data = perfTestData.status;
-				for ( var i = 0; i < data.length; i++) {
-					updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
-				}
-			},
-			complete : function() {
-				setTimeout(refreshContent, 3000);
+		var obj = new AjaxObj("Error!");
+		obj.url = '${req.getContextPath()}/perftest/api/<#if test??>${(test.id)?c}</#if>/status';
+		obj.success = function(perfTestData) {
+			perfTestData = eval(perfTestData);
+			data = perfTestData.status;
+			for ( var i = 0; i < data.length; i++) {
+				updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 			}
-		});
+		};
+		obj.complete = function() {
+			setTimeout(refreshContent, 3000);
+		};
+
+		callAjaxAPI(obj);
+
 	})();
 });
 
@@ -433,21 +433,20 @@ function initTags() {
 		maximumSelectionSize: 5,
 		query: function(query) {
 			var data = {results:[]};
-			$.ajax({
-				url : "${req.getContextPath()}/perftest/search_tag",
-				dataType : 'json',
-				type : 'POST',
-				cache : true,
-				data : {
-					'query' : query.term
-				},
-				success : function(res) {
-					for (var i = 0; i < res.length; i++) {
-						data.results.push({id:"q_" + res[i], text:res[i]});
-					} 
-					query.callback(data);
+
+			var obj = new AjaxObj("Error!");
+			obj.url = "${req.getContextPath()}/perftest/search_tag";
+			obj.cache = true;
+			obj.type = "POST";
+			obj.params = {'query' : query.term};
+			obj.success = function(res) {
+				for (var i = 0; i < res.length; i++) {
+					data.results.push({id:"q_" + res[i], text:res[i]});
 				}
-			});
+				query.callback(data);
+			};
+
+			callAjaxAPI(obj);
 		}
 	}).change(formatTags);
 	
@@ -985,42 +984,39 @@ function initChartData(size) {
 }
 
 function updateScript() {
-	$.ajax({
-		url : "${req.getContextPath()}/perftest/api/script",
-		dataType : 'json',
-		data : {
-			<@security.authorize ifAnyGranted="A, S">
-			<#if test??>'ownerId' : '${test.createdUser.userId}'</#if> 
-			</@security.authorize>
-		},
-		success : function(res) {
-			$scriptSelection = $("#script_name");
-			var selectedScript = $scriptSelection.attr("old_script");
-			var exists = false;
-			for (var i = 0; i < res.length; i++) {
-				if (selectedScript == res[i].path) {
-					exists = true;
-				}
-				$scriptSelection.append($("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>"));	
+
+	var obj = new AjaxObj("<@spring.message "common.error.error"/>");
+	obj.url = "${req.getContextPath()}/perftest/api/script";
+	obj.params = {
+				<@security.authorize ifAnyGranted="A, S">
+						<#if test??>'ownerId' : '${test.createdUser.userId}'</#if>
+				</@security.authorize>
+	};
+	obj.success = function(res) {
+		$scriptSelection = $("#script_name");
+		var selectedScript = $scriptSelection.attr("old_script");
+		var exists = false;
+		for (var i = 0; i < res.length; i++) {
+			if (selectedScript == res[i].path) {
+				exists = true;
 			}
-			if (exists) {
-				$scriptSelection.select2("val", selectedScript);
-			} else if (selectedScript) {
-				$scriptSelection.append($("<option value='' revision='-1' validated='false'>(deleted)" + selectedScript +"</option>"));
-				$scriptSelection.select2("val", ""); 
-			} else {
-				$scriptSelection.append($("<option value='' revision='-1' validated='false'>" + selectedScript +"</option>"));
-				$scriptSelection.select2("val", ""); 
-			}
-		
-			bindNewScript($scriptSelection, true);
-			hideProgressBar();
-		},
-		error : function() {
-			showErrorMsg("<@spring.message "common.error.error"/>");
-			return false;
+			$scriptSelection.append($("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>"));
 		}
-	});
+		if (exists) {
+			$scriptSelection.select2("val", selectedScript);
+		} else if (selectedScript) {
+			$scriptSelection.append($("<option value='' revision='-1' validated='false'>(deleted)" + selectedScript +"</option>"));
+			$scriptSelection.select2("val", "");
+		} else {
+			$scriptSelection.append($("<option value='' revision='-1' validated='false'>" + selectedScript +"</option>"));
+			$scriptSelection.select2("val", "");
+		}
+
+		bindNewScript($scriptSelection, true);
+		hideProgressBar();
+	};
+
+	callAjaxAPI(obj);
 }
 
 function updateScriptResources(first) {
@@ -1028,37 +1024,33 @@ function updateScriptResources(first) {
 	if (!scriptName) {
 		return;
 	}
-	
-	$.ajax({
-		url : "${req.getContextPath()}/perftest/api/resource",
-		dataType : 'json',
-		data : {
-			'scriptPath' : scriptName,
-			'r' : $("#script_revision").val()
-			<@security.authorize ifAnyGranted="A, S">
-			<#if test??>,'ownerId' : '${test.createdUser.userId}'</#if> 
-			</@security.authorize>
-		},
-		success : function(res) {
-			var html = "";
-			var len = res.resources.length;
-			if (first == false) {
-				initHosts(res.targetHosts);
-			}
-			for ( var i = 0; i < len; i++) {
-				var value = res.resources[i];
-				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
-			}
-			$("#scriptResources").html(html);
-		},
-		complete : function() {
-			hideProgressBar();
-		},
-		error : function() {
-			showErrorMsg("<@spring.message "common.error.error"/>");
-			return false;
-		}
-	});
+
+    var obj = new AjaxObj("<@spring.message "common.error.error"/>");
+    obj.url = "${req.getContextPath()}/perftest/api/resource";
+    obj.params = {
+        'scriptPath' : scriptName,
+        'r' : $("#script_revision").val()
+		<@security.authorize ifAnyGranted="A, S">
+			<#if test??>,'ownerId' : '${test.createdUser.userId}'</#if>
+		</@security.authorize>
+    };
+    obj.success = function(res) {
+        var html = "";
+        var len = res.resources.length;
+        if (first == false) {
+            initHosts(res.targetHosts);
+        }
+        for ( var i = 0; i < len; i++) {
+            var value = res.resources[i];
+            html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
+        }
+        $("#scriptResources").html(html);
+    };
+	obj.complete = function() {
+        hideProgressBar();
+    };
+
+    callAjaxAPI(obj);
 }
 
 function updateVuserPolicy(vuser) {

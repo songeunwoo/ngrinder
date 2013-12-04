@@ -296,22 +296,19 @@
 							columnCount +"' class='no-padding'><table style='width:100%'><tr><td><div " +
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
-					$.ajax({
-						url: "${req.getContextPath()}/perftest/api/"+ id +"/graph",
-						dataType:'json',
-		                cache: false,
-		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
-		                success: function(res) {
-							drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
-							drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
-							drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
-							return true;
-		                },
-		                error: function() {
-			                showErrorMsg("Failed to get graph.");
-		                    return false;
-		                }
-		            });
+
+					var obj = new AjaxObj("Failed to get graph.");
+					obj.url = "${req.getContextPath()}/perftest/api/"+ id +"/graph";
+					obj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
+					obj.success = function(res) {
+						drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
+						drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+						drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
+						return true;
+					};
+
+					callAjaxAPI(obj);
+
                     testInfoTr.show("slow");
 				}else{
                     $("#"+perftestChartTrId).next('tr').remove();
@@ -380,36 +377,30 @@
 		}
 
 		function deleteTests(ids) {
-			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/api/delete",
-		  		type: "POST",
-		  		data: {"ids" : ids},
-				dataType:'json',
-		    	success: function(res) {
-					showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
-						setTimeout(function() {
-							getList(1);
-					}, 500);
-		    	},
-		    	error: function() {
-	                showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
-		    	}
-		  	});
+			var obj = new AjaxObj("<@spring.message "perfTest.table.message.error.delete"/>");
+			obj.url = "${req.getContextPath()}/perftest/api/delete";
+			obj.type = "POST";
+			obj.params = {"ids" : ids};
+			obj.success = function(res) {
+				showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
+				setTimeout(function() {
+					getList(1);
+				}, 500);
+			};
+
+			callAjaxAPI(obj);
 		}
 
 		function stopTests(ids) {
-			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/api/stop",
-				type: "POST",
-		  		data: {"ids":ids},
-				dataType:'json',
-		    	success: function(res) {
-			    	showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-			    },
-				error: function() {
-					showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-				}
-		  	});
+			var obj = new AjaxObj("<@spring.message "perfTest.table.message.error.stop"/>");
+			obj.url = "${req.getContextPath()}/perftest/api/stop";
+			obj.type = "POST";
+			obj.params = {"ids" : ids};
+			obj.success = function(res) {
+				showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
+			};
+
+			callAjaxAPI(obj);
 		}
 
 		function getSortColumn(colNum) {
@@ -451,37 +442,37 @@
 					return this.value;
 		  	}).get();
 
-            $.ajax({
-                url: '${req.getContextPath()}/perftest/api/status',
-                type: 'POST',
-                cache: false,
-                data: {"ids": ids.join(",")},
-                success: function (data) {
-                    var perfTestData = eval(data);
-                    var status = perfTestData.status;
-                    var perfTest = perfTestData.perfTestInfo;
-                    var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
-                    $("#current_running_status").text(springMessage);
-                    for (var i = 0; i < status.length; i++) {
-                        var each = status[i];
-                        var statusId = each.status_id;
-                        $("#check_" + each.id).attr("status", statusId);
+			var obj = new AjaxObj();
+			obj.url = '${req.getContextPath()}/perftest/api/status';
+			obj.type = "POST";
+			obj.params = {"ids": ids.join(",")};
+			obj.success = function (data) {
+				var perfTestData = eval(data);
+				var status = perfTestData.status;
+				var perfTest = perfTestData.perfTestInfo;
+				var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
+				$("#current_running_status").text(springMessage);
+				for (var i = 0; i < status.length; i++) {
+					var each = status[i];
+					var statusId = each.status_id;
+					$("#check_" + each.id).attr("status", statusId);
 
-                        if (statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED") {
-                            location.reload();
-                        }
-                        updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
-                    }
-                    if (ids.length == 0) {
-                        return;
-                    }
-                    setTimeout(updateStatuses, 2000);
-                },
-                error: function () {
-                    var springMessage = "0 <@spring.message "perfTest.currentRunning.summary"/>";
-                    $("#current_running_status").text(springMessage);
-                }
-        	});
+					if (statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED") {
+						location.reload();
+					}
+					updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
+				}
+				if (ids.length == 0) {
+					return;
+				}
+				setTimeout(updateStatuses, 2000);
+			};
+			obj.error = function () {
+				var springMessage = "0 <@spring.message "perfTest.currentRunning.summary"/>";
+				$("#current_running_status").text(springMessage);
+			};
+
+			callAjaxAPI(obj);
 	    })();
 	</script>
 	</body>

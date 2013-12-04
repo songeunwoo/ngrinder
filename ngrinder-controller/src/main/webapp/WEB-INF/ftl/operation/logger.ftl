@@ -23,28 +23,27 @@
 	<script>
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function pollingLogs() {
-		    $.ajax({
-			    url: '${req.getContextPath()}/operation/log/last', 
-			    type: 'GET',
-			    cache: false,
-			    success: function(data) {
-			    	var eachLog = $("tr#" +data.index + " td");
-			    	if (eachLog.size() != 0) {
-			    		if (eachLog.attr("id") != data.modification) {
-			    			eachLog.html(data.log);
-			    			eachLog.attr("id", data.modification);
-			    		}
-			    	} else {
-			    		var logentries = $("#log_container tr");
-			    		if (logentries.size() > 5) {
-			    			logentries.first().remove();
-			    		}
-			    		$("#log_container").append($("<tr id='" + data.index + "'><td id='" + data.modification + "'>" + data.log + "</td></tr>"));
-			    	}
-			    	
-			    	setTimeout(pollingLogs, 5000);
-			    }
-		    });
+			var obj = new AjaxObj("Error!");
+			obj.url = '${req.getContextPath()}/operation/log/last';
+			obj.success = function(data) {
+				var eachLog = $("tr#" +data.index + " td");
+				if (eachLog.size() != 0) {
+					if (eachLog.attr("id") != data.modification) {
+						eachLog.html(data.log);
+						eachLog.attr("id", data.modification);
+					}
+				} else {
+					var logentries = $("#log_container tr");
+					if (logentries.size() > 5) {
+						logentries.first().remove();
+					}
+					$("#log_container").append($("<tr id='" + data.index + "'><td id='" + data.modification + "'>" + data.log + "</td></tr>"));
+				}
+
+				setTimeout(pollingLogs, 5000);
+			};
+
+			callAjaxAPI(obj);
 	  })();
 	</script>
 </body>
