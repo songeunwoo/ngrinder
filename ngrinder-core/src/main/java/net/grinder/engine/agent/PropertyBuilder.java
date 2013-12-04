@@ -13,18 +13,9 @@
  */
 package net.grinder.engine.agent;
 
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.net.InetAddress;
-import java.util.List;
-
 import net.grinder.common.GrinderProperties;
 import net.grinder.util.Directory;
 import net.grinder.util.NetworkUtil;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +24,14 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.InetAddress;
+import java.util.List;
+
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * Class which is responsible to build custom jvm arguments.
@@ -144,7 +143,7 @@ public class PropertyBuilder {
 			jvmArguments = addSecurityManager(jvmArguments);
 			jvmArguments = addCurrentAgentPath(jvmArguments);
 			jvmArguments = addConsoleIP(jvmArguments);
-			jvmArguments = addDNSIP(jvmArguments);
+			jvmArguments = addDnsIP(jvmArguments);
 		} else {
 			jvmArguments.append(properties.getProperty("grinder.jvm.arguments", ""));
 			jvmArguments = addNativeLibraryPath(jvmArguments);
@@ -311,10 +310,17 @@ public class PropertyBuilder {
 				.append(properties.getProperty(GrinderProperties.CONSOLE_HOST, "127.0.0.1")).append(" ");
 	}
 
-	@SuppressWarnings("restriction")
-	private StringBuilder addDNSIP(StringBuilder jvmArguments) {
-		List<?> nameservers = sun.net.dns.ResolverConfiguration.open().nameservers();
-		return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(nameservers, ",")).append(" ");
+	StringBuilder addDnsIP(StringBuilder jvmArguments) {
+		try {
+			List<?> dnsServers = NetworkUtil.getDnsServers();
+			if (!dnsServers.isEmpty()) {
+				return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(dnsServers, ",")).append(" ");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error while adding DNS IPs for the security mode. This might be occurred by not using " +
+					"Oracle JDK : {}", e.getMessage());
+		}
+		return jvmArguments;
 	}
 
 	private StringBuilder addCustomDns(StringBuilder jvmArguments) {

@@ -89,7 +89,7 @@ public class UserController extends NGrinderBaseController {
 			pagedUser = userService.getUsersByKeyWord(keywords, pageable);
 			model.put("keywords", keywords);
 		}
-		model.addAttribute("userPage", pagedUser);
+		model.addAttribute("users", pagedUser);
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("role", role);
