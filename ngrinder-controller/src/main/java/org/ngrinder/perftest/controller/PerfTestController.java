@@ -290,22 +290,37 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/quickstart")
 	public String getQuickStart(User user, //
-	                            @RequestParam(value = "url", required = true) String urlString, // LF
-	                            @RequestParam(value = "scriptType", required = true) String scriptType, // LF
-	                            ModelMap model) {
+								@RequestParam(value = "url", required = true) String urlString, // LF
+								@RequestParam(value = "scriptType", required = true) String scriptType, // LF
+								ModelMap model) {
 		URL url = checkValidURL(urlString);
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
 				scriptHandlerFactory.getHandler(scriptType));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
-		model.addAttribute(PARAM_TEST_NAME, "Test for " + url.getHost());
-		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
+		model.addAttribute(PARAM_TEST, createPerfTestFromQuickStart(user, "Test for " + url.getHost(), url.getHost()));
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
 		addDefaultAttributeOnModel(model);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
+	}
+
+	/**
+	 * Create a new test from quick start mode.
+	 *
+	 * @param user       user
+	 * @param testName   test name
+	 * @param targetHost target host
+	 * @return PerfTest
+	 */
+	private PerfTest createPerfTestFromQuickStart(User user, String testName, String targetHost) {
+		PerfTest test = new PerfTest(user);
+		test.init();
+		test.setTestName(testName);
+		test.setTargetHosts(targetHost);
+		return test;
 	}
 
 	/**

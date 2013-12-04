@@ -183,15 +183,8 @@
 								<div class="span4-5">
 									<div class="control-group">
 										<label for="test_name" class="control-label"><@spring.message "perfTest.configuration.testName"/></label>
-										<#if test.testName??>
-											<#assign initTestName = test.testName>
-										<#elseif testName??> 
-											<#assign initTestName = testName> 
-										<#else>
-				                 	   		<#assign initTestName = "">
-			                    		</#if>
 			                    		<div class="controls" style="margin-left: 120px;">
-											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${initTestName}"/>
+											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${test.testName}"/>
 										</div>  
 									</div>
 								</div>

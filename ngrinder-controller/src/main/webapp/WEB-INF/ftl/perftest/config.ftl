@@ -113,11 +113,7 @@
 			<div class="control-group">
 				<label class="control-label">
 					<@spring.message "perfTest.configuration.targetHost"/></label>
-					<#if test.targetHosts??>
-						<#assign targetHosts = test.targetHosts>
-					<#elseif targetHostString??>
-						<#assign targetHosts = targetHostString>
-					</#if>
+					<#assign targetHosts = test.targetHosts>
 				<div class="controls">
 					<#include "host.ftl">
 				</div>
