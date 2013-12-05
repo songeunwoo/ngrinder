@@ -34,6 +34,15 @@
 	<#if append!=""></div></#if>
 </#macro>
 
+<#macro input_prepend name, value, message, extraCss>
+	<div class="input-prepend ${extraCss}" style="margin-bottom: 0">
+		<span class="add-on" title='<@spring.message "${message}"/>'>
+			<@spring.message "${message}"/>
+		</span>
+		<input class="input span1" type="text" id="${toUnderscore(name)}" name="${name}" value="${value}" />
+	</div>
+</#macro>
+
 <#macro input_label name, value, message, others = "">
 	<div class="control-group">
 		<label for="${toUnderscore(name)}" class="control-label">

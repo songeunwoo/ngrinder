@@ -64,20 +64,10 @@
 						</span>
 					</div>
 					<div id="process_thread_config_panel" style="display: none;">
-						<span>
-							<div class="input-prepend control-group" style="margin-bottom: 0">
-								<span class="add-on" title='<@spring.message "perfTest.report.process"/>'>
-									<@spring.message "perfTest.report.process"/>
-								</span>
-								<input class="input span1" type="text" id="processes" name="processes" value="${test.processes}" />
-							</div>
-							<div class="input-prepend control-group" style="margin-bottom: 0">
-								<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'>
-									<@spring.message "perfTest.report.thread"/>
-								</span>
-								<input class="input span1" type="text" id="threads" name="threads" value="${test.threads}" />
-							</div>
-						</span>
+						<@input_prepend name="processes" value="${test.processes}" message="perfTest.report.process"
+							extraCss="control-group" />
+						<@input_prepend name="threads" value="${test.threads}" message="perfTest.report.thread"
+							extraCss="control-group" />
 					</div>
 				</div>
 			</div>
@@ -130,7 +120,7 @@
 					<select class="select-item" id="select_min"></select> : 
 					<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
 					<code>HH:MM:SS</code>
-					<input type="hidden" id="duration" name="duration" value="${(test.duration)!60000}"/>
+					<input type="hidden" id="duration" name="duration" value="${test.duration}"/>
 					<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
 					<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
 					<input id="hidden_duration_input" class="hide" data-step="1"/>
