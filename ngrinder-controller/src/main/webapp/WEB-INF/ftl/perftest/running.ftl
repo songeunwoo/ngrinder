@@ -36,29 +36,25 @@
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 					<div class="controls">
-					<#if test?exists >
 					<@list list_items = test.targetHosts?split(",") ; host >
 						${host?trim}<br>
 					</@list>
-					</#if>
 					</div>
 				</div>
 				<hr>
 				<div class="control-group">
-					<#if test??>
-						<#if test.threshold == "D">
-							<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
-							<div class="controls">
-								<span>${(test.durationStr)!}</span>
-								<code>HH:MM:SS</code>
-							</div>
-						<#else>
-							<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
-							<div class="controls">
-								${(test.runCount)!}
-								<span class="badge badge-success pull-right"> <span id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
-							</div>
-						</#if>
+					<#if test.threshold == "D">
+						<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
+						<div class="controls">
+							<span>${(test.durationStr)!}</span>
+							<code>HH:MM:SS</code>
+						</div>
+					<#else>
+						<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
+						<div class="controls">
+							${(test.runCount)!}
+							<span class="badge badge-success pull-right"> <span id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
+						</div>
 					</#if>
 				</div>
 				<div class="control-group">
