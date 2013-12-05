@@ -173,14 +173,10 @@
 								<@spring.message "perfTest.configuration.ignoreSampleCount"/>
 							</label>
 							<div class="controls">
-								<input type="text" class="input input-mini" 
-										id="ignore_sample_count" name="ignoreSampleCount" 
-										rel='popover'
-										title='<@spring.message "perfTest.configuration.ignoreSampleCount"/>' 
-										data-html='true'
-										data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>' 
-										data-placement='top'
-										value="${(test.ignoreSampleCount)!0}"/>
+								<@input_popover name="ignoreSampleCount"
+									value="${test.ignoreSampleCount}"
+									message="perfTest.configuration.ignoreSampleCount"
+									extraCss="input-mini" />
 							</div>
 							<div id="err_ignore_sample_count" class="small_error_box" style="margin-left:100px">
 							</div>
@@ -214,17 +210,10 @@
 								<@spring.message "perfTest.configuration.param"/>
 							</label>
 							<div class="controls" style="margin-left:70px">
-								<#assign paramHelp>
-									<@spring.message 'perfTest.configuration.param.help'/>
-								</#assign>
-								<input type="text" class="input" style="width:120px" 
-										id="param" name="param" 
-										rel="popover"
-										title="<@spring.message 'perfTest.configuration.param'/>"
-										data-html="true"
-										data-content="${paramHelp?html}" 
-										data-placement="top"
-										value="${(test.param?html)!""}"/>
+								<@input_popover name = "param"
+									value = "${(test.param?html)}"
+									message ="perfTest.configuration.param"
+									others = 'style="width:120px"'/>
 							</div>
 							<div id="err_param" class="small_error_box" style="margin-left:-25px">
 							</div>

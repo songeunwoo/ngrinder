@@ -57,6 +57,17 @@
 	</div>
 </#macro>
 
+<#macro input_popover name, value, message, extraCss = "", data_placement = "top", others = "">
+	<input type="text" class="input ${extraCss}" ${others}
+       id="${toUnderscore(name)}" name="${name}"
+       rel='popover'
+       title='<@spring.message "${message}"/>'
+       data-html='true'
+       data-content='<@spring.message "${message}"+".help"/>'
+       data-placement="${data_placement}"
+       value="${value}"/>
+</#macro>
+
 <#macro list list_items others = "table_list" colspan = "8" message = "" >
 	<#if list_items?has_content>
 		<#list list_items as each>
