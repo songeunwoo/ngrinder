@@ -178,8 +178,7 @@
 	});
 
 	function stopAgents(ids) {
-		var obj = new AjaxObj("<@spring.message "agent.table.message.error.stop"/>!");
-		obj.url = '${req.getContextPath()}/agent/api/stop';
+		var obj = new AjaxObj("${req.getContextPath()}/agent/api/stop" , "<@spring.message "agent.table.message.error.stop"/>!");
 		obj.type = 'POST';
 		obj.params = { "ids": ids };
 		obj.success = function (res) {
@@ -193,8 +192,7 @@
 	}
 
 	function updateAgents(ids) {
-		var obj = new AjaxObj("<@spring.message "agent.table.message.error.update"/>");
-		obj.url = '${req.getContextPath()}/agent/api/update';
+		var obj = new AjaxObj("${req.getContextPath()}/agent/api/update" , "<@spring.message "agent.table.message.error.update"/>");
 		obj.type = 'POST';
 		obj.params = { "ids": ids };
 		obj.success = function (res) {
@@ -209,22 +207,16 @@
 			return this.value;
 		}).get();
 
-		var obj = new AjaxObj();
-        obj.url = '${req.getContextPath()}/agent/api/states';
+		var obj = new AjaxObj("${req.getContextPath()}/agent/api/states" , "<@spring.message "common.error.error"/>");
         obj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
 				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
 			}
-
 			if (ids.length == 0) {
 				return;
 			}
 			setTimeout(updateStatuses, 2000);
 		};
-        obj.error = function () {
-            showErrorMsg("<@spring.message "common.error.error"/>");
-            return false;
-        }
 
 		callAjaxAPI(obj);
 

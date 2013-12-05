@@ -249,8 +249,8 @@ function cookie(name,value,expiredays){
 }
 
 
-function AjaxObj(errorMessage)  {
-    this.url = "" ,
+function AjaxObj(url, errorMessage) {
+    this.url = url ,
     this.type = "GET",
     this.params = {} ,
     this.cache = false ,

@@ -297,8 +297,7 @@
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
 
-					var obj = new AjaxObj("Failed to get graph.");
-					obj.url = "${req.getContextPath()}/perftest/api/"+ id +"/graph";
+					var obj = new AjaxObj("${req.getContextPath()}/perftest/api/"+ id +"/graph" , "Failed to get graph.");
 					obj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
 					obj.success = function(res) {
 						drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
@@ -377,8 +376,7 @@
 		}
 
 		function deleteTests(ids) {
-			var obj = new AjaxObj("<@spring.message "perfTest.table.message.error.delete"/>");
-			obj.url = "${req.getContextPath()}/perftest/api/delete";
+			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/delete" , "<@spring.message "perfTest.table.message.error.delete"/>");
 			obj.type = "POST";
 			obj.params = {"ids" : ids};
 			obj.success = function(res) {
@@ -392,8 +390,7 @@
 		}
 
 		function stopTests(ids) {
-			var obj = new AjaxObj("<@spring.message "perfTest.table.message.error.stop"/>");
-			obj.url = "${req.getContextPath()}/perftest/api/stop";
+			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/stop" , "<@spring.message "perfTest.table.message.error.stop"/>");
 			obj.type = "POST";
 			obj.params = {"ids" : ids};
 			obj.success = function(res) {
@@ -442,8 +439,7 @@
 					return this.value;
 		  	}).get();
 
-			var obj = new AjaxObj();
-			obj.url = '${req.getContextPath()}/perftest/api/status';
+			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
 			obj.type = "POST";
 			obj.params = {"ids": ids.join(",")};
 			obj.success = function (data) {

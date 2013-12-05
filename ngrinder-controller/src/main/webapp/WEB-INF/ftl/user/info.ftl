@@ -160,23 +160,20 @@
 						url = "${req.getContextPath()}/user/api/" + userId + "/check_duplication";
 					</#if>
 					var result ;
-					$.ajax({
-						  url: url,
-						  async: false,
-						  cache: false,
-						  type: "GET",
-						  dataType:'json',
-						  success: function(res) {
-						  	result = res.success;
-	  					  }
-					});
+
+					var obj = new AjaxObj(url , "Error!");
+					obj.async = false;
+					obj.success = function(res) {
+						result = res.success;
+					};
+					callAjaxAPI(obj);
+
 					if (!result) {
 						removeSuccess(element);
 					}
 					
 					return result;
 				}
-				
 				return false;
 			}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		</#if>

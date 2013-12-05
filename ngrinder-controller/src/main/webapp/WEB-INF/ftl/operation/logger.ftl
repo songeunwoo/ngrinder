@@ -23,8 +23,7 @@
 	<script>
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function pollingLogs() {
-			var obj = new AjaxObj("Error!");
-			obj.url = '${req.getContextPath()}/operation/log/last';
+			var obj = new AjaxObj("${req.getContextPath()}/operation/log/last" , "Error!");
 			obj.success = function(data) {
 				var eachLog = $("tr#" +data.index + " td");
 				if (eachLog.size() != 0) {

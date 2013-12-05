@@ -105,8 +105,7 @@
 			}
 
 			function getState(){
-                var obj = new AjaxObj("Error!");
-                obj.url = "${req.getContextPath()}/agent/api/${agent.id}/state";
+                var obj = new AjaxObj("${req.getContextPath()}/agent/api/${agent.id}/state" , "Error!");
                 obj.params = {'ip': '${(agent.ip)!}','name': '${(agent.hostName)!}','imgWidth':700};
 				obj.async = false;
                 obj.success = function(res) {

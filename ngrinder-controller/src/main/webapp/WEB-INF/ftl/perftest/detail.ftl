@@ -369,8 +369,7 @@ $(document).ready(function () {
 			return;
 		}
 
-		var obj = new AjaxObj("Error!");
-		obj.url = '${req.getContextPath()}/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status';
+		var obj = new AjaxObj("${req.getContextPath()}/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status" , "Error!");
 		obj.success = function(perfTestData) {
 			perfTestData = eval(perfTestData);
 			data = perfTestData.status;
@@ -421,8 +420,7 @@ function initTags() {
 		query: function(query) {
 			var data = {results:[]};
 
-			var obj = new AjaxObj("Error!");
-			obj.url = "${req.getContextPath()}/perftest/search_tag";
+			var obj = new AjaxObj("${req.getContextPath()}/perftest/search_tag" , "Error!");
 			obj.cache = true;
 			obj.type = "POST";
 			obj.params = {'query' : query.term};
@@ -972,8 +970,7 @@ function initChartData(size) {
 
 function updateScript() {
 
-	var obj = new AjaxObj("<@spring.message "common.error.error"/>");
-	obj.url = "${req.getContextPath()}/perftest/api/script";
+	var obj = new AjaxObj("${req.getContextPath()}/perftest/api/script" , "<@spring.message "common.error.error"/>");
 	obj.params = {
 				<@security.authorize ifAnyGranted="A, S">
 						<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
@@ -1012,8 +1009,7 @@ function updateScriptResources(first) {
 		return;
 	}
 
-    var obj = new AjaxObj("<@spring.message "common.error.error"/>");
-    obj.url = "${req.getContextPath()}/perftest/api/resource";
+    var obj = new AjaxObj("${req.getContextPath()}/perftest/api/resource" , "<@spring.message "common.error.error"/>");
     obj.params = {
         'scriptPath' : scriptName,
         'r' : $("#script_revision").val()
@@ -1021,23 +1017,23 @@ function updateScriptResources(first) {
 			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>
     };
-    obj.success = function(res) {
-        var html = "";
-        var len = res.resources.length;
-        if (first == false) {
-            initHosts(res.targetHosts);
-        }
-        for ( var i = 0; i < len; i++) {
-            var value = res.resources[i];
-            html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
-        }
-        $("#scriptResources").html(html);
-    };
+	obj.success = function(res) {
+		var html = "";
+		var len = res.resources.length;
+		if (first == false) {
+			initHosts(res.targetHosts);
+		}
+		for ( var i = 0; i < len; i++) {
+			var value = res.resources[i];
+			html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
+		}
+		$("#scriptResources").html(html);
+	};
 	obj.complete = function() {
-        hideProgressBar();
-    };
+		hideProgressBar();
+	};
 
-    callAjaxAPI(obj);
+	callAjaxAPI(obj);
 }
 
 function updateVuserPolicy(vuser) {

@@ -289,8 +289,7 @@
 		    }
 		    performanceInit = true;
 
-			var obj = new AjaxObj("Failed to get graph!");
-			obj.url = "${req.getContextPath()}/perftest/api/${(test.id)?c}/graph";
+			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/${(test.id)?c}/graph" , "Failed to get graph!");
 			obj.cache = true;
 			obj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
 			obj.success = function(res) {
@@ -375,17 +374,15 @@
 				return;
         	}
 
-            var obj = new AjaxObj("Failed to get monitor graph data!");
-            obj.url = "${req.getContextPath()}/perftest/api/${(test.id)?c}/monitor";
-            obj.cache = true;
-            obj.params = {'targetIP': ip, 'imgWidth': 700};
-            obj.success = function(res) {
-                targetMonitorData[ip] = res;
-                drawPlot(ip);
-                return true;
-            };
-
-            callAjaxAPI(obj);
+			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/${(test.id)?c}/monitor" , "Failed to get monitor graph data!");
+			obj.cache = true;
+			obj.params = {'targetIP': ip, 'imgWidth': 700};
+			obj.success = function(res) {
+				targetMonitorData[ip] = res;
+				drawPlot(ip);
+				return true;
+			};
+			callAjaxAPI(obj);
         }
               
 
