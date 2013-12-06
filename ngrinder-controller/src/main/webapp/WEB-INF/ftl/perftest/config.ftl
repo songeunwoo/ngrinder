@@ -65,9 +65,9 @@
 					</div>
 					<div id="process_thread_config_panel" style="display: none;">
 						<@input_prepend name="processes" value="${test.processes}" message="perfTest.report.process"
-							extraCss="control-group" />
+							extra_css="control-group" />
 						<@input_prepend name="threads" value="${test.threads}" message="perfTest.report.thread"
-							extraCss="control-group" />
+							extra_css="control-group" />
 					</div>
 				</div>
 			</div>
@@ -176,7 +176,7 @@
 								<@input_popover name="ignoreSampleCount"
 									value="${test.ignoreSampleCount}"
 									message="perfTest.configuration.ignoreSampleCount"
-									extraCss="input-mini" />
+									extra_css="input-mini" />
 							</div>
 							<div id="err_ignore_sample_count" class="small_error_box" style="margin-left:100px">
 							</div>

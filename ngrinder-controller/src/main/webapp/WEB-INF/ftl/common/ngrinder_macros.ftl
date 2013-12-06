@@ -34,8 +34,8 @@
 	<#if append!=""></div></#if>
 </#macro>
 
-<#macro input_prepend name, value, message, extraCss>
-	<div class="input-prepend ${extraCss}" style="margin-bottom: 0">
+<#macro input_prepend name, value, message, extra_css>
+	<div class="input-prepend ${extra_css}" style="margin-bottom: 0">
 		<span class="add-on" title='<@spring.message "${message}"/>'>
 			<@spring.message "${message}"/>
 		</span>
@@ -57,18 +57,21 @@
 	</div>
 </#macro>
 
-<#macro input_popover name, value, message, extraCss = "", data_placement = "top", others = "">
-	<input type="text" class="input ${extraCss}" ${others}
-       id="${toUnderscore(name)}" name="${name}"
-       rel='popover'
-       title='<@spring.message "${message}"/>'
-       data-html='true'
-       data-content='<@spring.message "${message}"+".help"/>'
-       data-placement="${data_placement}"
-       value="${value}"/>
+<#macro input_popover name, message, value = "", type = "text", rel = "popover", extra_css = "", message_content = "",
+	data_placement = "top", others = "", placeholder = "">
+	<input type="${type}" class="input ${extra_css}"  <#if others!="">${others}</#if>
+		id="${toUnderscore(name)}"
+		name="${name}"
+		rel="${rel}"
+        placeholder = <#if placeholder!="">'<@spring.message "${placeholder}"/>'<#else>''</#if>
+		title='<@spring.message "${message}"/>'
+		data-content= <#if message_content!="">"${message_content}"<#else>"<@spring.message "${message}.help"/>"</#if>
+		data-html="true"
+		data-placement="${data_placement}"
+		<#if value!="">value="${value}"</#if> />
 </#macro>
 
-<#macro list list_items others = "table_list" colspan = "8" message = "" >
+<#macro list list_items others = "table_list" ,colspan = "8", message = "" >
 	<#if list_items?has_content>
 		<#list list_items as each>
 			<#nested each each_index>
