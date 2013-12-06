@@ -13,12 +13,14 @@
  */
 package org.ngrinder.infra.config;
 
+import org.ngrinder.common.util.PropertiesWrapper;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
 import java.util.Properties;
 
-import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.infra.annotation.TestOnlyComponent;
-
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockConfig extends Config {
 	private PropertiesWrapper wrapper = new PropertiesWrapper(new Properties());
 

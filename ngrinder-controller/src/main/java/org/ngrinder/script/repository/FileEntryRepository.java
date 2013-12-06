@@ -36,7 +36,6 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.EncodingUtils;
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileCategory;
@@ -46,6 +45,8 @@ import org.ngrinder.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNErrorCode;
@@ -73,7 +74,8 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
+@Profile("production")
+@Component
 public class FileEntryRepository {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryRepository.class);

@@ -17,7 +17,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.BaseController;
-import org.ngrinder.infra.annotation.RuntimeOnlyController;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -30,7 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +51,8 @@ import java.io.StringWriter;
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyController
+@Profile("production")
+@Controller
 @RequestMapping("/operation/script_console")
 @PreAuthorize("hasAnyRole('A')")
 public class ScriptConsoleController extends BaseController implements ApplicationContextAware {

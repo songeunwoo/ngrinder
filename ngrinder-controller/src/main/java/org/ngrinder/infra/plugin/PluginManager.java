@@ -27,7 +27,6 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.extension.OnControllerLifeCycleRunnable;
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -41,7 +40,9 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 
 import com.atlassian.plugin.DefaultModuleDescriptorFactory;
@@ -67,7 +68,8 @@ import com.atlassian.plugin.predicate.ModuleDescriptorPredicate;
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
+@Profile("production")
+@Component
 public class PluginManager implements ServletContextAware, Constants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginManager.class);
