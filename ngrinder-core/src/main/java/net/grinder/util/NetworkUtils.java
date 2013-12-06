@@ -19,7 +19,6 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.python.google.common.net.InetAddresses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.net.util.IPAddressUtil;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -260,7 +259,7 @@ public abstract class NetworkUtils {
 		}
 
 		public boolean isIP6() {
-			return IPAddressUtil.isIPv6LiteralAddress(ip);
+			return IPUtils.isValidIP6Address(ip);
 		}
 	}
 
