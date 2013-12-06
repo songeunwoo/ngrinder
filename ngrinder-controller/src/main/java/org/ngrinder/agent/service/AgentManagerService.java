@@ -313,12 +313,23 @@ public class AgentManagerService extends AbstractAgentManagerService {
 
 	/*
 	 * (non-Javadoc)
+	 *
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getOne(long,
+	 * boolean)
+	 */
+	@Override
+	public AgentInfo getOne(Long id) {
+		return getOne(id, false);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * 
 	 * @see org.ngrinder.agent.service.IAgentManagerService#getOne(long,
 	 * boolean)
 	 */
 	@Override
-	public AgentInfo getOne(long id, boolean includeAgentIdentity) {
+	public AgentInfo getOne(Long id, boolean includeAgentIdentity) {
 		AgentInfo findOne = agentManagerRepository.findOne(id);
 		if (findOne == null) {
 			return null;
@@ -351,7 +362,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	}
 
 	/**
-	 * Approve/Unapprove the agent on given id.
+	 * Approve/disapprove the agent on given id.
 	 *
 	 * @param id      id
 	 * @param approve true/false
