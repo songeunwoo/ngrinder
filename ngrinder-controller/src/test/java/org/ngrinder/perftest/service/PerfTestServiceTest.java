@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestServiceTest extends AbstractAgentReadyTest {
+public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private PerfTestService testService;
@@ -64,7 +64,6 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 
 	@Test
 	public void testGetTestListAll() {
-
 		createPerfTest("new Test1", Status.TESTING, new Date());
 		createPerfTest("new Test2", Status.FINISHED, new Date());
 
@@ -231,14 +230,14 @@ public class PerfTestServiceTest extends AbstractAgentReadyTest {
 		test.setAgentState("{\"NC-PL-DEV013\":{\"freeMemory\":2937684,\"totalMemory\":8301204,\"cpuUsedPercentage\":31.234259,\"receivedPerSec\":1874668,\"sentPerSec\":1881129}}");
 		test.setMonitorState("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"receivedPerSec\":102718,\"sentPerSec\":135072}}");
 		test.setRunningSample("{\"process\":1,\"peakTpsForGraph\":2192.0,\"lastSampleStatistics\":[{\"Peak_TPS\":0.0,\"Tests\":2145.0,\"Mean_time_to_first_byte\":0.3142191142191142,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":62205.0,\"Errors\":0.0,\"TPS\":2145.0,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4205128205128205}],\"thread\":1,\"cumulativeStatistics\":[{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4425539468012273}],\"tpsChartData\":2145.0,\"success\":true,\"totalStatistics\":{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"Mean_Test_Time_(ms)\":0.4425539468012273},\"test_time\":105}");
-		perfTestService.save(test);
+		perfTestService.save(getTestUser(), test);
 
 		PerfTest testInDB = perfTestService.getOne(test.getId());
 		assertTrue(testInDB.getAgentState().length() > 0 && testInDB.getMonitorState().length() > 0);
 		test.setAgentState(null);
 		test.setMonitorState(null);
 		test.setRunningSample(null);
-		perfTestService.save(test);
+		perfTestService.save(getTestUser(), test);
 		testInDB = perfTestService.getOne(test.getId());
 		assertTrue(testInDB.getAgentState() == null && testInDB.getMonitorState() == null);
 

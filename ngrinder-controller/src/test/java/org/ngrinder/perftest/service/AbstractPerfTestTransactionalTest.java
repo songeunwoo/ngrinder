@@ -86,13 +86,12 @@ public abstract class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	}
 
 	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
-		PerfTest test = newPerfTest(testName, status, scheduledTime);
-		perfTestService.save(test);
-		return test;
+		PerfTest perftest = newPerfTest(testName, status, scheduledTime);
+		return createPerfTest(perftest);
 	}
 
 	public PerfTest createPerfTest(PerfTest perfTest) {
-		perfTestService.save(perfTest);
+		perfTestService.save(getTestUser(), perfTest);
 		return perfTest;
 	}
 

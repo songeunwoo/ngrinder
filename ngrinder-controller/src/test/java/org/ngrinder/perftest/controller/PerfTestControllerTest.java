@@ -111,7 +111,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.deletePerfTests(getTestUser(), model, String.valueOf(test.getId()));
+		controller.delete(getTestUser(), model, String.valueOf(test.getId()));
 
 		model.clear();
 		controller.getOne(getTestUser(), test.getId(), model);
@@ -122,7 +122,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
 		String delIds = "" + test1.getId() + "," + test2.getId();
-		controller.deletePerfTests(getTestUser(), model, delIds);
+		controller.delete(getTestUser(), model, delIds);
 
 		model.clear();
 		controller.getOne(getTestUser(), test1.getId(), model);
@@ -294,8 +294,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getAll(getTestUser(), strangeName.substring(2, 10), null, null, new PageRequest(0, 10),
-				model);
+		controller.getAll(getTestUser(), strangeName.substring(2, 10), null, null, new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));

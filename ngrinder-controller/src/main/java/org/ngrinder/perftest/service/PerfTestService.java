@@ -242,9 +242,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 
 	}
 
-
-	@Transactional
-	PerfTest save(PerfTest perfTest) {
+	private PerfTest save(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		// Merge if necessary
 		if (perfTest.exist()) {
@@ -918,17 +916,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	}
 
 	private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-	/**
-	 * Save system monitor data of all agents connected to one console. If the console is not available, it returns
-	 * empty map. After getting, it will be put into cache.
-	 *
-	 * @param singleConsole singleConsole of the test add this parameter just for the key of cache.
-	 * @param perfTest      perfTest
-	 */
-	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
-		save(perfTest);
-	}
 
 	/**
 	 * Get agent info from saved file.

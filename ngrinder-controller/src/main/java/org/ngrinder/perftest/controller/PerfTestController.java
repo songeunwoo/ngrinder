@@ -214,7 +214,7 @@ public class PerfTestController extends BaseController {
 	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
-			test = getPerfTestWithPermissionCheck(user, id, true);
+			test = getOneWithPermissionCheck(user, id, true);
 		}
 
 		model.addAttribute(PARAM_TEST, test);
@@ -225,13 +225,13 @@ public class PerfTestController extends BaseController {
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
+		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
 		return "perftest/detail";
 	}
 
-	private ArrayList<String> getRegionList(Map<String, MutableInt> agentCountMap) {
+	private ArrayList<String> getRegions(Map<String, MutableInt> agentCountMap) {
 		ArrayList<String> regions = new ArrayList<String>(agentCountMap.keySet());
 		Collections.sort(regions);
 		return regions;
@@ -299,7 +299,7 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
+		model.addAttribute(PARAM_REGION_LIST, getRegions(agentCountMap));
 		addDefaultAttributeOnModel(model);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
@@ -393,7 +393,7 @@ public class PerfTestController extends BaseController {
 		return id;
 	}
 
-	private List<Map<String, Object>> getPerfTestStatus(List<PerfTest> perfTests) {
+	private List<Map<String, Object>> getStatus(List<PerfTest> perfTests) {
 		List<Map<String, Object>> statuses = newArrayList();
 		for (PerfTest each : perfTests) {
 			Map<String, Object> result = newHashMap();
@@ -425,7 +425,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/delete", method = RequestMethod.POST)
-	public HttpEntity<String> deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String
+	public HttpEntity<String> delete(User user, ModelMap model, @RequestParam(defaultValue = "") String
 			ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
@@ -495,7 +495,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping(value = "{id}/basic_report")
 	public String getReportSection(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
-		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
+		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
 		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
 		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
@@ -513,7 +513,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping(value = "{id}/download_csv")
 	public void downloadCSV(User user, HttpServletResponse response, @PathVariable("id") long id) {
-		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
+		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
 		FileDownloadUtils.downloadFile(response, targetFile);
@@ -530,7 +530,7 @@ public class PerfTestController extends BaseController {
 	@RequestMapping(value = "{id}/download_log/**")
 	public void downloadLog(User user, @RemainedPath String path, @PathVariable("id") long id,
 	                        HttpServletResponse response) {
-		getPerfTestWithPermissionCheck(user, id, false);
+		getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		FileDownloadUtils.downloadFile(response, targetFile);
 	}
@@ -546,7 +546,7 @@ public class PerfTestController extends BaseController {
 	@RequestMapping(value = "{id}/show_log/**")
 	public void showLog(User user, @PathVariable("id") long id, //
 	                    @RemainedPath String path, HttpServletResponse response) {
-		getPerfTestWithPermissionCheck(user, id, false);
+		getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		response.reset();
 		response.setContentType("text/plain");
@@ -579,7 +579,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping(value = "{id}/running/sample")
 	public String refreshTestRunning(User user, ModelMap model, @PathVariable("id") long id) {
-		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, id, false), "given test should be exist : "
+		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : "
 				+ id);
 		if (test.getStatus().equals(Status.TESTING)) {
 			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test));
@@ -653,7 +653,7 @@ public class PerfTestController extends BaseController {
 		return "perftest/detail_report";
 	}
 
-	private PerfTest getPerfTestWithPermissionCheck(User user, Long id, boolean withTag) {
+	private PerfTest getOneWithPermissionCheck(User user, Long id, boolean withTag) {
 		PerfTest perfTest = withTag ? perfTestService.getOneWithTag(id) : perfTestService.getOne(id);
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return perfTest;
@@ -689,7 +689,7 @@ public class PerfTestController extends BaseController {
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		List<PerfTest> perfTests = perfTestService.getOne(user, convertString2Long(ids));
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
-				getPerfTestStatus(perfTests)));
+				getStatus(perfTests)));
 	}
 
 	/**
@@ -761,7 +761,7 @@ public class PerfTestController extends BaseController {
 	@RequestMapping("/api/{id}/status")
 	public HttpEntity<String> getStatus(User user, @PathVariable("id") Long id) {
 		List<PerfTest> perfTests = perfTestService.getOne(user, new Long[]{id});
-		return toJsonHttpEntity(buildMap("status", getPerfTestStatus(perfTests)));
+		return toJsonHttpEntity(buildMap("status", getStatus(perfTests)));
 	}
 
 	/**
@@ -829,7 +829,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
 	public HttpEntity<String> getOne(User user, @PathVariable("id") Long id) {
-		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, id, false), "PerfTest %s does not exists", id);
+		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "PerfTest %s does not exists", id);
 		return toJsonHttpEntity(test);
 	}
 
@@ -858,7 +858,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.DELETE)
 	public HttpEntity<String> delete(User user, @PathVariable("id") Long id) {
-		PerfTest perfTest = getPerfTestWithPermissionCheck(user, id, false);
+		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id);
 		perfTestService.delete(user, id);
 		return successJsonHttpEntity();
@@ -905,7 +905,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", params = "action=status", method = RequestMethod.PUT)
 	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id, Status status) {
-		PerfTest perfTest = getPerfTestWithPermissionCheck(user, id, false);
+		PerfTest perfTest = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id).setStatus(status);
 		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
@@ -921,7 +921,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = {"/api/{id}/clone_and_start", /* for backward compatibility */ "/api/{id}/cloneAndStart"})
 	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {
-		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
+		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		checkNotNull(test, "no perftest for %s exits", id);
 		PerfTest newOne = test.cloneTo(new PerfTest());
 		newOne.setStatus(Status.READY);
