@@ -15,7 +15,7 @@ package net.grinder.engine.agent;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.util.Directory;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -312,7 +312,7 @@ public class PropertyBuilder {
 
 	StringBuilder addDnsIP(StringBuilder jvmArguments) {
 		try {
-			List<?> dnsServers = NetworkUtil.getDnsServers();
+			List<?> dnsServers = NetworkUtils.getDnsServers();
 			if (!dnsServers.isEmpty()) {
 				return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(dnsServers, ",")).append(" ");
 			}
@@ -355,7 +355,7 @@ public class PropertyBuilder {
 			} else if (securityEnabled) {
 				// When the security mode is enabled, we should provide all IPs
 				boolean eachFirst = true;
-				for (InetAddress each : NetworkUtil.getIpsFromHost(pair)) {
+				for (InetAddress each : NetworkUtils.getIpsFromHost(pair)) {
 					if (!eachFirst) {
 						newHostString.append(",");
 					}

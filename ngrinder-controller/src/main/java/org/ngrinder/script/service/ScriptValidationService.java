@@ -15,7 +15,7 @@ package org.ngrinder.script.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
 import org.ngrinder.model.User;
@@ -36,6 +36,7 @@ import org.ngrinder.script.handler.ProcessingResultPrintStream;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.service.AbstractScriptValidationService;
 import org.ngrinder.service.IScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ import org.springframework.stereotype.Component;
  * @since 3.0
  */
 @Component
-public class ScriptValidationService implements IScriptValidationService {
+public class ScriptValidationService extends AbstractScriptValidationService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
 
@@ -69,12 +70,12 @@ public class ScriptValidationService implements IScriptValidationService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.script.service.IScriptValidationService#validateScript(org
+	 * org.ngrinder.script.service.IScriptValidationService#validate(org
 	 * .ngrinder.model.User, org.ngrinder.model.IFileEntry, boolean,
 	 * java.lang.String)
 	 */
 	@Override
-	public String validateScript(User user, IFileEntry scriptIEntry, boolean useScriptInSVN, String hostString) {
+	public String validate(User user, IFileEntry scriptIEntry, boolean useScriptInSVN, String hostString) {
 		FileEntry scriptEntry = cast(scriptIEntry);
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
@@ -127,13 +128,7 @@ public class ScriptValidationService implements IScriptValidationService {
 
 	protected int getTimeout() {
 		return Math.max(
-				config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_VALIDATION_TIMEOUT,
+				config.getSystemProperties().getPropertyInt(Constants.NGRINDER_VALIDATION_TIMEOUT,
 						LocalScriptTestDriveService.DEFAULT_TIMEOUT), 10);
-	}
-
-	@Override
-	public String checkSyntaxErrors(String script) {
-		// deprecated
-		return null;
 	}
 }

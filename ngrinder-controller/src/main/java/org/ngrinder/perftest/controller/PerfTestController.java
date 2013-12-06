@@ -37,9 +37,9 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import net.grinder.util.LogCompressUtil;
+import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
-import net.grinder.util.UnitUtil;
+import net.grinder.util.UnitUtils;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -50,11 +50,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.FileDownloadUtil;
+import org.ngrinder.common.util.DateUtils;
+import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -101,7 +101,7 @@ import com.google.gson.GsonBuilder;
  */
 @Controller
 @RequestMapping("/perftest")
-public class PerfTestController extends NGrinderBaseController {
+public class PerfTestController extends BaseController {
 
 	@Autowired
 	private PerfTestService perfTestService;
@@ -148,16 +148,16 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return perftest/list
 	 */
 	@RequestMapping({"/list", "/", ""})
-	public String getPerfTestList(User user, @RequestParam(required = false) String query,
-	                              @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
-	                              @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
+	public String getAll(User user, @RequestParam(required = false) String query,
+	                     @RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
+	                     @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
 		if (sort == null && pageReq != null) {
 			sort = new Sort(Direction.DESC, "lastModifiedDate");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
-		Page<PerfTest> testList = perfTestService.getPerfTest(user, query, tag, queryFilter, pageable);
+		Page<PerfTest> testList = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 
 		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
 		Calendar userToday = Calendar.getInstance(userTZ);
@@ -166,7 +166,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 		for (PerfTest test : testList) {
 			Calendar localedModified = Calendar.getInstance(userTZ);
-			localedModified.setTime(DateUtil.convertToUserDate(getCurrentUser().getTimeZone(),
+			localedModified.setTime(DateUtils.convertToUserDate(getCurrentUser().getTimeZone(),
 					test.getLastModifiedDate()));
 			if (org.apache.commons.lang.time.DateUtils.isSameDay(userToday, localedModified)) {
 				test.setDateString("today");
@@ -198,8 +198,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/new")
-	public String getPerfTestDetail(User user, ModelMap model) {
-		return getPerfTestDetail(user, null, model);
+	public String openForm(User user, ModelMap model) {
+		return getOne(user, null, model);
 	}
 
 	/**
@@ -211,7 +211,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return perftest/detail
 	 */
 	@RequestMapping("/{id}")
-	public String getPerfTestDetail(User user, @PathVariable("id") Long id, ModelMap model) {
+	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
 			test = getPerfTestWithPermissionCheck(user, id, true);
@@ -314,9 +314,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param isClone true if cloneTo
 	 * @return redirect:/perftest/list
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String savePerfTest(User user, ModelMap model, PerfTest test,
-	                           @RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
+	@RequestMapping(value = "/new", method = RequestMethod.POST)
+	public String saveOne(User user, ModelMap model, PerfTest test,
+	                      @RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
 
 		test.setTestName(StringUtils.trimToEmpty(test.getTestName()));
 		checkNotEmpty(test.getTestName(), "test name should be provided");
@@ -328,7 +328,7 @@ public class PerfTestController extends NGrinderBaseController {
 				|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 				"test run duration should be equal to or less than %s", agentManager.getMaxRunHour());
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
-		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
+		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
 		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
@@ -360,7 +360,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (test.isThresholdRunCount()) {
 			test.setIgnoreSampleCount(0);
 		}
-		perfTestService.savePerfTest(user, test);
+		perfTestService.save(user, test);
 		model.clear();
 		return "redirect:/perftest/list";
 	}
@@ -428,7 +428,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String
 			ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
-			perfTestService.deletePerfTest(user, NumberUtils.toLong(idStr, 0));
+			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
 		}
 		return successJsonHttpEntity();
 	}
@@ -443,10 +443,10 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/stop", method = RequestMethod.POST)
-	public HttpEntity<String> stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids",
+	public HttpEntity<String> stop(User user, ModelMap model, @RequestParam(value = "ids",
 			defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
-			perfTestService.stopPerfTest(user, NumberUtils.toLong(idStr, 0));
+			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));
 		}
 		return successJsonHttpEntity();
 	}
@@ -516,7 +516,7 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
-		FileDownloadUtil.downloadFile(response, targetFile);
+		FileDownloadUtils.downloadFile(response, targetFile);
 	}
 
 	/**
@@ -532,7 +532,7 @@ public class PerfTestController extends NGrinderBaseController {
 	                        HttpServletResponse response) {
 		getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
-		FileDownloadUtil.downloadFile(response, targetFile);
+		FileDownloadUtils.downloadFile(response, targetFile);
 	}
 
 	/**
@@ -558,7 +558,7 @@ public class PerfTestController extends NGrinderBaseController {
 				// Limit log view to 1MB
 				outputStream.println(" Only the last 1MB of a log shows.\n");
 				outputStream.println("==========================================================================\n\n");
-				LogCompressUtil.decompress(fileInputStream, outputStream, 1 * 1024 * 1204);
+				LogCompressUtils.decompress(fileInputStream, outputStream, 1 * 1024 * 1204);
 			} else {
 				IOUtils.copy(fileInputStream, outputStream);
 			}
@@ -620,8 +620,8 @@ public class PerfTestController extends NGrinderBaseController {
 			String perfString = String.format(" {'agent' : '%s', 'agentFull' : '%s', 'cpu' : '%s',"
 					+ " 'mem' : '%s', 'sentPerSec' : '%s', 'receivedPerSec' : '%s'}",
 					StringUtils.abbreviate(each.getKey(), 15), each.getKey(), format.format(cpuUsedPercentage),
-					format.format(memUsage), UnitUtil.byteCountToDisplaySize(sentPerSec),
-					UnitUtil.byteCountToDisplaySize(receivedPerSec));
+					format.format(memUsage), UnitUtils.byteCountToDisplaySize(sentPerSec),
+					UnitUtils.byteCountToDisplaySize(receivedPerSec));
 			perfStringList.add(perfString);
 		}
 		return StringUtils.join(perfStringList, ",");
@@ -636,7 +636,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @deprecated
 	 */
 	@RequestMapping(value = "/detail_report")
-	public String getReportRaw(ModelMap model, @RequestParam long testId) {
+	public String getRawReport(ModelMap model, @RequestParam long testId) {
 		return getReport(model, testId);
 	}
 
@@ -649,12 +649,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = {"{id}/detail_report", /** for backward compatibility */ "{id}/report"})
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
-		model.addAttribute("test", perfTestService.getPerfTest(id));
+		model.addAttribute("test", perfTestService.getOne(id));
 		return "perftest/detail_report";
 	}
 
 	private PerfTest getPerfTestWithPermissionCheck(User user, Long id, boolean withTag) {
-		PerfTest perfTest = withTag ? perfTestService.getPerfTestWithTag(id) : perfTestService.getPerfTest(id);
+		PerfTest perfTest = withTag ? perfTestService.getOneWithTag(id) : perfTestService.getOne(id);
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return perfTest;
 		}
@@ -668,12 +668,12 @@ public class PerfTestController extends NGrinderBaseController {
 	private Map<String, String> getMonitorData(long id, String targetIP, int imgWidth) {
 		int interval = perfTestService.getSystemMonitorDataInterval(id, targetIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, targetIP, interval);
-		PerfTest perfTest = perfTestService.getPerfTest(id);
+		PerfTest perfTest = perfTestService.getOne(id);
 		sysMonitorMap.put(
 				"interval",
 				String.valueOf(interval
 						* (perfTest != null ? perfTest.getSamplingInterval()
-						: NGrinderConstants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
+						: Constants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
 		return sysMonitorMap;
 	}
 
@@ -687,7 +687,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping("/api/status")
 	public HttpEntity<String> getStatuses(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
-		List<PerfTest> perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
+		List<PerfTest> perfTests = perfTestService.getOne(user, convertString2Long(ids));
 		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "status",
 				getPerfTestStatus(perfTests)));
 	}
@@ -705,9 +705,9 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId,
 	                                     ModelMap model) {
 		if (StringUtils.isNotEmpty(ownerId)) {
-			user = userService.getUserById(ownerId);
+			user = userService.getOne(ownerId);
 		}
-		List<FileEntry> allFileEntries = fileEntryService.getAllFileEntries(user);
+		List<FileEntry> allFileEntries = fileEntryService.getAll(user);
 		CollectionUtils.filter(allFileEntries, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
@@ -732,9 +732,9 @@ public class PerfTestController extends NGrinderBaseController {
 	                                       @RequestParam(value = "r", required = false) Long revision, // LF
 	                                       @RequestParam(required = false) String ownerId) {
 		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
-			user = userService.getUserById(ownerId);
+			user = userService.getOne(ownerId);
 		}
-		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
+		FileEntry fileEntry = fileEntryService.getOne(user, scriptPath);
 		String targetHosts = "";
 		List<String> fileStringList = newArrayList();
 		if (fileEntry != null) {
@@ -760,7 +760,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping("/api/{id}/status")
 	public HttpEntity<String> getStatus(User user, @PathVariable("id") Long id) {
-		List<PerfTest> perfTests = perfTestService.getPerfTest(user, new Long[]{id});
+		List<PerfTest> perfTests = perfTestService.getOne(user, new Long[]{id});
 		return toJsonHttpEntity(buildMap("status", getPerfTestStatus(perfTests)));
 	}
 
@@ -784,7 +784,7 @@ public class PerfTestController extends NGrinderBaseController {
 			return errorJsonHttpEntity();
 		}
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
-		return toJsonHttpEntity(getReportGraphStrings(perfTestService.getPerfTest(id), dataTypes, interval));
+		return toJsonHttpEntity(getReportGraphStrings(perfTestService.getOne(id), dataTypes, interval));
 	}
 
 	/**
@@ -815,7 +815,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> getAll(User user, @RequestParam(value = "page", defaultValue = "0") int page,
 	                                 @RequestParam(value = "size", defaultValue = "1") int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
-		Page<PerfTest> testList = perfTestService.getPerfTest(user, null, null, null, pageRequest);
+		Page<PerfTest> testList = perfTestService.getPagedAll(user, null, null, null, pageRequest);
 		return toJsonHttpEntity(testList.getContent());
 	}
 
@@ -844,7 +844,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
 	public HttpEntity<String> create(User user, PerfTest perftest) {
 		checkNull(perftest.getId(), "id should be null");
-		PerfTest savePerfTest = perfTestService.savePerfTest(user, perftest);
+		PerfTest savePerfTest = perfTestService.save(user, perftest);
 		return toJsonHttpEntity(savePerfTest);
 	}
 
@@ -860,7 +860,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> delete(User user, @PathVariable("id") Long id) {
 		PerfTest perfTest = getPerfTestWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id);
-		perfTestService.deletePerfTest(user, id);
+		perfTestService.delete(user, id);
 		return successJsonHttpEntity();
 	}
 
@@ -876,7 +876,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.PUT)
 	public HttpEntity<String> update(User user, @PathVariable("id") Long id, PerfTest perfTest) {
-		return toJsonHttpEntity(perfTestService.savePerfTest(user, perfTest));
+		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
 
 	/**
@@ -889,7 +889,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", params = "action=stop", method = RequestMethod.PUT)
 	public HttpEntity<String> stop(User user, @PathVariable("id") Long id) {
-		perfTestService.stopPerfTest(user, id);
+		perfTestService.stop(user, id);
 		return successJsonHttpEntity();
 	}
 
@@ -907,7 +907,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id, Status status) {
 		PerfTest perfTest = getPerfTestWithPermissionCheck(user, id, false);
 		checkNotNull(perfTest, "no perftest for %s exits", id).setStatus(status);
-		return toJsonHttpEntity(perfTestService.savePerfTest(user, perfTest));
+		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
 
 	/**
@@ -941,13 +941,13 @@ public class PerfTestController extends NGrinderBaseController {
 			newOne.setAgentCount(0);
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
-		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
+		MutableInt agentCountObj = agentCountMap.get(isClustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
 		checkArgument(newOne.getAgentCount() != 0, "test agent should not be %s", agentMaxCount);
 		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
 				agentMaxCount);
-		PerfTest savePerfTest = perfTestService.savePerfTest(user, newOne);
+		PerfTest savePerfTest = perfTestService.save(user, newOne);
 		CoreLogger.LOGGER.info("test {} is created through web api by {}", savePerfTest.getId(), user.getUserId());
 		return toJsonHttpEntity(savePerfTest);
 	}

@@ -14,7 +14,7 @@
 package org.ngrinder.perftest.service.monitor;
 
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.controller.domain.MonitorCollectionInfoDomain;
 import org.ngrinder.monitor.share.domain.MBeanClient;
@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Used to get monitor data directly from MBeanClient and save. For every
@@ -85,7 +85,7 @@ public class MonitorClientService {
 			ObjectName systemName = new ObjectName(objNameStr);
 			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
 
-			fileWriter = new FileWriter(new File(reportPath, NGrinderConstants.MONITOR_FILE_PREFIX + ip + ".data"),
+			fileWriter = new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + ".data"),
 					false);
 			bw = new BufferedWriter(fileWriter);
 			// write header info

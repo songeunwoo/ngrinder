@@ -31,12 +31,12 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private int ignoreCount;
 
 	@Override
-	public void startTest() {
+	public void start() {
 		// No Nothing.
 	};
 
 	public void testDrive() {
-		super.startTest();
+		super.start();
 	};
 
 	@Override

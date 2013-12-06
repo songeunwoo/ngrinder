@@ -61,8 +61,8 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testHealthcheck() {
 		MockHttpServletResponse resq = new MockHttpServletResponse();
-		homeController.healthcheck(resq);
-		HttpEntity<String> message = homeController.healthcheckSlowly(500, resq);
+		homeController.healthCheck(resq);
+		HttpEntity<String> message = homeController.healthCheckSlowly(500, resq);
 		assertThat(message.getBody(), containsString("NONE"));
 	}
 
@@ -73,14 +73,6 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		assertThat(viewName, is("redirect:/"));
 	}
 
-	@Test
-	public void testGetTimeZone() {
-		ModelMap model = new ModelMap();
-		String viewName = homeController.getAllTimeZone(model);
-		assertThat(viewName, is("allTimeZone"));
-
-		homeController.changeTimeZone(getTestUser(), "Asia/Shanghai");
-	}
 
 	@Test
 	public void testErrorPage() {

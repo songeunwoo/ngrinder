@@ -41,14 +41,14 @@ public class MockConfig extends Config {
 	}
 
 	@Override
-	public boolean isCluster() {
+	public boolean isClustered() {
 		// TODO Auto-generated method stub
 		return cluster;
 	}
 
 	@Override
 	public String getRegion() {
-		return isCluster() ? (doRealOnRegion == true ? super.getRegion() : "TestRegion") : NONE_REGION;
+		return isClustered() ? (doRealOnRegion == true ? super.getRegion() : "TestRegion") : NONE_REGION;
 	}
 
 }

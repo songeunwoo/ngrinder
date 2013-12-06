@@ -20,7 +20,7 @@ import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.util.AbstractGrinderClassPathProcessor;
 import net.grinder.util.Directory;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -103,7 +103,7 @@ public class LocalScriptTestDriveService {
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcessor();
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
-					NetworkUtil.getLocalHostName());
+					NetworkUtils.getLocalHostName());
 			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);

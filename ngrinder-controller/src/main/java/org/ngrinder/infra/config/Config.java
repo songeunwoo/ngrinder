@@ -16,14 +16,13 @@ package org.ngrinder.infra.config;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import com.google.common.io.Files;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.FileWatchdog;
@@ -32,7 +31,7 @@ import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.service.IConfig;
+import org.ngrinder.service.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +44,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -59,7 +56,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  * @since 3.0
  */
 @Component
-public class Config implements IConfig, NGrinderConstants {
+public class Config extends AbstractConfig implements Constants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
@@ -115,7 +112,7 @@ public class Config implements IConfig, NGrinderConstants {
 			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
-			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
+			cluster = getSystemProperties().getPropertyBoolean(Constants.NGRINDER_PROP_CLUSTER_MODE, false);
 			initLogger(isTestMode());
 			resolveLocalIp();
 			loadAnnouncement();
@@ -148,7 +145,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if the cluster mode is enabled.
 	 * @since 3.1
 	 */
-	public boolean isCluster() {
+	public boolean isClustered() {
 		return cluster;
 	}
 
@@ -168,7 +165,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return region. If it's not clustered mode, return "NONE"
 	 */
 	public String getRegion() {
-		return isCluster() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
+		return isClustered() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
 	}
 
 	/**
@@ -187,7 +184,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_USAGE_REPORT, true);
+		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_PROP_USAGE_REPORT, true);
 	}
 
 	/**
@@ -196,7 +193,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if enabled.
 	 */
 	public boolean isSelfUserRegistration() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_USER_SELF_REGISTRATION, false);
+		return getSystemProperties().getPropertyBoolean(Constants.NGRINDER_USER_SELF_REGISTRATION, false);
 	}
 
 	/**
@@ -224,7 +221,7 @@ public class Config implements IConfig, NGrinderConstants {
 		try {
 			if (!logbackConf.exists()) {
 				logbackConf = new ClassPathResource("/logback/logback-ngrinder.xml").getFile();
-				if (exHome.exists() && isCluster()) {
+				if (exHome.exists() && isClustered()) {
 					context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
 					context.putProperty("SUFFIX", "_" + getRegion());
 				} else {
@@ -650,6 +647,6 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return public IP.
 	 */
 	public String getCurrentPublicIP() {
-		return NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS;
+		return NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS;
 	}
 }

@@ -41,7 +41,6 @@ import net.grinder.common.Test;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
-import net.grinder.console.common.ConsoleException;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.ProcessControl;
@@ -77,9 +76,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.ReflectionUtil;
+import org.ngrinder.common.util.DateUtils;
+import org.ngrinder.common.util.ReflectionUtils;
 import org.ngrinder.common.util.ThreadUtils;
+import org.ngrinder.service.AbstractSingleConsole;
 import org.ngrinder.service.ISingleConsole;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class SingleConsole implements Listener, SampleListener, ISingleConsole {
+public class SingleConsole extends AbstractSingleConsole implements Listener, SampleListener {
 	private static final String RESOURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
@@ -275,7 +275,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-				ReflectionUtil.getFieldValue(
+				ReflectionUtils.getFieldValue(
 						(ProcessControlImplementation) getConsoleFoundation().getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
 				"m_agentNumberMap on ProcessControlImplementation is not available in this grinder version");
@@ -745,7 +745,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics) {
 
 		StringBuilder csvLine = new StringBuilder();
-		csvLine.append(DateUtil.dateToString(new Date()));
+		csvLine.append(DateUtils.dateToString(new Date()));
 
 		// add headers into the csv file.
 		if (!headerAdded) {

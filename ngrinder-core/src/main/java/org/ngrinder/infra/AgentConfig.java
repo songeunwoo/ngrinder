@@ -14,7 +14,7 @@
 package org.ngrinder.infra;
 
 import net.grinder.communication.AgentControllerCommunicationDefaults;
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -323,7 +323,7 @@ public class AgentConfig {
 	}
 
 	public String getAgentHostID() {
-		return getProperty(AGENT_HOST_ID, NetworkUtil.DEFAULT_LOCAL_HOST_NAME);
+		return getProperty(AGENT_HOST_ID, NetworkUtils.DEFAULT_LOCAL_HOST_NAME);
 	}
 
 	public boolean isServerMode() {
@@ -331,7 +331,7 @@ public class AgentConfig {
 	}
 
 	public String getLocalIP() {
-		return getProperty(MONITOR_LISTEN_IP, NetworkUtil.DEFAULT_LOCAL_HOST_ADDRESS);
+		return getProperty(MONITOR_LISTEN_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public boolean isSilentMode() {

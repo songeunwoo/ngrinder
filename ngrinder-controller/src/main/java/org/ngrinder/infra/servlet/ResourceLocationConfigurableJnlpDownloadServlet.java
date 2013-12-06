@@ -151,7 +151,7 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 	 * @see javax.servlet.GenericServlet#getInitParameterNames()
 	 */
 	@Override
-	public Enumeration<?> getInitParameterNames() {
+	public Enumeration<String> getInitParameterNames() {
 		return new IteratorEnumeration(initParam.keySet().iterator());
 	}
 }

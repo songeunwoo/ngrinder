@@ -22,9 +22,9 @@ import java.io.StringReader;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.exception.ConfigurationException;
-import org.ngrinder.common.util.EncodingUtil;
+import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
@@ -36,7 +36,7 @@ import org.ngrinder.model.User;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class Home implements NGrinderConstants {
+public class Home implements Constants {
 
 	private final File directory;
 
@@ -129,7 +129,7 @@ public class Home implements NGrinderConstants {
 			File configFile = getSubFile(confFileName);
 			if (configFile.exists()) {
 				byte[] propByte = FileUtils.readFileToByteArray(configFile);
-				String propString = EncodingUtil.getAutoDecodedString(propByte, "UTF-8");
+				String propString = EncodingUtils.getAutoDecodedString(propByte, "UTF-8");
 				Properties prop = new Properties();
 				prop.load(new StringReader(propString));
 				return prop;

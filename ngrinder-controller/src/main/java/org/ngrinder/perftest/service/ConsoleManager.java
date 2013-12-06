@@ -15,7 +15,7 @@ package org.ngrinder.perftest.service;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+import static org.ngrinder.common.constant.Constants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
@@ -81,8 +81,8 @@ public class ConsoleManager {
 	 * @return base port number
 	 */
 	protected int getConsolePortBase() {
-		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE,
-				NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
+		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_CONSOLE_PORT_BASE,
+				Constants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
 	}
 
 	/**
@@ -91,8 +91,8 @@ public class ConsoleManager {
 	 * @return console size.
 	 */
 	protected int getConsoleSize() {
-		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		return config.getSystemProperties().getPropertyInt(Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+				Constants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class ConsoleManager {
 	 */
 	protected long getMaxWaitingMilliSecond() {
 		return config.getSystemProperties().getPropertyInt(NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS,
-				NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
+				Constants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
 	}
 
 	/**

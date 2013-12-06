@@ -16,7 +16,7 @@ package org.ngrinder.operation.cotroller;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.annotation.RuntimeOnlyController;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
@@ -35,8 +35,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -55,7 +53,7 @@ import java.io.StringWriter;
 @RuntimeOnlyController
 @RequestMapping("/operation/script_console")
 @PreAuthorize("hasAnyRole('A')")
-public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
+public class ScriptConsoleController extends BaseController implements ApplicationContextAware {
 	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
 
 	private ApplicationContext applicationContext;
@@ -99,7 +97,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 * @return operation/script_console
 	 */
 	@RequestMapping("")
-	public String runScript(@RequestParam(value = "script", defaultValue = "") String script, Model model) {
+	public String run(@RequestParam(value = "script", defaultValue = "") String script, Model model) {
 		if (StringUtils.isNotBlank(script)) {
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("Groovy");
 			engine.put("applicationContext", this.applicationContext);

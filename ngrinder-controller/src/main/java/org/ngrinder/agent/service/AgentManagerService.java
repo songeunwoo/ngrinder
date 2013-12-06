@@ -28,6 +28,7 @@ import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
+import org.ngrinder.service.AbstractAgentManagerService;
 import org.ngrinder.service.IAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ import java.util.*;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.TypeConvertUtil.cast;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Agent manager service.
@@ -49,14 +50,14 @@ import static org.ngrinder.common.util.TypeConvertUtil.cast;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentManagerService implements IAgentManagerService {
+public class AgentManagerService extends AbstractAgentManagerService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
 	@Autowired
 	private AgentManager agentManager;
 
 	@Autowired
-	private AgentManagerRepository agentManagerRepository;
+	protected AgentManagerRepository agentManagerRepository;
 
 	@Autowired
 	private Config config;
@@ -85,7 +86,7 @@ public class AgentManagerService implements IAgentManagerService {
 
 
 		// If region is not specified retrieved all
-		List<AgentInfo> agentsInDB = getAgentRepository().findAll();
+		List<AgentInfo> agentsInDB = agentManagerRepository.findAll();
 
 		Multimap<String, AgentInfo> agentInDBMap = ArrayListMultimap.create();
 		// step1. check all agents in DB, whether they are attached to
@@ -131,8 +132,8 @@ public class AgentManagerService implements IAgentManagerService {
 		}
 
 		// step3. update into DB
-		getAgentRepository().save(changeAgents);
-		getAgentRepository().delete(agentsToBeDeleted);
+		agentManagerRepository.save(changeAgents);
+		agentManagerRepository.delete(agentsToBeDeleted);
 
 	}
 
@@ -200,7 +201,7 @@ public class AgentManagerService implements IAgentManagerService {
 
 	private Map<String, AgentInfo> createLocalAgentMapFromDB() {
 		Map<String, AgentInfo> agentInfoMap = Maps.newHashMap();
-		for (AgentInfo each : getLocalAgentListFromDB()) {
+		for (AgentInfo each : getLocalAgentsFromDB()) {
 			agentInfoMap.put(createAgentKey(each), each);
 		}
 		return agentInfoMap;
@@ -256,11 +257,11 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getLocalAgentListFromDB()
+	 * org.ngrinder.agent.service.IAgentManagerService#getLocalAgentsFromDB()
 	 */
 	@Override
-	public List<AgentInfo> getLocalAgentListFromDB() {
-		return getAgentRepository().findAll();
+	public List<AgentInfo> getLocalAgentsFromDB() {
+		return agentManagerRepository.findAll();
 	}
 
 	/*
@@ -272,7 +273,7 @@ public class AgentManagerService implements IAgentManagerService {
 	 */
 	@Override
 	public List<AgentInfo> getAllActiveAgentInfoFromDB() {
-		return getAgentRepository().findAll(active());
+		return agentManagerRepository.findAll(active());
 	}
 
 	/*
@@ -284,7 +285,7 @@ public class AgentManagerService implements IAgentManagerService {
 	 */
 	@Override
 	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
-		return getAgentRepository().findAll(visible());
+		return agentManagerRepository.findAll(visible());
 	}
 
 	private AgentInfo createAgentInfo(AgentControllerIdentityImplementation agentIdentity,
@@ -313,12 +314,12 @@ public class AgentManagerService implements IAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getAgent(long,
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getOne(long,
 	 * boolean)
 	 */
 	@Override
-	public AgentInfo getAgent(long id, boolean includeAgentIdentity) {
-		AgentInfo findOne = getAgentRepository().findOne(id);
+	public AgentInfo getOne(long id, boolean includeAgentIdentity) {
+		AgentInfo findOne = agentManagerRepository.findOne(id);
 		if (findOne == null) {
 			return null;
 		}
@@ -337,7 +338,7 @@ public class AgentManagerService implements IAgentManagerService {
 	 * @param agent saved agent
 	 */
 	public void saveAgent(AgentInfo agent) {
-		getAgentRepository().save(agent);
+		agentManagerRepository.save(agent);
 	}
 
 	/**
@@ -346,7 +347,7 @@ public class AgentManagerService implements IAgentManagerService {
 	 * @param id agent id to be deleted
 	 */
 	public void deleteAgent(long id) {
-		getAgentRepository().delete(id);
+		agentManagerRepository.delete(id);
 	}
 
 	/**
@@ -357,11 +358,11 @@ public class AgentManagerService implements IAgentManagerService {
 	 */
 	@Transactional
 	public void approve(Long id, boolean approve) {
-		AgentInfo found = getAgentRepository().findOne(id);
+		AgentInfo found = agentManagerRepository.findOne(id);
 		if (found != null) {
 			found.setApproved(approve);
-			getAgentRepository().save(found);
-			getAgentRepository().findOne(found.getId());
+			agentManagerRepository.save(found);
+			agentManagerRepository.findOne(found.getId());
 		}
 
 	}
@@ -374,7 +375,7 @@ public class AgentManagerService implements IAgentManagerService {
 	 */
 	@Transactional
 	public void stopAgent(Long id) {
-		AgentInfo agent = getAgent(id, true);
+		AgentInfo agent = getOne(id, true);
 		if (agent == null) {
 			return;
 		}
@@ -411,16 +412,13 @@ public class AgentManagerService implements IAgentManagerService {
 		this.agentManager = agentManager;
 	}
 
-	AgentManagerRepository getAgentRepository() {
-		return agentManagerRepository;
-	}
-
-	void setAgentRepository(AgentManagerRepository agentRepository) {
-		this.agentManagerRepository = agentRepository;
-	}
-
-	protected AgentManagerRepository getAgentManagerRepository() {
+	// For unit test
+	public AgentManagerRepository getAgentManagerRepository() {
 		return this.agentManagerRepository;
+	}
+
+	public void setAgentManagerRepository(AgentManagerRepository agentManagerRepository) {
+		this.agentManagerRepository = agentManagerRepository;
 	}
 
 	public Config getConfig() {
@@ -441,7 +439,7 @@ public class AgentManagerService implements IAgentManagerService {
 	@Override
 	public void updateAgent(List<Long> ids) {
 		for (Long each : ids) {
-			updateAgent(each);
+			update(each);
 		}
 	}
 
@@ -453,8 +451,8 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (java.lang.String)
 	 */
 	@Override
-	public void updateAgent(Long id) {
-		AgentInfo agent = getAgent(id, true);
+	public void update(Long id) {
+		AgentInfo agent = getOne(id, true);
 		if (agent == null) {
 			return;
 		}

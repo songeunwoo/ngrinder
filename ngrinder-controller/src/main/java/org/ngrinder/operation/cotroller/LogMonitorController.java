@@ -22,7 +22,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/operation/log")
 @PreAuthorize("hasAnyRole('A')")
-public class LogMonitorController extends NGrinderBaseController {
+public class LogMonitorController extends BaseController {
 
 	private static final int LOGGER_BUFFER_SIZE = 10000;
 
@@ -64,7 +64,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@PostConstruct
 	public void init() {
-		if (!clustered()) {
+		if (!isClustered()) {
 			initTailer();
 		}
 	}
@@ -116,7 +116,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@PreDestroy
 	public void destroy() {
-		if (!clustered()) {
+		if (!isClustered()) {
 			tailer.stop();
 		}
 	}
@@ -129,7 +129,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 * @return operation/logger
 	 */
 	@RequestMapping("")
-	public String getLog(Model model) {
+	public String getOne(Model model) {
 		model.addAttribute("verbose", getConfig().isVerbose());
 		return "operation/logger";
 	}
@@ -140,7 +140,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 * @return log json
 	 */
 	@RequestMapping("/last")
-	public HttpEntity<String> getLastLog() {
+	public HttpEntity<String> getLast() {
 		return toJsonHttpEntity(buildMap("index", count, "modification", modification, "log", stringBuffer));
 	}
 

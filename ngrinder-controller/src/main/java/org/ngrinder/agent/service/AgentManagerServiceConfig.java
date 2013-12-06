@@ -50,7 +50,7 @@ public class AgentManagerServiceConfig implements ApplicationContextAware {
 	@Bean(name = "agentManagerService")
 	public AgentManagerService agentManagerService() {
 		AgentManagerService createBean = (AgentManagerService) applicationContext.getAutowireCapableBeanFactory()
-				.autowire(config.isCluster() ? ClusteredAgentManagerService.class : AgentManagerService.class,
+				.autowire(config.isClustered() ? ClusteredAgentManagerService.class : AgentManagerService.class,
 						AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, true);
 		return createBean;
 	}

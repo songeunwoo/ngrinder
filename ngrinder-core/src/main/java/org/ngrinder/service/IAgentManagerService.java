@@ -87,7 +87,7 @@ public interface IAgentManagerService {
 	 *
 	 * @return agent list
 	 */
-	public abstract List<AgentInfo> getLocalAgentListFromDB();
+	public abstract List<AgentInfo> getLocalAgentsFromDB();
 
 	/**
 	 * Get all active agents from DB.
@@ -111,7 +111,7 @@ public interface IAgentManagerService {
 	 * @param includeAgentIdentity include agent identity
 	 * @return agent
 	 */
-	public abstract AgentInfo getAgent(long id, boolean includeAgentIdentity);
+	public abstract AgentInfo getOne(long id, boolean includeAgentIdentity);
 
 	/**
 	 * Get the agent system data model for the given ip. This method is cluster
@@ -136,7 +136,7 @@ public interface IAgentManagerService {
 	 *
 	 * @param id ids.
 	 */
-	public abstract void updateAgent(Long id) throws IOException;
+	public abstract void update(Long id) throws IOException;
 
 	/**
 	 * Get the agent package directory

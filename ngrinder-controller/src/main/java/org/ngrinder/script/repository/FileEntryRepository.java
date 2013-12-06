@@ -35,7 +35,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.common.util.EncodingUtil;
+import org.ngrinder.common.util.EncodingUtils;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -274,7 +274,7 @@ public class FileEntryRepository {
 			}
 			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script.getFileName())));
 			if (script.getFileType().isEditable()) {
-				String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
+				String autoDetectedEncoding = EncodingUtils.detectEncoding(byteArray, "UTF-8");
 				script.setContent(new String(byteArray, autoDetectedEncoding));
 				script.setEncoding(autoDetectedEncoding);
 				script.setContentBytes(byteArray);
@@ -495,7 +495,7 @@ public class FileEntryRepository {
 	 * @param path path in user repo
 	 * @return true if exists.
 	 */
-	public boolean hasFileEntry(User user, String path) {
+	public boolean hasOne(User user, String path) {
 		SVNClientManager svnClientManager = null;
 		try {
 			svnClientManager = getSVNClientManager();

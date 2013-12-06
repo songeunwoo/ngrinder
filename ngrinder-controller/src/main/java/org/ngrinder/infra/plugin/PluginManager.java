@@ -24,7 +24,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.extension.OnControllerLifeCycleRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
@@ -68,7 +68,7 @@ import com.atlassian.plugin.predicate.ModuleDescriptorPredicate;
  * @since 3.0
  */
 @RuntimeOnlyComponent
-public class PluginManager implements ServletContextAware, NGrinderConstants {
+public class PluginManager implements ServletContextAware, Constants {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PluginManager.class);
 

@@ -18,9 +18,8 @@ import static org.ngrinder.common.util.Preconditions.checkArgument;
 
 import java.util.EnumSet;
 
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -31,7 +30,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -43,13 +41,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping("/registration")
-public class UserRegistrationController extends NGrinderBaseController {
+public class UserRegistrationController extends BaseController {
 
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private Config config;
 
 	/**
 	 * New user sign up form login page.
@@ -61,7 +57,7 @@ public class UserRegistrationController extends NGrinderBaseController {
 	@RequestMapping("/sign_up")
 	public String getUserForm(ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.of(Role.USER));
-		model.addAttribute("isSelfRegistration", config.isSelfUserRegistration());
+		model.addAttribute("isSelfRegistration", getConfig().isSelfUserRegistration());
 		return "user/user_sign_up_modal";
 	}
 	
@@ -77,7 +73,7 @@ public class UserRegistrationController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping("/api/{userId}/check_duplication")
 	public HttpEntity<String> checkUserId(ModelMap model, @PathVariable String userId) {
-		User user = userService.getUserById(userId);
+		User user = userService.getOne(userId);
 		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
 	

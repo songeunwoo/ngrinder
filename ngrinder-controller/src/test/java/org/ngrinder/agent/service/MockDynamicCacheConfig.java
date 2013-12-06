@@ -13,7 +13,7 @@
  */
 package org.ngrinder.agent.service;
 
-import net.grinder.util.NetworkUtil;
+import net.grinder.util.NetworkUtils;
 import net.grinder.util.Pair;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.Configuration;
@@ -53,8 +53,8 @@ public class MockDynamicCacheConfig extends DynamicCacheConfig {
 			FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 			peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 			List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
-			Pair<NetworkUtil.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
-			NetworkUtil.IPPortPair currentListener = properties.getFirst();
+			Pair<NetworkUtils.IPPortPair, String> properties = createCacheProperties(replicatedCacheNames);
+			NetworkUtils.IPPortPair currentListener = properties.getFirst();
 			String peerProperty = properties.getSecond();
 			peerProviderConfig.setProperties(peerProperty);
 			cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
