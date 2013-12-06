@@ -13,20 +13,11 @@
  */
 package org.ngrinder.region.service;
 
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
@@ -38,8 +29,11 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
+import java.util.Map;
+
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
  * Region service class. This class responsible to keep the status of available regions.
@@ -108,17 +102,6 @@ public class RegionService {
 		}
 	}
 
-	/**
-	 * Destroy method. this method is responsible to delete our current region from dist cache.
-	 */
-	@PreDestroy
-	public void destroy() {
-		if (config.isClustered()) {
-			@SuppressWarnings("deprecation")
-			File file = new File(config.getHome().getControllerShareDirectory(), config.getRegion());
-			FileUtils.deleteQuietly(file);
-		}
-	}
 
 	/**
 	 * Get current region. This method returns where this service is running.

@@ -13,12 +13,6 @@
  */
 package org.ngrinder.user.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.Constants;
@@ -30,7 +24,6 @@ import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.AbstractUserService;
-import org.ngrinder.service.IUserService;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +38,10 @@ import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The Class UserService.

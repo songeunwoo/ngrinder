@@ -81,7 +81,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.save(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), script, null, "", false, model);
 		scriptController.validate(getTestUser(), script, "test.com");
 		// save and get
 		model.clear();
@@ -97,7 +97,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.search(getTestUser(), "test", model);
 
 		model.clear();
-		scriptController.delete(getTestUser(), path, "new_file.py", model);
+		scriptController.delete(getTestUser(), path, "new_file.py");
 		scriptController.getAll(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>) model.get("files");
 		assertThat(scriptList.size(), is(0));
@@ -115,12 +115,12 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.createForm(getTestUser(), path, "test.com", "file-for-search.py", "jython", false,
 						new RedirectAttributesModelMap(), model);
 		FileEntry script = (FileEntry) model.get("file");
-		scriptController.save(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), script, null, "", false, model);
 
 		// save another script
 		model.clear();
 		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
-		scriptController.save(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), script, null, "", false, model);
 		// save and get
 		model.clear();
 		scriptController.getOne(getTestUser(), script.getPath(), -1L, model);
@@ -132,7 +132,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		model.clear();
 		// delete both files
-		scriptController.delete(getTestUser(), path, "file-for-search.py,new-file-for-search.py", model);
+		scriptController.delete(getTestUser(), path, "file-for-search.py,new-file-for-search.py");
 		scriptController.getAll(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>) model.get("files");
 		assertThat(scriptList.size(), is(0));
@@ -166,7 +166,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.save(getTestUser(), path, script, null, "", false, model);
+		scriptController.save(getTestUser(), script, null, "", false, model);
 
 		scriptController.createForm(getTestUser(), path, "", fileName, "", false, attrMap, model);
 

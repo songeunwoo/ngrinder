@@ -13,14 +13,7 @@
  */
 package org.ngrinder.user.controller;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
@@ -43,7 +36,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import com.google.common.collect.Lists;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
 import static org.ngrinder.common.util.Preconditions.*;
 
@@ -84,7 +81,7 @@ public class UserController extends BaseController {
 			sort = new Sort(Direction.ASC, "userName");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
-		Page<User> pagedUser = null;
+		Page<User> pagedUser;
 		if (StringUtils.isEmpty(keywords)) {
 			pagedUser = userService.getPagedAll(role, pageable);
 		} else {
@@ -97,7 +94,7 @@ public class UserController extends BaseController {
 		model.addAttribute("role", role);
 		model.addAttribute("page", pageable);
 		if (sort != null) {
-			Order sortProp = (Order) sort.iterator().next();
+			Order sortProp = sort.iterator().next();
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
@@ -147,7 +144,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
-	public String save(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
+	public String save(User user, @ModelAttribute("user") User updatedUser, ModelMap model) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -234,7 +231,6 @@ public class UserController extends BaseController {
 	/**
 	 * Switch user identity.
 	 *
-	 * @param user     current user
 	 * @param model    model
 	 * @param to       the user to whom a user will switch
 	 * @param request  request
@@ -242,8 +238,8 @@ public class UserController extends BaseController {
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switch")
-	public String switchUser(User user, ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
-							 HttpServletRequest request, HttpServletResponse response) {
+	public String switchUser(ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
+	                         HttpServletResponse response) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
@@ -283,14 +279,13 @@ public class UserController extends BaseController {
 	/**
 	 * Check the user id existence.
 	 *
-	 * @param model  model
 	 * @param userId userId to be checked
 	 * @return success json if true.
 	 */
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/api/{userId}/check_duplication")
-	public HttpEntity<String> checkDuplication(ModelMap model, @PathVariable String userId) {
+	public HttpEntity<String> checkDuplication(@PathVariable String userId) {
 		User user = userService.getOne(userId);
 		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
@@ -298,21 +293,21 @@ public class UserController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.GET)
-	public HttpEntity<String> getAll(User user, Role role) {
+	public HttpEntity<String> getAll(Role role) {
 		return toJsonHttpEntity(userService.getAll(role));
 	}
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.GET)
-	public HttpEntity<String> getOne(User user, @PathVariable("userId") String userId) {
+	public HttpEntity<String> getOne(@PathVariable("userId") String userId) {
 		return toJsonHttpEntity(userService.getOne(userId));
 	}
 
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = {"/api/", "/api"}, method = RequestMethod.POST)
-	public HttpEntity<String> create(User user, @ModelAttribute("user") User newUser) {
+	public HttpEntity<String> create(@ModelAttribute("user") User newUser) {
 		checkNull(newUser.getId(), "User DB ID should be null");
 		return toJsonHttpEntity(save(newUser));
 	}
@@ -320,7 +315,8 @@ public class UserController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.PUT)
-	public HttpEntity<String> update(User user, @PathVariable("userId") String userId, User update) {
+	public HttpEntity<String> update(@PathVariable("userId") String userId, User update) {
+		update.setUserId(userId);
 		checkNull(update.getId(), "User DB ID should be null");
 		return toJsonHttpEntity(save(update));
 	}
@@ -328,7 +324,7 @@ public class UserController extends BaseController {
 	@RestAPI
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{userId}", method = RequestMethod.DELETE)
-	public HttpEntity<String> delete(User user, @PathVariable("userId") String userId) {
+	public HttpEntity<String> delete(@PathVariable("userId") String userId) {
 		userService.delete(userId);
 		return successJsonHttpEntity();
 	}

@@ -79,22 +79,4 @@ public abstract class ReflectionUtils {
 		}
 	}
 
-	/**
-	 * Get the instance of the given class.
-	 * 
-	 * @param <T>
-	 *            the return type
-	 * @param className
-	 *            class name including package name
-	 * @return created instance
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceByName(String className) {
-		try {
-			Class<?> loader = Class.forName(className);
-			return (T) loader.newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 }

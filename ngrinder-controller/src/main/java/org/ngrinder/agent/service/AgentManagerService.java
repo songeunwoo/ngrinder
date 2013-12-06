@@ -29,7 +29,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.service.AbstractAgentManagerService;
-import org.ngrinder.service.IAgentManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,10 +159,7 @@ public class AgentManagerService extends AbstractAgentManagerService {
 			// It's this controller's agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
 				availableUserOwnAgent++;
-			} else if (fullRegion.contains("owned_")) {
-				// If it's the other controller's agent.. skip..
-				continue;
-			} else {
+			} else if (!fullRegion.contains("owned_")) {
 				availableShareAgents++;
 			}
 		}
@@ -448,33 +444,11 @@ public class AgentManagerService extends AbstractAgentManagerService {
 	 * (java.lang.String)
 	 */
 	@Override
-	public void updateAgent(List<Long> ids) {
-		for (Long each : ids) {
-			update(each);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#updateAgentLib
-	 * (java.lang.String)
-	 */
-	@Override
 	public void update(Long id) {
 		AgentInfo agent = getOne(id, true);
 		if (agent == null) {
 			return;
 		}
 		agentManager.updateAgent(agent.getAgentIdentity(), config.getVersion());
-	}
-
-	/**
-	 * Get the agent package containing folder.
-	 */
-	@Override
-	public File getAgentPackagesDir() {
-		return getConfig().getHome().getSubFile("download");
 	}
 }

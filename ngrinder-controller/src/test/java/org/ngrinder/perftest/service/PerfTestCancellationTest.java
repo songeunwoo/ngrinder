@@ -37,7 +37,6 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.ui.ModelMap;
 
 public class PerfTestCancellationTest extends AbstractAgentReadyTest implements Constants {
 
@@ -102,7 +101,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 				SampleModelImplementationEx sampleModelMock = mock(SampleModelImplementationEx.class);
 				singleConsole.setSampleModel(sampleModelMock);
 				assertThat(singleConsole, notNullValue());
-				perfTestController.stop(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
+				perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
 			}
 		}, 1);
 		perfTestRunnable.start();
@@ -118,7 +117,7 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 		// Given the testing perftest
 		perfTest = createPerfTest("test1", Status.TESTING, null);
 		// When the stop is requested
-		perfTestController.stop(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
+		perfTestController.stop(getTestUser(), String.valueOf(perfTest.getId()));
 		perfTestRunnable.finishPeriodically();
 		// Then it should be canceled.
 		assertThat(perfTestService.getOne(perfTest.getId()).getStatus(), is(Status.CANCELED));

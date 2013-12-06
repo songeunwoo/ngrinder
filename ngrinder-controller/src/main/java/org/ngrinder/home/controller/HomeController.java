@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.annotation.PostConstruct;
@@ -265,7 +264,7 @@ public class HomeController extends BaseController {
 	 * @return "redirect:/doError"
 	 */
 	@RequestMapping(value = "/error_404")
-	public String error404(RedirectAttributesModelMap model) {
+	public String error404() {
 		return "redirect:/doError?type=404";
 	}
 

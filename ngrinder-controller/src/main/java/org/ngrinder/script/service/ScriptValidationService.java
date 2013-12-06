@@ -13,22 +13,14 @@
  */
 package org.ngrinder.script.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.TypeConvertUtils.cast;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.thread.Condition;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.Constants;
+import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
 import org.ngrinder.model.User;
@@ -37,11 +29,18 @@ import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.service.AbstractScriptValidationService;
-import org.ngrinder.service.IScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.TypeConvertUtils.cast;
 
 /**
  * Script Validation Service.
@@ -93,7 +92,8 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 			}
 			File scriptDirectory = config.getHome().getScriptDirectory(user);
 			FileUtils.deleteDirectory(scriptDirectory);
-			scriptDirectory.mkdirs();
+			Preconditions.checkTrue(scriptDirectory.mkdirs(), "Script directory {} creation is failed.");
+
 			ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
 			handler.prepareDist(0L, user, scriptEntry, scriptDirectory, config.getSystemProperties(), processingResult);
 			if (!processingResult.isSuccess()) {
@@ -110,7 +110,7 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
 					config.isSecurityEnabled(), hostString, getTimeout());
 			List<String> readLines = FileUtils.readLines(doValidate);
-			StringBuffer output = new StringBuffer();
+			StringBuilder output = new StringBuilder();
 			String path = config.getHome().getDirectory().getAbsolutePath();
 			for (String each : readLines) {
 				if (!each.startsWith("*sys-package-mgr")) {
@@ -123,6 +123,7 @@ public class ScriptValidationService extends AbstractScriptValidationService {
 			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
 			LOG.error("Error details ", e);
 		}
+
 		return StringUtils.EMPTY;
 	}
 

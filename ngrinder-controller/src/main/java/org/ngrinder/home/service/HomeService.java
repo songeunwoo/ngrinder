@@ -55,8 +55,6 @@ public class HomeService {
 	public void init() {
 	}
 
-	@Autowired
-	private Config config;
 
 	/**
 	 * Get the let panel entries from the given feed RUL.

@@ -47,9 +47,6 @@ import static org.ngrinder.common.util.NoOp.noOp;
  * @since 3.0
  */
 public class BaseController implements Constants {
-
-	public static final String ERROR_PAGE = "errors/error";
-	protected static final int DEFAULT_PAGE_LIMIT = 20;
 	private static String successJson;
 	private static String errorJson;
 	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
@@ -177,19 +174,14 @@ public class BaseController implements Constants {
 	 * @return the found message. If not found, the error message will return.
 	 */
 	protected String getMessages(String key) {
-		Locale locale = null;
-		String message = null;
-		User currentUser = null;
 		String userLanguage = "en";
 		try {
-			currentUser = getCurrentUser();
-			userLanguage = currentUser.getUserLanguage();
+			userLanguage = getCurrentUser().getUserLanguage();
 		} catch (Exception e) {
 			noOp();
 		}
-		locale = new Locale(userLanguage);
-		message = messageSource.getMessage(key, null, locale);
-		return message;
+		Locale locale = new Locale(userLanguage);
+		return messageSource.getMessage(key, null, locale);
 	}
 
 	/**
@@ -316,15 +308,6 @@ public class BaseController implements Constants {
 		return toHttpEntity(serializer.toJson(content), responseHeaders);
 	}
 
-	/**
-	 * Convert the given map into the json message.
-	 *
-	 * @param map map
-	 * @return json message
-	 */
-	public String toJson(Map<Object, Object> map) {
-		return gson.toJson(map);
-	}
 
 	/**
 	 * Exception handler to forward to front page showing the error message box.

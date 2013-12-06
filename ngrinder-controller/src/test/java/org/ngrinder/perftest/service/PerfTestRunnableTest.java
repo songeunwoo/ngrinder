@@ -136,7 +136,7 @@ public class PerfTestRunnableTest extends AbstractAgentReadyTest implements Cons
 		perfTestService.prepareDistribution(perfTest);
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 		sleep(3000);
-		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
+		perfTestRunnable.distributeFileOn(perfTest, singleConsole);
 
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
 			@Override

@@ -19,10 +19,7 @@ import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
@@ -136,21 +133,8 @@ public interface IAgentManagerService {
 	/**
 	 * Update agent
 	 *
-	 * @param ids ids.
-	 */
-	public abstract void updateAgent(List<Long> ids) throws IOException;
-
-	/**
-	 * Update agent
-	 *
 	 * @param id ids.
 	 */
 	public abstract void update(Long id) throws IOException;
 
-	/**
-	 * Get the agent package directory
-	 *
-	 * @return package stored directory
-	 */
-	public abstract File getAgentPackagesDir();
 }

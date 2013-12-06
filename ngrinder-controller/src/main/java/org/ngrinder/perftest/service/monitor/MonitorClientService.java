@@ -204,8 +204,12 @@ public class MonitorClientService {
 	 */
 	public void record(boolean empty) {
 		ValueWrapper valueWrapper = cache.get(ip);
-		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
-				: (SystemInfo) cast(valueWrapper.get());
+		SystemInfo systemInfo;
+		if (valueWrapper == null) {
+			systemInfo = new SystemInfo();
+		} else {
+			systemInfo = cast(valueWrapper.get());
+		}
 		try {
 			if (empty) {
 				bw.write(systemInfo.toEmptyRecordString());

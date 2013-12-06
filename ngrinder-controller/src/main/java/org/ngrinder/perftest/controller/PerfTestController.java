@@ -13,34 +13,11 @@
  */
 package org.ngrinder.perftest.controller;
 
-import static org.apache.commons.lang.StringUtils.trimToEmpty;
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.ExceptionUtils.processException;
-import static org.ngrinder.common.util.Preconditions.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
 import net.grinder.util.UnitUtils;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
@@ -83,15 +60,22 @@ import org.springframework.data.web.PageableDefaults;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.springframework.web.bind.annotation.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
+import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.Preconditions.*;
 
 /**
  * Performance Test Controller.
@@ -183,7 +167,7 @@ public class PerfTestController extends BaseController {
 		model.addAttribute("query", query);
 		model.addAttribute("page", pageable);
 		if (sort != null) {
-			Order sortProp = (Order) sort.iterator().next();
+			Order sortProp = sort.iterator().next();
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
@@ -267,7 +251,7 @@ public class PerfTestController extends BaseController {
 		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
 				getConfig().getSystemProperties().getPropertyBoolean(NGRINDER_PROP_DIST_SAFE, false));
 		String timeZone = getCurrentUser().getTimeZone();
-		int offset = 0;
+		int offset;
 		if (StringUtils.isNotBlank(timeZone)) {
 			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
 		} else {
@@ -374,7 +358,7 @@ public class PerfTestController extends BaseController {
 	 * @param tagString   tagString
 	 * @return JSON
 	 */
-	@RequestMapping(value = "{id}/leave_comment", method = RequestMethod.POST)
+	@RequestMapping(value = "/{id}/leave_comment", method = RequestMethod.POST)
 	@ResponseBody
 	public String leaveComment(User user, @PathVariable("id") Long id, @RequestParam("testComment") String testComment,
 	                           @RequestParam(value = "tagString", required = false) String tagString) {
@@ -418,15 +402,13 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Delete the perf tests having given IDs.
 	 *
-	 * @param user  user
-	 * @param model model
-	 * @param ids   comma operated IDs
+	 * @param user user
+	 * @param ids  comma operated IDs
 	 * @return success json messages if succeeded.
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/delete", method = RequestMethod.POST)
-	public HttpEntity<String> delete(User user, ModelMap model, @RequestParam(defaultValue = "") String
-			ids) {
+	public HttpEntity<String> delete(User user, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.delete(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -436,15 +418,13 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Stop the perf tests having given IDs.
 	 *
-	 * @param user  user
-	 * @param model model
-	 * @param ids   comma separated perf test IDs
+	 * @param user user
+	 * @param ids  comma separated perf test IDs
 	 * @return success json if succeeded.
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/stop", method = RequestMethod.POST)
-	public HttpEntity<String> stop(User user, ModelMap model, @RequestParam(value = "ids",
-			defaultValue = "") String ids) {
+	public HttpEntity<String> stop(User user, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stop(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -511,8 +491,8 @@ public class PerfTestController extends BaseController {
 	 * @param response response
 	 * @param id       test id
 	 */
-	@RequestMapping(value = "{id}/download_csv")
-	public void downloadCSV(User user, HttpServletResponse response, @PathVariable("id") long id) {
+	@RequestMapping(value = "/{id}/download_csv")
+	public void downloadCSV(User user, @PathVariable("id") long id, HttpServletResponse response) {
 		PerfTest test = getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
@@ -527,8 +507,8 @@ public class PerfTestController extends BaseController {
 	 * @param id       test id
 	 * @param response response
 	 */
-	@RequestMapping(value = "{id}/download_log/**")
-	public void downloadLog(User user, @RemainedPath String path, @PathVariable("id") long id,
+	@RequestMapping(value = "/{id}/download_log/**")
+	public void downloadLog(User user, @PathVariable("id") long id, @RemainedPath String path,
 	                        HttpServletResponse response) {
 		getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
@@ -543,9 +523,8 @@ public class PerfTestController extends BaseController {
 	 * @param path     path in the log folder
 	 * @param response response
 	 */
-	@RequestMapping(value = "{id}/show_log/**")
-	public void showLog(User user, @PathVariable("id") long id, //
-	                    @RemainedPath String path, HttpServletResponse response) {
+	@RequestMapping(value = "/{id}/show_log/**")
+	public void showLog(User user, @PathVariable("id") long id, @RemainedPath String path, HttpServletResponse response) {
 		getOneWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		response.reset();
@@ -577,8 +556,8 @@ public class PerfTestController extends BaseController {
 	 * @param id    test id
 	 * @return "perftest/sample"
 	 */
-	@RequestMapping(value = "{id}/running/sample")
-	public String refreshTestRunning(User user, ModelMap model, @PathVariable("id") long id) {
+	@RequestMapping(value = "/{id}/running/sample")
+	public String refreshTestRunning(User user, @PathVariable("id") long id, ModelMap model) {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : "
 				+ id);
 		if (test.getStatus().equals(Status.TESTING)) {
@@ -608,7 +587,7 @@ public class PerfTestController extends BaseController {
 
 			double memUsage = 0;
 			if (totalMemory != 0) {
-				memUsage = (((double) (totalMemory - freeMemory)) / totalMemory) * 100;
+				memUsage = ((totalMemory - freeMemory) / totalMemory) * 100;
 			}
 			DecimalFormat format = new DecimalFormat("#00.0");
 			if (cpuUsedPercentage > 99.9f) {
@@ -647,7 +626,7 @@ public class PerfTestController extends BaseController {
 	 * @param id    test id
 	 * @return perftest/detail_report
 	 */
-	@RequestMapping(value = {"{id}/detail_report", /** for backward compatibility */ "{id}/report"})
+	@RequestMapping(value = {"/{id}/detail_report", /** for backward compatibility */"/{id}/report"})
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getOne(id));
 		return "perftest/detail_report";
@@ -697,13 +676,11 @@ public class PerfTestController extends BaseController {
 	 *
 	 * @param user    user
 	 * @param ownerId owner id
-	 * @param model   model
 	 * @return JSON containing script's list.
 	 */
 	@RestAPI
 	@RequestMapping("/api/script")
-	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId,
-	                                     ModelMap model) {
+	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId) {
 		if (StringUtils.isNotEmpty(ownerId)) {
 			user = userService.getOne(ownerId);
 		}
@@ -729,7 +706,6 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping("/api/resource")
 	public HttpEntity<String> getResources(User user, @RequestParam String scriptPath,
-	                                       @RequestParam(value = "r", required = false) Long revision, // LF
 	                                       @RequestParam(required = false) String ownerId) {
 		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
 			user = userService.getOne(ownerId);
@@ -738,8 +714,7 @@ public class PerfTestController extends BaseController {
 		String targetHosts = "";
 		List<String> fileStringList = newArrayList();
 		if (fileEntry != null) {
-			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user,
-					fileEntry, SVNRevision.HEAD.getNumber());
+			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user, fileEntry, -1L);
 			for (FileEntry each : fileList) {
 				fileStringList.add(each.getPath());
 			}
@@ -769,7 +744,6 @@ public class PerfTestController extends BaseController {
 	 *
 	 * This method returns the appropriate points based on the given imgWidth.
 	 *
-	 * @param model    model
 	 * @param id       test id
 	 * @param dataType which data
 	 * @param imgWidth imageWidth
@@ -777,7 +751,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping("/api/{id}/graph")
-	public HttpEntity<String> getGraph(ModelMap model, @PathVariable("id") long id,
+	public HttpEntity<String> getGraph(@PathVariable("id") long id,
 	                                   @RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		if (dataTypes.length <= 0) {
@@ -790,7 +764,6 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the monitor data of the target having the given IP.
 	 *
-	 * @param model    model
 	 * @param id       test Id
 	 * @param targetIP targetIP
 	 * @param imgWidth image width
@@ -798,8 +771,8 @@ public class PerfTestController extends BaseController {
 	 */
 	@RestAPI
 	@RequestMapping("/api/{id}/monitor")
-	public HttpEntity<String> getMonitorData(ModelMap model, @PathVariable("id") long id,
-	                                         @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
+	public HttpEntity<String> getMonitor(@PathVariable("id") long id,
+	                                     @RequestParam("targetIP") String targetIP, @RequestParam int imgWidth) {
 		return toJsonHttpEntity(getMonitorData(id, targetIP, imgWidth));
 	}
 
@@ -876,6 +849,7 @@ public class PerfTestController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.PUT)
 	public HttpEntity<String> update(User user, @PathVariable("id") Long id, PerfTest perfTest) {
+		perfTest.setId(id);
 		return toJsonHttpEntity(perfTestService.save(user, perfTest));
 	}
 

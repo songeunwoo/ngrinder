@@ -140,19 +140,17 @@ public class FileEntryController extends BaseController {
 			accumulatedPart.append("/").append(each);
 			returnHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
 		}
-		String result = returnHtml.toString();
-		return result;
+		return returnHtml.toString();
 	}
 
 
 	/**
 	 * Get the script path BreadCrumbs HTML string.
 	 *
-	 * @param user user
 	 * @param path path
 	 * @return generated HTML
 	 */
-	public String getScriptPathBreadcrumbs(User user, String path) {
+	public String getScriptPathBreadcrumbs(String path) {
 		String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		String[] parts = StringUtils.split(path, '/');
 		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
@@ -182,11 +180,7 @@ public class FileEntryController extends BaseController {
 	@RequestMapping(value = "/new/**", params = "type=folder", method = RequestMethod.POST)
 	public String addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName,
 	                        ModelMap model) { // "fileName"
-		try {
-			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
-		} catch (Exception e) {
-			return "error/errors";
-		}
+		fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
 		model.clear();
 		return "redirect:/script/list/" + path;
 	}
@@ -242,7 +236,7 @@ public class FileEntryController extends BaseController {
 						scriptHandler, createLibAndResources));
 			}
 		}
-		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, PathUtils.join(path, fileName)));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(PathUtils.join(path, fileName)));
 		model.addAttribute("scriptHandler", scriptHandler);
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		return "script/editor";
@@ -271,7 +265,7 @@ public class FileEntryController extends BaseController {
 		model.addAttribute("curRevision", script.getRevision());
 		model.addAttribute("scriptHandler", fileEntryService.getScriptHandler(script));
 		model.addAttribute("ownerId", user.getUserId());
-		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(user, path));
+		model.addAttribute("breadcrumbPath", getScriptPathBreadcrumbs(path));
 		return "script/editor";
 	}
 
@@ -347,16 +341,15 @@ public class FileEntryController extends BaseController {
 	 * Save a fileEntry and return to the the path.
 	 *
 	 * @param user                 current user
-	 * @param path                 path to which this will forward.
 	 * @param fileEntry            file to be saved
 	 * @param targetHosts          target host parameter
-	 * @param createLibAndResource true if lib and resources should be created as well.
 	 * @param validated            validated the script or not, 1 is validated, 0 is not.
+	 * @param createLibAndResource true if lib and resources should be created as well.
 	 * @param model                model
 	 * @return script/list
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String save(User user, @RemainedPath String path, FileEntry fileEntry,
+	public String save(User user, FileEntry fileEntry,
 	                   @RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
 	                   @RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
@@ -413,13 +406,11 @@ public class FileEntryController extends BaseController {
 	 * @param user        user
 	 * @param path        base path
 	 * @param filesString file list delimited by ","
-	 * @param model       model
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
 	@ResponseBody
-	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString,
-	                     ModelMap model) {
+	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString) {
 		String[] files = filesString.split(",");
 		fileEntryService.delete(user, path, files);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1);
@@ -461,7 +452,7 @@ public class FileEntryController extends BaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/**", params = "action=view", method = RequestMethod.GET)
 	public HttpEntity<String> viewOne(User user, @RemainedPath String path) {
-		FileEntry fileEntry = fileEntryService.getOne(user, path, (long) -1L);
+		FileEntry fileEntry = fileEntryService.getOne(user, path, -1L);
 		return toJsonHttpEntity(checkNotNull(fileEntry
 				, "%s file is not viewable", path));
 	}

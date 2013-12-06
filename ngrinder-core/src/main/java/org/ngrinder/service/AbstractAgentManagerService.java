@@ -13,17 +13,6 @@
  */
 package org.ngrinder.service;
 
-import net.grinder.engine.controller.AgentControllerIdentityImplementation;
-import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.model.AgentInfo;
-import org.ngrinder.model.User;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Abstract Agent manager service class which is used to retrieve the agent info
  * attaching the current controller.

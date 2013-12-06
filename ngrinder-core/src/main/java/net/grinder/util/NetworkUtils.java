@@ -208,10 +208,6 @@ public abstract class NetworkUtils {
 			this.port = port;
 		}
 
-		public boolean isSameIP(String ip) {
-			return this.ip.equals(ip);
-		}
-
 		public int getPort() {
 			return port;
 		}
@@ -228,14 +224,14 @@ public abstract class NetworkUtils {
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
 
 			IPPortPair that = (IPPortPair) o;
 
-			if (port != that.port) return false;
-			if (ip != null ? !ip.equals(that.ip) : that.ip != null) return false;
+			return port == that.port && !(ip != null ? !ip.equals(that.ip) : that.ip != null);
 
-			return true;
 		}
 
 		@Override
@@ -352,7 +348,7 @@ public abstract class NetworkUtils {
 	}
 
 	public static List<String> getDnsServers() throws NamingException {
-		Hashtable env = new Hashtable();
+		Hashtable<String, String> env = new Hashtable<String, String>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
 		DirContext ctx = null;
 		List<String> dnsServers = new ArrayList<String>();

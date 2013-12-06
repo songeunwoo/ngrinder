@@ -42,18 +42,9 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
  *
  * @author JunHo Yoon
  */
+@SuppressWarnings("All")
 public abstract class CompressionUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompressionUtils.class);
-
-	/**
-	 * Unzip the given file on the same folder.
-	 *
-	 * @param zippedFile zipped file
-	 * @throws IOException IOException
-	 */
-	public static void unzip(File zippedFile) throws IOException {
-		unzip(zippedFile, Charset.defaultCharset().name());
-	}
 
 	/**
 	 * Unzip the given zipped file with given character set.

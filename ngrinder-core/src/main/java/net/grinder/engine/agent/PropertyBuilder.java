@@ -176,7 +176,6 @@ public class PropertyBuilder {
 				.append(" ");
 	}
 
-	protected static final long MIN_FREE_MEM_SIZE = 200 * 1024 * 1024;
 	protected static final long MIN_PER_PROCESS_MEM_SIZE = 50 * 1024 * 1024;
 	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
 	protected static final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
@@ -191,7 +190,7 @@ public class PropertyBuilder {
 
 		int reservedMemory = Math.max(reservedMemoryUnit, 0) * 1024 * 1024;
 		int processCount = NumberUtils.toInt(processCountStr, 1);
-		long desirableXmx = DEFAULT_XMX_SIZE; // make 500M as default.
+		long desirableXmx; // make 500M as default.
 		long permGen = 32 * 1024 * 1024;
 		try {
 			// Make a free memory room size of reservedMemory.
@@ -210,7 +209,7 @@ public class PropertyBuilder {
 			desirableXmx = DEFAULT_XMX_SIZE;
 		}
 
-		jvmArguments.append(" -Xms" + getMemorySize(desirableXmx) + "m -Xmx" + getMemorySize(desirableXmx) + "m ");
+		jvmArguments.append(" -Xms").append(getMemorySize(desirableXmx)).append("m -Xmx").append(getMemorySize(desirableXmx)).append("m ");
 		jvmArguments.append(" -XX:PermSize=")
 				.append(properties.getInt("grinder.memory.permsize", getMemorySize(permGen))).append("m ");
 		jvmArguments.append(" -XX:MaxPermSize=")
@@ -241,6 +240,7 @@ public class PropertyBuilder {
 	 *                        absolute path
 	 * @return classpath string
 	 */
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public String buildCustomClassPath(final boolean useAbsolutePath) {
 		File baseFile = baseDirectory.getFile();
 		File libFolder = new File(baseFile, "lib");
@@ -282,6 +282,7 @@ public class PropertyBuilder {
 		return newClassPath.toString();
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private StringBuilder addPythonPathJvmArgument(StringBuilder jvmArguments) {
 		jvmArguments.append(" -Dpython.path=");
 		jvmArguments.append(new File(baseDirectory.getFile(), "lib").getAbsolutePath());

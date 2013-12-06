@@ -67,7 +67,7 @@ public class Config extends AbstractConfig implements Constants {
 	private PropertiesWrapper databaseProperties;
 	private String announcement;
 	private Date announcementDate;
-	private static String versionString = "";
+	private String versionString = "";
 	private boolean verbose;
 	private String currentIP;
 
@@ -202,7 +202,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @param forceToVerbose true to force verbose logging.
 	 */
 	public synchronized void initLogger(boolean forceToVerbose) {
-		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
+		setupLogger((forceToVerbose) || getSystemProperties().getPropertyBoolean("verbose", false));
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class Config extends AbstractConfig implements Constants {
 	 */
 	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
-		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
+		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile());
 		home.makeSubPath(PLUGIN_PATH);
 		home.makeSubPath(PERF_TEST_PATH);
 		home.makeSubPath(DOWNLOAD_PATH);
@@ -259,11 +259,13 @@ public class Config extends AbstractConfig implements Constants {
 		if (StringUtils.isNotBlank(System.getProperty("unit-test"))) {
 			final String tempDir = System.getProperty("java.io.tmpdir");
 			final File tmpHome = new File(tempDir, ".ngrinder");
-			tmpHome.mkdirs();
+			if (tmpHome.mkdirs()) {
+				LOG.info("{} is created", tmpHome.getPath());
+			}
 			try {
 				FileUtils.forceDeleteOnExit(tmpHome);
 			} catch (IOException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOG.error("Error while setting forceDeleteOnExit on {}", tmpHome);
 			}
 			return new Home(tmpHome);
 		}
@@ -361,7 +363,6 @@ public class Config extends AbstractConfig implements Constants {
 			} else {
 				announcementDate = null;
 			}
-			return;
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while reading announcement file.", e);
 			announcement = "";
@@ -561,14 +562,6 @@ public class Config extends AbstractConfig implements Constants {
 		return internalProperties;
 	}
 
-	/**
-	 * Get nGrinder version in static way.
-	 *
-	 * @return nGrinder version.
-	 */
-	public static String getVersionString() {
-		return versionString;
-	}
 
 	/**
 	 * Check if it's verbose logging mode.
@@ -604,10 +597,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if it exists
 	 */
 	public boolean hasNoMoreTestLock() {
-		if (exHome.exists()) {
-			return exHome.getSubFile("no_more_test.lock").exists();
-		}
-		return false;
+		return exHome.exists() && exHome.getSubFile("no_more_test.lock").exists();
 	}
 
 	/**
@@ -616,10 +606,7 @@ public class Config extends AbstractConfig implements Constants {
 	 * @return true if it exists
 	 */
 	public boolean hasShutdownLock() {
-		if (exHome.exists()) {
-			return exHome.getSubFile("shutdown.lock").exists();
-		}
-		return false;
+		return exHome.exists() && exHome.getSubFile("shutdown.lock").exists();
 	}
 
 	/**

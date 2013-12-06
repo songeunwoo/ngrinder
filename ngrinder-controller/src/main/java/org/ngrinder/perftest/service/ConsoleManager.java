@@ -172,13 +172,11 @@ public class ConsoleManager {
 	 * elapsed, the timeout error occurs and throws {@link org.ngrinder.common.exception.NGrinderRuntimeException} . The
 	 * timeout can be adjusted by overriding {@link #getMaxWaitingMilliSecond()}.
 	 *
-	 * @param testIdentifier        test identifier
-	 * @param baseConsoleProperties base {@link ConsoleProperties}
+	 * @param baseConsoleProperties base {@link net.grinder.console.model.ConsoleProperties}
 	 * @return console
 	 */
-	public SingleConsole getAvailableConsole(String testIdentifier, ConsoleProperties baseConsoleProperties) {
+	public SingleConsole getAvailableConsole(ConsoleProperties baseConsoleProperties) {
 		ConsoleEntry consoleEntry = null;
-		SingleConsole singleConsole = null;
 		try {
 			consoleEntry = consoleQueue.poll(getMaxWaitingMilliSecond(), TimeUnit.MILLISECONDS);
 			if (consoleEntry == null) {
@@ -186,7 +184,8 @@ public class ConsoleManager {
 			}
 			synchronized (this) {
 				// FIXME : It might fail here
-				singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(), baseConsoleProperties);
+				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
+						baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}
@@ -281,7 +280,7 @@ public class ConsoleManager {
 	public SingleConsole getConsoleUsingPort(Integer port) {
 		for (SingleConsole each : consoleInUse) {
 			// Avoid to Klocwork error.
-			if (each instanceof  NullSingleConsole) {
+			if (each instanceof NullSingleConsole) {
 				continue;
 			}
 			if (each.getConsolePort() == port) {

@@ -56,19 +56,18 @@ import org.tmatesoft.svn.util.SVNLogType;
 /**
  * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV request into
  * underlying SVN Repo.
- * 
+ *
  * This implementation is borrowed from SVNKit-DAV project.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.0
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({"unchecked", "rawtypes"})
 @Controller("svnDavServlet")
 public class SvnDavController implements HttpRequestHandler, ServletConfig, ServletContextAware {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(SvnDavController.class);
 	public static final String XML_CONTENT_TYPE = "text/xml; charset=UTF-8";
-	public static final String DAV_SVN_AUTOVERSIONING_ACTIVITY = "svn-autoversioning-activity";
 
 	@Autowired
 	private Config config;
@@ -101,9 +100,8 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 
 	/**
 	 * Returns this servlet's {@link ServletConfig} object.
-	 * 
+	 *
 	 * @return ServletConfig the <code>ServletConfig</code> object that initialized this servlet
-	 * 
 	 */
 
 	public ServletConfig getServletConfig() {
@@ -112,20 +110,16 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 
 	/**
 	 * Request Handler.
-	 * 
-	 * @param request
-	 *            request
-	 * @param response
-	 *            response
-	 * @throws ServletException
-	 *             occurs when servlet has a problem.
-	 * @throws IOException
-	 *             occurs when file system has a problem.
+	 *
+	 * @param request  request
+	 * @param response response
+	 * @throws ServletException occurs when servlet has a problem.
+	 * @throws IOException      occurs when file system has a problem.
 	 */
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
-					throws ServletException,
-					IOException {
+			throws ServletException,
+			IOException {
 
 		if (LOGGER.isTraceEnabled()) {
 			logRequest(request);
@@ -152,7 +146,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 			}
 			SVNErrorCode errorCode = svne.getErrorMessage().getErrorCode();
 			if (errorCode == SVNErrorCode.FS_NOT_DIRECTORY || errorCode == SVNErrorCode.FS_NOT_FOUND
-							|| errorCode == SVNErrorCode.RA_DAV_PATH_NOT_FOUND) {
+					|| errorCode == SVNErrorCode.RA_DAV_PATH_NOT_FOUND) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
 			} else if (errorCode == SVNErrorCode.NO_AUTH_FILE_PATH) {
 				response.sendError(HttpServletResponse.SC_FORBIDDEN, msg);
@@ -216,13 +210,10 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 
 	/**
 	 * Handler for error.
-	 * 
-	 * @param error
-	 *            error occurred
-	 * @param servletResponse
-	 *            response
-	 * @throws IOException
-	 *             occurs when IO has problem
+	 *
+	 * @param error           error occurred
+	 * @param servletResponse response
+	 * @throws IOException occurs when IO has problem
 	 */
 	public static void handleError(DAVException error, HttpServletResponse servletResponse) throws IOException {
 		SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, error);
@@ -289,7 +280,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 			namespaces.add(namespace);
 		}
 		SVNXMLUtil.openNamespaceDeclarationTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVXMLUtil.SVN_DAV_ERROR_TAG,
-						namespaces, SVNXMLUtil.PREFIX_MAP, xmlBuffer);
+				namespaces, SVNXMLUtil.PREFIX_MAP, xmlBuffer);
 		String prefix = (String) SVNXMLUtil.PREFIX_MAP.get(namespace);
 		if (prefix != null) {
 			prefix = SVNXMLUtil.DAV_NAMESPACE_PREFIX;
@@ -299,7 +290,7 @@ public class SvnDavController implements HttpRequestHandler, ServletConfig, Serv
 		}
 
 		SVNXMLUtil.openXMLTag(SVNXMLUtil.SVN_APACHE_PROPERTY_PREFIX, "human-readable", SVNXMLUtil.XML_STYLE_NORMAL,
-						"errcode", String.valueOf(errorID), xmlBuffer);
+				"errcode", String.valueOf(errorID), xmlBuffer);
 		xmlBuffer.append(SVNEncodingUtil.xmlEncodeCDATA(description));
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.SVN_APACHE_PROPERTY_PREFIX, "human-readable", xmlBuffer);
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVXMLUtil.SVN_DAV_ERROR_TAG, xmlBuffer);

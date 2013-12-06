@@ -13,11 +13,6 @@
  */
 package org.ngrinder.user.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Date;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.controller.BaseController;
@@ -29,6 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.ui.ModelMap;
+
+import java.util.Date;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Class description.
@@ -87,7 +87,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
-		userController.save(currUser, model, currUser);
+		userController.save(currUser, currUser, model);
 		userController.getOne(getTestUser(), model, currUser.getUserId());
 		User user = (User) model.get("user");
 		assertThat(user.getUserName(), is("new name"));
@@ -95,12 +95,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 		User admin = getAdminUser();
 		User temp = new User("temp1", "temp1", "temp1", "temp@nhn.com", Role.USER);
-		userController.save(admin, model, temp);
+		userController.save(admin, temp, model);
 		temp = new User("temp2", "temp2", "temp2", "temp@nhn.com", Role.USER);
-		userController.save(admin, model, temp);
+		userController.save(admin, temp, model);
 		model.clear();
 		currUser.setFollowersStr("temp1, temp2");
-		userController.save(currUser, model, currUser);
+		userController.save(currUser, currUser, model);
 		userController.getOne(getTestUser(), model, currUser.getUserId());
 		user = (User) model.get("user");
 		assertThat(user.getFollowers().size(), is(2));
@@ -119,7 +119,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); // Attempt to modify himself as ADMIN
-		userController.save(currUser, model, updatedUser);
+		userController.save(currUser, updatedUser, model);
 
 		userController.getOne(getTestUser(), model, currUser.getUserId());
 		User user = (User) model.get("user");
@@ -137,7 +137,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
 		ModelMap model = new ModelMap();
-		userController.save(getAdminUser(), model, newUser);
+		userController.save(getAdminUser(), newUser, model);
 	}
 
 	/**
@@ -180,18 +180,16 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.user.controller.UserController#checkDuplication(org.springframework.ui.ModelMap,
-	 * java.lang.String)}
+	 * {@link UserController#checkDuplication(String)}
 	 * .
 	 */
 	@Test
 	public void testCheckDuplicatedID() {
 		BaseController ngrinderBaseController = new BaseController();
-		ModelMap model = new ModelMap();
-		HttpEntity<String> rtnStr = userController.checkDuplication(model, "not-exist");
+		HttpEntity<String> rtnStr = userController.checkDuplication("not-exist");
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnSuccess()));
 
-		rtnStr = userController.checkDuplication(model, getTestUser().getUserId());
+		rtnStr = userController.checkDuplication(getTestUser().getUserId());
 		assertThat(rtnStr.getBody(), is(ngrinderBaseController.returnError()));
 	}
 

@@ -13,8 +13,6 @@
  */
 package org.ngrinder.dns;
 
-import java.net.InetAddress;
-
 /**
  * Static utilities used to convert IP Addresses between the various formats used internally by the
  * java.net.InetAddress class and associated classes.

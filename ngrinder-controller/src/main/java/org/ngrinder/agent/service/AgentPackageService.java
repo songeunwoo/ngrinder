@@ -40,8 +40,8 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 @Service
 public class AgentPackageService {
-
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentPackageService.class);
+	public static final int EXEC = 0x81ed;
 	@Autowired
 	private Config config;
 
@@ -104,7 +104,9 @@ public class AgentPackageService {
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
 	                                     String owner) {
 		File agentPackagesDir = getAgentPackagesDir();
-		agentPackagesDir.mkdirs();
+		if (agentPackagesDir.mkdirs()) {
+			LOGGER.info("{} is created", agentPackagesDir.getPath());
+		}
 		final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
 		File agentTar = new File(agentPackagesDir, packageName);
 		if (agentTar.exists()) {
@@ -132,7 +134,7 @@ public class AgentPackageService {
 							ZipEntry zipEntry = (ZipEntry) object;
 							return zipEntry.getName().endsWith("sh") || zipEntry.getName().endsWith("bat");
 						}
-					}, basePath, 0100755));
+					}, basePath, EXEC));
 				} else if (isAgentDependentLib(eachClassPath, libs)) {
 					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 				}

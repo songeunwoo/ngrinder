@@ -103,7 +103,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		FileUtils.deleteQuietly(file);
 		CompressionUtils.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		controller.getResources(getTestUser(), "filefilter.txt", null, null);
+		controller.getResources(getTestUser(), "filefilter.txt", null);
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.delete(getTestUser(), model, String.valueOf(test.getId()));
+		controller.delete(getTestUser(), String.valueOf(test.getId()));
 
 		model.clear();
 		controller.getOne(getTestUser(), test.getId(), model);
@@ -122,7 +122,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
 		String delIds = "" + test1.getId() + "," + test2.getId();
-		controller.delete(getTestUser(), model, delIds);
+		controller.delete(getTestUser(), delIds);
 
 		model.clear();
 		controller.getOne(getTestUser(), test1.getId(), model);
@@ -158,7 +158,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		// test stop test
 		cloneTest.setStatus(Status.TESTING);
 		perfTestService.save(getTestUser(), cloneTest);
-		controller.stop(getTestUser(), model, String.valueOf(cloneTest.getId()));
+		controller.stop(getTestUser(), String.valueOf(cloneTest.getId()));
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		controller.getReport(model, test.getId());
 
 		model.clear();
-		controller.getGraph(model, test.getId(), "TPS,mean_time(ms)", 0);
+		controller.getGraph(test.getId(), "TPS,mean_time(ms)", 0);
 
 		model.clear();
 		controller.getReportSection(getTestUser(), model, test.getId(), 700);
@@ -318,11 +318,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetMonitorData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
-		ModelMap model = new ModelMap();
-		controller.getMonitorData(model, test.getId(), "127.0.0.1", 0);
-		model.clear();
+		controller.getMonitor(test.getId(), "127.0.0.1", 0);
+
 		long testId = 123456L;
-		controller.getMonitorData(model, testId, "127.0.0.1", 700);
+		controller.getMonitor(testId, "127.0.0.1", 700);
 	}
 
 	@Test
@@ -331,13 +330,13 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		HttpServletResponse resp = new MockHttpServletResponse();
 		try {
-			controller.downloadCSV(getTestUser(), resp, test.getId());
+			controller.downloadCSV(getTestUser(), test.getId(), resp);
 		} catch (IllegalStateException e) {
 			// the report file doesn't exist
 			assertTrue(true);
 		}
 		resp.reset();
-		controller.downloadLog(getTestUser(), "log", test.getId(), resp);
+		controller.downloadLog(getTestUser(), test.getId(), "log", resp);
 	}
 
 	@Test
@@ -348,7 +347,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		test.setPort(11011);
 		ModelMap model = new ModelMap();
 		try {
-			controller.refreshTestRunning(getTestUser(), model, test.getId());
+			controller.refreshTestRunning(getTestUser(), test.getId(), model);
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}

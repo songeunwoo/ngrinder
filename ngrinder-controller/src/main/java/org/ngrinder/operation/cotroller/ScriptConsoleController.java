@@ -56,7 +56,6 @@ import java.io.StringWriter;
 @RequestMapping("/operation/script_console")
 @PreAuthorize("hasAnyRole('A')")
 public class ScriptConsoleController extends BaseController implements ApplicationContextAware {
-	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
 
 	private ApplicationContext applicationContext;
 

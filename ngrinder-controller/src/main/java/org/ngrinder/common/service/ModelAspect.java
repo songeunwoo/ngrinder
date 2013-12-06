@@ -49,15 +49,12 @@ public class ModelAspect {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private Config config;
 
 	/**
 	 * Inject the created/modified user and date to the model. It's only applied
 	 * in the servlet context.
 	 *
-	 * @param joinPoint
-	 *            joint point
+	 * @param joinPoint joint point
 	 */
 	@Before(EXECUTION_SAVE)
 	public void beforeSave(JoinPoint joinPoint) {

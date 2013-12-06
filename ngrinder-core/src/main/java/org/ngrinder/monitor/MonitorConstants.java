@@ -16,8 +16,6 @@ package org.ngrinder.monitor;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ngrinder.infra.AgentConfig;
-
 /**
  * Static Monitoring Constants.
  *

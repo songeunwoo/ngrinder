@@ -488,11 +488,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 */
 	@Override
 	public File getStatisticPath(PerfTest perfTest) {
-		File perfTestStatisticPath = config.getHome().getPerfTestStatisticPath(perfTest);
-		if (!perfTestStatisticPath.exists()) {
-			perfTestStatisticPath.mkdirs();
-		}
-		return perfTestStatisticPath;
+		return config.getHome().getPerfTestStatisticPath(perfTest);
 	}
 
 	/*
@@ -511,6 +507,8 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param perfTest perftest
 	 * @return custom class path.
 	 */
+
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public String getCustomClassPath(PerfTest perfTest) {
 		File perfTestDirectory = getDistributionPath(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
@@ -630,7 +628,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 */
 	public ScriptHandler prepareDistribution(PerfTest perfTest) {
 		File perfTestDistDirectory = getDistributionPath(perfTest);
-		perfTestDistDirectory.mkdirs();
 		User user = perfTest.getCreatedUser();
 		FileEntry scriptEntry = checkNotNull(
 				fileEntryService.getOne(user,
@@ -696,7 +693,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	public int getReportDataInterval(long testId, String dataType, int imgWidth) {
 		int pointCount = Math.max(imgWidth, MAX_POINT_COUNT);
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		int lineNumber;
 		int interval = 0;
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
@@ -712,8 +708,8 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 			isr = new InputStreamReader(in);
 			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int) (lineNumber / pointCount), 1);
+			int lineNumber = lnr.getLineNumber() + 1;
+			interval = Math.max(lineNumber / pointCount, 1);
 		} catch (Exception e) {
 			LOGGER.error("Failed to get report data for {}", dataType, e);
 		} finally {
@@ -733,17 +729,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 */
 	public File getReportFile(PerfTest perfTest) {
 		return new File(config.getHome().getPerfTestReportDirectory(perfTest), Constants.REPORT_CSV);
-	}
-
-	/**
-	 * Get log file names for give test .
-	 *
-	 * @param perfTest perfTest
-	 * @param fileName file name of one logs of the test
-	 * @return file report file path
-	 */
-	public File getLogFile(PerfTest perfTest, String fileName) {
-		return new File(getLogFileDirectory(perfTest), fileName);
 	}
 
 	/**
@@ -793,15 +778,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		return Arrays.asList(logFileDirectory.list());
 	}
 
-	/**
-	 * Get report file directory for give test id .
-	 *
-	 * @param testId testId
-	 * @return reportDir report file path
-	 */
-	public File getReportFileDirectory(long testId) {
-		return config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-	}
 
 	/**
 	 * Get report file directory for give test .
@@ -905,15 +881,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		return gson.fromJson(perfTest.getRunningSample(), HashMap.class);
 	}
 
-	/**
-	 * get test running statistic data from cache. If there is no cache data, will return empty statistic data.
-	 *
-	 * @param perfTest perfTest
-	 * @return test running statistic data
-	 */
-	public String getStatisticsJson(PerfTest perfTest) {
-		return perfTest.getRunningSample();
-	}
 
 	private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
@@ -1051,10 +1018,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		if (perfTest == null) {
 			return false;
 		}
-		if (perfTest.getCreatedUser().equals(user)) {
-			return true;
-		}
-		return user.getRole().hasPermission(type);
+		return perfTest.getCreatedUser().equals(user) || user.getRole().hasPermission(type);
 	}
 
 	/*
@@ -1239,15 +1203,14 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 		FileInputStream in = null;
 		InputStreamReader isr = null;
 		LineNumberReader lnr = null;
-		int lineNumber = 0;
 		int interval = 0;
 		try {
 			in = new FileInputStream(monitorDataFile);
 			isr = new InputStreamReader(in);
 			lnr = new LineNumberReader(isr);
 			lnr.skip(monitorDataFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int) (lineNumber / pointCount), 1);
+			int lineNumber = lnr.getLineNumber() + 1;
+			interval = Math.max(lineNumber / pointCount, 1);
 		} catch (FileNotFoundException e) {
 			LOGGER.info("Monitor data file does not exist at {}", monitorDataFile);
 		} catch (IOException e) {
@@ -1296,7 +1259,6 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
-					continue;
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");

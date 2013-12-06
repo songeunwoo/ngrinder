@@ -176,7 +176,7 @@ public class PerfTestRunnable implements Constants {
 			ScriptHandler prepareDistribution = perfTestService.prepareDistribution(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
-			distributeFileOn(perfTest, grinderProperties, checkCancellation(singleConsole));
+			distributeFileOn(perfTest, checkCancellation(singleConsole));
 
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
@@ -217,7 +217,7 @@ public class PerfTestRunnable implements Constants {
 		perfTestService.markStatusAndProgress(perfTest, START_CONSOLE, "Console is being prepared.");
 		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
-		SingleConsole singleConsole = consoleManager.getAvailableConsole(perfTest.getTestIdentifier(), consoleProperty);
+		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		singleConsole.start();
 		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort());
 		return singleConsole;
@@ -227,10 +227,9 @@ public class PerfTestRunnable implements Constants {
 	 * Distribute files to agents.
 	 *
 	 * @param perfTest          perftest
-	 * @param grinderProperties grinder properties
 	 * @param singleConsole     console to be used.
 	 */
-	void distributeFileOn(final PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
+	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
@@ -337,7 +336,7 @@ public class PerfTestRunnable implements Constants {
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
-		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
+		singleConsole.startSampling();
 
 	}
 

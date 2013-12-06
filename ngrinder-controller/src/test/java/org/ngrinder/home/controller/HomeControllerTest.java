@@ -36,9 +36,6 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private HomeController homeController;
 
-	@Autowired
-	private RegionService regionService;
-
 	@Test
 	public void testHome() {
 		MockHttpServletResponse res = new MockHttpServletResponse();
@@ -76,12 +73,13 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testErrorPage() {
-		RedirectAttributesModelMap model = new RedirectAttributesModelMap();
-		String viewName = homeController.error404(model);
+
+		String viewName = homeController.error404();
 		assertThat(viewName, startsWith("redirect:/doError"));
 
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		MockHttpServletRequest req = new MockHttpServletRequest();
+		RedirectAttributesModelMap model = new RedirectAttributesModelMap();
 		viewName = homeController.second(getTestUser(), model, res, req);
 		assertThat(viewName, is("index"));
 	}

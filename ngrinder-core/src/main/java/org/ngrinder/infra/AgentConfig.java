@@ -62,9 +62,7 @@ public class AgentConfig {
 	private AgentHome home = null;
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper internalProperties;
-	private String agentHostID;
 	private boolean silent = false;
-	private int controllerPort;
 
 	/**
 	 * Initialize.
@@ -119,15 +117,6 @@ public class AgentConfig {
 		}
 	}
 
-	/**
-	 * Load the internal files for the given path by searching class paths.
-	 *
-	 * @param path path in the classpath
-	 * @return {@link InputStream}
-	 */
-	public InputStream loadFromClassPath(String path) {
-		return AgentConfig.class.getClassLoader().getResourceAsStream(path);
-	}
 
 	private void loadAgentProperties() {
 		checkNotNull(home);
@@ -328,10 +317,6 @@ public class AgentConfig {
 
 	public boolean isServerMode() {
 		return getPropertyBoolean("agent.servermode", false);
-	}
-
-	public String getLocalIP() {
-		return getProperty(MONITOR_LISTEN_IP, NetworkUtils.DEFAULT_LOCAL_HOST_ADDRESS);
 	}
 
 	public boolean isSilentMode() {

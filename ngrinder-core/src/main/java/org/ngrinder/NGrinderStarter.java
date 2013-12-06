@@ -155,8 +155,6 @@ public class NGrinderStarter {
 
 		String controllerIP = getIP(defaultIfBlank(directControllerIP, agentConfig.getControllerIP()));
 		int controllerPort = agentConfig.getControllerPort();
-		String region = agentConfig.getRegion();
-
 		agentConfig.setControllerIP(controllerIP);
 		LOG.info("connecting to controller {}:{}", controllerIP, controllerPort);
 

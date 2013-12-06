@@ -41,7 +41,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -212,7 +211,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonitoringTargetsCache.get(each);
 			AgentControllerIdentityImplementation agentIdentity = cast(value.get());
-			if (value != null && agentIdentity != null) {
+			if (agentIdentity != null) {
 				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
 						agentIdentity.getName());
 				if (found != null) {
@@ -279,10 +278,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			// It's my own agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
 				incrementAgentCount(availUserOwnAgent, region, user.getUserId());
-			} else if (fullRegion.contains("_owned_")) {
-				// If it's the others agent.. skip..
-				continue;
-			} else {
+			} else if (!fullRegion.contains("_owned_")) {
 				incrementAgentCount(availShareAgents, region, user.getUserId());
 			}
 		}
@@ -415,11 +411,4 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				new ClusteredAgentRequest(agent.getIp(), agent.getName(), UPDATE_AGENT));
 	}
 
-	/**
-	 * Get the agent package containing folder.
-	 */
-	@Override
-	public File getAgentPackagesDir() {
-		return getConfig().getExHome().getSubFile("download");
-	}
 }

@@ -253,14 +253,6 @@ public abstract class AbstractGrinderClassPathProcessor {
 		return filterClassPath(builder.toString(), logger);
 	}
 
-	public List<String> getForeMostJarList() {
-		return foreMostJarList;
-	}
-
-	public List<String> getPatchJarList() {
-		return patchJarList;
-	}
-
 	public List<String> getUsefulJarList() {
 		return usefulJarList;
 	}

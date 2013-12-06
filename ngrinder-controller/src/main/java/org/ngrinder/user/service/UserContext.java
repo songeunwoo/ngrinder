@@ -41,11 +41,11 @@ public class UserContext {
 	public User getCurrentUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null) {
-			throw new AuthenticationCredentialsNotFoundException("No athenticated");
+			throw new AuthenticationCredentialsNotFoundException("No authentication");
 		}
 		Object obj = auth.getPrincipal();
 		if (!(obj instanceof SecuredUser)) {
-			throw new AuthenticationCredentialsNotFoundException("Invalid athentication with " + obj);
+			throw new AuthenticationCredentialsNotFoundException("Invalid authentication with " + obj);
 		}
 		SecuredUser securedUser = (SecuredUser) obj;
 		return securedUser.getUser();

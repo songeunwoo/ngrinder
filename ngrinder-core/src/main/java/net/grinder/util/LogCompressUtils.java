@@ -107,7 +107,7 @@ public abstract class LogCompressUtils {
 			zipEntry.setTime(new Date().getTime());
 			zos.putNextEntry(zipEntry);
 			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
-			int count = 0;
+			int count;
 			while ((count = fio.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
 				zos.write(buffer, 0, count);
 			}
@@ -141,7 +141,6 @@ public abstract class LogCompressUtils {
 		} catch (IOException e) {
 			LOGGER.error("Error occurs during extracting to {} : {} ", toFile.getAbsolutePath(), e.getMessage());
 			LOGGER.debug("Details : ", e);
-			return;
 		} finally {
 			IOUtils.closeQuietly(fos);
 			IOUtils.closeQuietly(bio);
@@ -160,7 +159,7 @@ public abstract class LogCompressUtils {
 		try {
 			zipInputStream = new ZipInputStream(inputStream);
 			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
-			int count = 0;
+			int count;
 			long total = 0;
 			checkNotNull(zipInputStream.getNextEntry(), "In zip, it should have at least one entry");
 			do {
@@ -176,40 +175,9 @@ public abstract class LogCompressUtils {
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while decompressing {}", e.getMessage());
 			LOGGER.debug("Details : ", e);
-			return;
 		} finally {
 			IOUtils.closeQuietly(zipInputStream);
 		}
 	}
 
-	/**
-	 * Decompress the given array into the given file.
-	 *
-	 * @param zipEntry byte array of compressed file
-	 * @param toFile   file to be written
-	 */
-	public static void decompressGzip(byte[] zipEntry, File toFile) {
-		FileOutputStream fos = null;
-		GZIPInputStream zipInputStream = null;
-		ByteArrayInputStream bio = null;
-		try {
-			bio = new ByteArrayInputStream(zipEntry);
-			zipInputStream = new GZIPInputStream(bio);
-			fos = new FileOutputStream(toFile);
-			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
-			int count = 0;
-			while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
-				fos.write(buffer, 0, count);
-			}
-			fos.flush();
-		} catch (IOException e) {
-			LOGGER.error("Error occurs while decompressing to {} : {}", toFile.getAbsolutePath(), e.getMessage());
-			LOGGER.debug("Details : ", e);
-			return;
-		} finally {
-			IOUtils.closeQuietly(fos);
-			IOUtils.closeQuietly(bio);
-			IOUtils.closeQuietly(zipInputStream);
-		}
-	}
 }

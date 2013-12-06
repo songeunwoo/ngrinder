@@ -13,13 +13,6 @@
  */
 package org.ngrinder.operation.cotroller;
 
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-
-import java.io.File;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.ngrinder.common.controller.BaseController;
@@ -30,17 +23,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.File;
+
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+
 /**
  * Log monitor controller.
- * 
+ *
  * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed. this class gets the
  * changes. and keep them(max 10000 byte) in the memory. Whenever user requests the log, it returns latest changes with
  * the index of the log.
- * 
+ *
  * This is only available in the non-clustered instance.
- * 
+ *
  * @author JunHo Yoon
- * 
  */
 @Controller
 @RequestMapping("/operation/log")
@@ -80,12 +78,12 @@ public class LogMonitorController extends BaseController {
 		tailer = Tailer.create(logFile, new TailerListenerAdapter() {
 			/**
 			 * Handles a line from a Tailer.
-			 * 
+			 *
 			 * @param line
 			 *            the line.
 			 */
 			public void handle(String line) {
-				synchronized (stringBuffer) {
+				synchronized (this) {
 					if (stringBuffer.length() + line.length() > 5000) {
 						count++;
 						modification = 0;
@@ -103,7 +101,7 @@ public class LogMonitorController extends BaseController {
 
 	/**
 	 * Get the log file.
-	 * 
+	 *
 	 * @return log file
 	 */
 	File getLogFile() {
@@ -123,9 +121,8 @@ public class LogMonitorController extends BaseController {
 
 	/**
 	 * Return the logger first page.
-	 * 
-	 * @param model
-	 *            model
+	 *
+	 * @param model model
 	 * @return operation/logger
 	 */
 	@RequestMapping("")
@@ -136,7 +133,7 @@ public class LogMonitorController extends BaseController {
 
 	/**
 	 * Get the last log in the form of json.
-	 * 
+	 *
 	 * @return log json
 	 */
 	@RequestMapping("/last")
@@ -146,9 +143,8 @@ public class LogMonitorController extends BaseController {
 
 	/**
 	 * Turn on verbose log mode.
-	 * 
-	 * @param verbose
-	 *            true if verbose mode
+	 *
+	 * @param verbose true if verbose mode
 	 * @return success message if successful
 	 */
 	@RequestMapping("/verbose")
