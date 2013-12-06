@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Mock PerfTest which disable spring task schedule.
- * 
+ *
  * @author JunHo Yoon
  */
 @Profile("unit-test")
@@ -31,14 +31,7 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
 
-	@Override
-	public void start() {
-		// No Nothing.
-	};
-
-	public void testDrive() {
-		super.start();
-	};
+	;
 
 	@Override
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
@@ -61,6 +54,14 @@ public class MockPerfTestRunnableForCancellation extends PerfTestRunnable {
 		}
 		return super.checkCancellation(singleConsole);
 	}
+
+
+	@Override
+	protected void addSamplingListeners(PerfTest perfTest, SingleConsole singleConsole) {
+		// Do nothing on each sampling...
+		// To avoid exceptions due to @Transactional in the different thread.
+	}
+
 
 	public void setRunnable(Runnable runnable, int ignoreCount) {
 		this.runnable = runnable;

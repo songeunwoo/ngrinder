@@ -32,6 +32,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +62,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	public void clearPerfTest() {
 		clearAllPerfTest();
 	}
+
 
 	@Test
 	public void testGetTestListAll() {

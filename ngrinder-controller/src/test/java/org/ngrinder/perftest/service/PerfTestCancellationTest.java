@@ -105,7 +105,8 @@ public class PerfTestCancellationTest extends AbstractAgentReadyTest implements 
 				perfTestController.stop(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
 			}
 		}, 1);
-		perfTestRunnable.testDrive();
+		perfTestRunnable.start();
+
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		// Then
 		assertThat(allPerfTest.get(0).getStatus(), is(Status.CANCELED));

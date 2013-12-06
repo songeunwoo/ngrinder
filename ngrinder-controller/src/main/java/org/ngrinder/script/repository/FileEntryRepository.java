@@ -255,6 +255,9 @@ public class FileEntryRepository {
 			svnClientManager = getSVNClientManager();
 
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
+			if (userRepoUrl == null) {
+				return null;
+			}
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			if (nodeKind == SVNNodeKind.NONE) {
