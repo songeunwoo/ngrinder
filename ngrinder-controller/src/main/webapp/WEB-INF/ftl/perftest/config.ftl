@@ -6,23 +6,16 @@
 		<div class="form-horizontal form-horizontal-2">
 
 			<div class="control-group">
-
                 <div class="row">
                     <div class="span4">
-                        <div class="control-group">
-                            <label for="agent_count" class="control-label">
-							<@spring.message "perfTest.configuration.agent"/>
-                            </label>
-                            <div class="controls">
+						<@control_group name = "agentCount" label_message_key = "perfTest.configuration.agent" err_style = "margin-left:120px;">
 							<@input_append name="agentCount"
-									value="${(test.agentCount)!0}"
-									message="perfTest.configuration.agent"
-									append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
-							</div>
-                            <div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
-                            </div>
-                        </div>
+								value="${test.agentCount}"
+								message="perfTest.configuration.agent"
+								append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
+						</@control_group>
                     </div>
+
 					<div class="span2">
 						<#if clustered == true>
 							<label for="region" class="control-label" style="margin-left:-50px;width:80px">
@@ -46,69 +39,56 @@
 					</div>
 				</div>
 			</div>
-			<div class="control-group">
-				<label for="vuser_per_agent" class="control-label">
-					<@spring.message "perfTest.configuration.vuserPerAgent"/>
-				</label>
-				<div class="controls">
-					<@input_append name="vuserPerAgent"
-						value="${(test.vuserPerAgent)!1}"
-						message="perfTest.configuration.vuserPerAgent"
-						append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
-					<i class="pointer-cursor expand" id="expand_collapse_btn"></i>
-					<div class="pull-right">
-						<span class="badge badge-info pull-right"
-							  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
-							<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
-								id="total_vuser"></span>
-						</span>
-					</div>
-					<div id="process_thread_config_panel" style="display: none;">
-						<@input_prepend name="processes" value="${test.processes}" message="perfTest.report.process"
-							extra_css="control-group" />
-						<@input_prepend name="threads" value="${test.threads}" message="perfTest.report.thread"
-							extra_css="control-group" />
-					</div>
+
+			<@control_group  name = "vuserPerAgent" label_message_key = "perfTest.configuration.vuserPerAgent">
+				<@input_append name="vuserPerAgent"
+					value="${(test.vuserPerAgent)!1}"
+					message="perfTest.configuration.vuserPerAgent"
+					append_prefix="perfTest.configuration.max" append="${(maxVuserPerAgent)!0}" />
+				<i class="pointer-cursor expand" id="expand_collapse_btn"></i>
+				<div class="pull-right">
+							<span class="badge badge-info pull-right"
+								  style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
+								<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span
+									id="total_vuser"></span>
+							</span>
 				</div>
-			</div>
-			<div class="control-group" id="script_control">
-				<label for="script_name" class="control-label">
-					<@spring.message "perfTest.configuration.script"/>
-				</label>
-				<div class="controls">
-					<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
-					<input type="hidden" id="script_revision"
-						name="scriptRevision"
-						value="${(test.scriptRevision)!-1}"
-						old_revision="${(test.scriptRevision)!-1}"/>
-					<button class="btn btn-mini btn-info pull-right" type="button"
+				<div id="process_thread_config_panel" style="display: none;">
+					<@input_prepend name="processes" value="${test.processes}" message="perfTest.report.process"
+						extra_css="control-group" />
+					<@input_prepend name="threads" value="${test.threads}" message="perfTest.report.thread"
+						extra_css="control-group" />
+				</div>
+			</@control_group>
+
+			<@control_group group_id = "script_control" name = "scriptName" label_message_key = "perfTest.configuration.script">
+				<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
+				<input type="hidden" id="script_revision"
+					   name="scriptRevision"
+					   value="${(test.scriptRevision)!-1}"
+					   old_revision="${(test.scriptRevision)!-1}"/>
+				<button class="btn btn-mini btn-info pull-right" type="button"
 						id="show_script_btn"
 						style="margin-top: 3px; display: none;">R
-						<#if test.scriptRevision != -1>
-							${test.scriptRevision}
-						<#else>
-							<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if>
-						</#if>
-					</button>
-				</div>
-			</div>
-			<div class="control-group">
-				<label for="Script Resources" class="control-label">
-					<@spring.message "perfTest.configuration.scriptResources"/>
-				</label>
-				<div class="controls">
-					<div class="div-resources" id="scriptResources"></div>
-				</div>
-			</div>
-			<div class="control-group">
-				<label class="control-label">
-					<@spring.message "perfTest.configuration.targetHost"/></label>
-					<#assign targetHosts = test.targetHosts>
-				<div class="controls">
-					<#include "host.ftl">
-				</div>
-			</div>
+					<#if test.scriptRevision != -1>
+					${test.scriptRevision}
+					<#else>
+						<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if>
+					</#if>
+				</button>
+			</@control_group>
+
+			<@control_group name = "scriptResources" label_message_key = "perfTest.configuration.scriptResources">
+            	<div class="div-resources" id="script_resources"></div>
+			</@control_group>
+
+			<#assign targetHosts = test.targetHosts>
+
+			<@control_group label_message_key = "perfTest.configuration.targetHost">
+				<#include "host.ftl">
+			</@control_group>
 			<hr>
+
 			<div class="control-group">
 				<label class="control-label"> 
 					<input type="radio" id="duration_ratio" name="threshold" value="D"
@@ -130,57 +110,47 @@
                 <label for="run_count" class="control-label">
                     <input type="radio" id="run_count_radio" name="threshold" value="R"
 						   <#if test.threshold == "R" >checked</#if>/>
-				<@spring.message "perfTest.configuration.runCount"/>
+					<@spring.message "perfTest.configuration.runCount"/>
                 </label>
 
                 <div class="controls">
-				<@input_append  name="runCount"
-						value="${(test.runCount)!0}"
-						message="perfTest.configuration.runCount"
-						others='number_limit="${(maxRunCount)}"'
-						append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
+					<@input_append  name="runCount"
+							value="${(test.runCount)!0}"
+							message="perfTest.configuration.runCount"
+							others='number_limit="${(maxRunCount)}"'
+							append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
                 </div>
             </div>
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
-						<div class="control-group">
-							<label for="sampling_interval" class="control-label">
-								<@spring.message "perfTest.configuration.samplingInterval"/>
-							</label>
-							<div class="controls">
-								<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]> 
-								<select class="select-item" id="sampling_interval" name="samplingInterval"> 
-									<#list samplingIntervalArray as eachInterval>
-										<option value="${eachInterval}"
-											<#if test.samplingInterval != 0>
-												<#if eachInterval == test.samplingInterval> selected="selected" </#if> 
-											<#else> 
-												<#if eachInterval == 2>
-													selected="selected" 
-												</#if> 
-											</#if> >
-											${eachInterval}
-										</option>
-									</#list>
-								</select>
-							</div>
-						</div>
+						<@control_group name = "samplingInterval" label_message_key = "perfTest.configuration.samplingInterval">
+							<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
+							<select class="select-item" id="sampling_interval" name="samplingInterval">
+								<#list samplingIntervalArray as eachInterval>
+									<option value="${eachInterval}"
+										<#if test.samplingInterval != 0>
+											<#if eachInterval == test.samplingInterval> selected="selected" </#if>
+										<#else>
+											<#if eachInterval == 2>
+											selected="selected"
+											</#if>
+										</#if> >
+									${eachInterval}
+									</option>
+								</#list>
+							</select>
+						</@control_group>
 					</div>
 					<div class="span3">
-						<div class="control-group">
-							<label for="ignore_sample_count" class="control-label" style="width: 150px;margin-left:-20px">
-								<@spring.message "perfTest.configuration.ignoreSampleCount"/>
-							</label>
-							<div class="controls">
-								<@input_popover name="ignoreSampleCount"
-									value="${test.ignoreSampleCount}"
-									message="perfTest.configuration.ignoreSampleCount"
-									extra_css="input-mini" />
-							</div>
-							<div id="err_ignore_sample_count" class="small_error_box" style="margin-left:100px">
-							</div>
-						</div>
+						<@control_group name = "ignoreSampleCount" label_message_key = "perfTest.configuration.ignoreSampleCount"
+							label_style = "width:150px;margin-left:-20px"
+							err_style = "margin-left:100px">
+							<@input_popover name="ignoreSampleCount"
+								value="${test.ignoreSampleCount}"
+								message="perfTest.configuration.ignoreSampleCount"
+								extra_css="input-mini" />
+						</@control_group>
 					</div>
 				</div>
 			</div>
@@ -205,19 +175,15 @@
 						</div>
 					</div>
 					<div class="span3">
-						<div class="control-group">
-							<label for="param" class="control-label" style="width:70px;margin-left:-20px">
-								<@spring.message "perfTest.configuration.param"/>
-							</label>
-							<div class="controls" style="margin-left:70px">
-								<@input_popover name = "param"
-									value = "${(test.param?html)}"
-									message ="perfTest.configuration.param"
-									others = 'style="width:120px"'/>
-							</div>
-							<div id="err_param" class="small_error_box" style="margin-left:-25px">
-							</div>
-						</div>
+						<@control_group name = "param" label_message_key = "perfTest.configuration.param"
+							label_style = "width:70px;margin-left:-20px"
+							err_style = "margin-left:-25px"
+							controls_style = "margin-left:70px">
+							<@input_popover name = "param"
+								value = "${(test.param?html)}"
+								message ="perfTest.configuration.param"
+								others = 'style="width:120px"'/>
+						</@control_group>
 					</div>					
 				</div>
 			</div>

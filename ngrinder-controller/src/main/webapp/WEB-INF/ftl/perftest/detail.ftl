@@ -1027,7 +1027,7 @@ function updateScriptResources(first) {
 			var value = res.resources[i];
 			html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
 		}
-		$("#scriptResources").html(html);
+		$("#script_resources").html(html);
 	};
 	obj.complete = function() {
 		hideProgressBar();
