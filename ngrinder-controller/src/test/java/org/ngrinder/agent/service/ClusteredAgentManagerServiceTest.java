@@ -110,7 +110,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getOne(agent.getId(), false);
+		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNotNull(agent2);
 
 		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
@@ -120,7 +120,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.approve(agent.getId(), true);
 
 		agentManagerService.deleteAgent(agent.getId());
-		agent2 = agentManagerService.getOne(agent.getId(), false);
+		agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNull(agent2);
 	}
 

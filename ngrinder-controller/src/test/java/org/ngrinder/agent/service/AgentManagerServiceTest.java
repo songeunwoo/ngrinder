@@ -60,7 +60,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getOne(agent.getId(), false);
+		AgentInfo agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNotNull(agent2);
 
 		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentsFromDB();
@@ -70,7 +70,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentManagerService.approve(agent.getId(), true);
 
 		agentManagerService.deleteAgent(agent.getId());
-		agent2 = agentManagerService.getOne(agent.getId(), false);
+		agent2 = agentManagerService.getOne(agent.getId());
 		Assert.assertNull(agent2);
 	}
 

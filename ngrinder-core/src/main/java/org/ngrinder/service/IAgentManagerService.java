@@ -104,7 +104,7 @@ public interface IAgentManagerService {
 	public abstract List<AgentInfo> getAllVisibleAgentInfoFromDB();
 
 	/**
-	 * Get the agent for the given id. If it's called from the other controller, only
+	 * Get the agent for the given id without agent identity info. If it's called from the other controller, only
 	 * limited info available in db will be return.
 	 *
 	 * @param id agent id
@@ -117,7 +117,7 @@ public interface IAgentManagerService {
 	 * limited info available in db will be return.
 	 *
 	 * @param id                   agent id
-	 * @param includeAgentIdentity include agent identity
+	 * @param includeAgentIdentity include agent identity field.
 	 * @return agent
 	 */
 	public abstract AgentInfo getOne(Long id, boolean includeAgentIdentity);

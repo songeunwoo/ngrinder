@@ -338,7 +338,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public void stopAgent(Long id) {
-		AgentInfo agent = getOne(id, false);
+		AgentInfo agent = getOne(id);
 		if (agent == null) {
 			return;
 		}
@@ -353,7 +353,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public void requestShareAgentSystemDataModel(Long id) {
-		AgentInfo agent = getOne(id, false);
+		AgentInfo agent = getOne(id);
 		if (agent == null) {
 			return;
 		}
@@ -407,7 +407,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	@Override
 	public void update(Long id) {
-		AgentInfo agent = getOne(id, false);
+		AgentInfo agent = getOne(id);
 		if (agent == null) {
 			return;
 		}

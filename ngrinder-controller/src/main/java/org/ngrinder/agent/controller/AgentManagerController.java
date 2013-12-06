@@ -129,7 +129,7 @@ public class AgentManagerController extends BaseController {
 	 */
 	@RequestMapping("/{id}")
 	public String getOne(@PathVariable Long id, ModelMap model) {
-		model.addAttribute("agent", agentManagerService.getOne(id, false));
+		model.addAttribute("agent", agentManagerService.getOne(id));
 		return "agent/detail";
 	}
 
@@ -174,7 +174,7 @@ public class AgentManagerController extends BaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping(value = "/api/{id}", method = RequestMethod.GET)
 	public HttpEntity<String> getOne(@PathVariable("id") Long id) {
-		return toJsonHttpEntity(agentManagerService.getOne(id, false));
+		return toJsonHttpEntity(agentManagerService.getOne(id));
 	}
 
 	@RestAPI
