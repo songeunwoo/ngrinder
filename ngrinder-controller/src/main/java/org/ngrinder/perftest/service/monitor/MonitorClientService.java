@@ -83,7 +83,7 @@ public class MonitorClientService {
 			mbeanClient = new MBeanClient(ip, port);
 			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
 			ObjectName systemName = new ObjectName(objNameStr);
-			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
+			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo");
 
 			fileWriter = new FileWriter(new File(reportPath, Constants.MONITOR_FILE_PREFIX + ip + ".data"),
 					false);
@@ -110,7 +110,7 @@ public class MonitorClientService {
 			mbeanClient = new MBeanClient(ip, port);
 			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
 			ObjectName systemName = new ObjectName(objNameStr);
-			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
+			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo");
 		} catch (Exception e) {
 			LOGGER.error("Init Error while {} and {}.", new Object[]{ip, port}, e);
 		}

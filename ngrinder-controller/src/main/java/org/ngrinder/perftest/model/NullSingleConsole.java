@@ -90,11 +90,6 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
-	public void distributeFiles(File filePath) {
-		// Do nothing
-	}
-
-	@Override
 	public int getConsolePort() {
 		return 0;
 	}
