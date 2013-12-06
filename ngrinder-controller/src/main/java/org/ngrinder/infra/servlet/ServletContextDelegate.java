@@ -20,12 +20,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.EventListener;
-import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.*;
-import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 /**
  * {@link ServletContext} delegate handler which forwards a request to the passed file path.
@@ -35,7 +35,6 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  */
 @SuppressWarnings("deprecation")
 public class ServletContextDelegate implements ServletContext {
-
 	private final ServletContext servletContext;
 	private final File base;
 
@@ -53,13 +52,8 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public ServletContext getContext(String uriPath) {
-		return servletContext.getContext(uriPath);
-	}
-
-	@Override
-	public String getContextPath() {
-		return servletContext.getContextPath();
+	public ServletContext getContext(String uripath) {
+		return servletContext.getContext(uripath);
 	}
 
 	@Override
@@ -70,16 +64,6 @@ public class ServletContextDelegate implements ServletContext {
 	@Override
 	public int getMinorVersion() {
 		return servletContext.getMinorVersion();
-	}
-
-	@Override
-	public int getEffectiveMajorVersion() {
-		return servletContext.getEffectiveMajorVersion();
-	}
-
-	@Override
-	public int getEffectiveMinorVersion() {
-		return servletContext.getEffectiveMinorVersion();
 	}
 
 	@Override
@@ -129,13 +113,8 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<String> getInitParameterNames() {
+	public Enumeration<?> getInitParameterNames() {
 		return servletContext.getInitParameterNames();
-	}
-
-	@Override
-	public boolean setInitParameter(String s, String s2) {
-		return servletContext.setInitParameter(s, s2);
 	}
 
 	@Override
@@ -144,12 +123,12 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<String> getAttributeNames() {
+	public Enumeration<?> getAttributeNames() {
 		return servletContext.getAttributeNames();
 	}
 
 	@Override
-	public Set<String> getResourcePaths(String arg0) {
+	public Set<?> getResourcePaths(String arg0) {
 		return servletContext.getResourcePaths(arg0);
 	}
 
@@ -159,7 +138,7 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<Servlet> getServlets() {
+	public Enumeration<?> getServlets() {
 		return servletContext.getServlets();
 	}
 
@@ -189,122 +168,7 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	@Override
-	public ServletRegistration.Dynamic addServlet(String s, String s2) {
-		return servletContext.addServlet(s, s2);
-	}
-
-	@Override
-	public ServletRegistration.Dynamic addServlet(String s, Servlet servlet) {
-		return servletContext.addServlet(s, servlet);
-	}
-
-	@Override
-	public ServletRegistration.Dynamic addServlet(String s, Class<? extends Servlet> aClass) {
-		return servletContext.addServlet(s, aClass);
-	}
-
-	@Override
-	public <T extends Servlet> T createServlet(Class<T> tClass) throws ServletException {
-		return servletContext.createServlet(tClass);
-	}
-
-	@Override
-	public ServletRegistration getServletRegistration(String s) {
-		return servletContext.getServletRegistration(s);
-	}
-
-	@Override
-	public Map<String, ? extends ServletRegistration> getServletRegistrations() {
-		return servletContext.getServletRegistrations();
-	}
-
-	@Override
-	public FilterRegistration.Dynamic addFilter(String s, String s2) {
-		return servletContext.addFilter(s, s2);
-	}
-
-	@Override
-	public FilterRegistration.Dynamic addFilter(String s, Filter filter) {
-		return servletContext.addFilter(s, filter);
-	}
-
-	@Override
-	public FilterRegistration.Dynamic addFilter(String s, Class<? extends Filter> aClass) {
-		return servletContext.addFilter(s, aClass);
-	}
-
-	@Override
-	public <T extends Filter> T createFilter(Class<T> tClass) throws ServletException {
-		return servletContext.createFilter(tClass);
-	}
-
-	@Override
-	public FilterRegistration getFilterRegistration(String s) {
-		return servletContext.getFilterRegistration(s);
-	}
-
-	@Override
-	public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
-		return servletContext.getFilterRegistrations();
-	}
-
-	@Override
-	public SessionCookieConfig getSessionCookieConfig() {
-		return servletContext.getSessionCookieConfig();
-	}
-
-	@Override
-	public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) throws IllegalStateException, IllegalArgumentException {
-		servletContext.setSessionTrackingModes(sessionTrackingModes);
-	}
-
-	@Override
-	public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-		return servletContext.getDefaultSessionTrackingModes();
-	}
-
-	@Override
-	public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-		return servletContext.getEffectiveSessionTrackingModes();
-	}
-
-	@Override
-	public void addListener(String s) {
-		servletContext.addListener(s);
-	}
-
-	@Override
-	public <T extends EventListener> void addListener(T t) {
-		servletContext.addListener(t);
-	}
-
-	@Override
-	public void addListener(Class<? extends EventListener> aClass) {
-		servletContext.addListener(aClass);
-	}
-
-	@Override
-	public <T extends EventListener> T createListener(Class<T> tClass) throws ServletException {
-		return servletContext.createListener(tClass);
-	}
-
-	@Override
-	public void declareRoles(String... strings) {
-		servletContext.declareRoles(strings);
-	}
-
-	@Override
-	public ClassLoader getClassLoader() {
-		return servletContext.getClassLoader();
-	}
-
-	@Override
-	public JspConfigDescriptor getJspConfigDescriptor() {
-		return servletContext.getJspConfigDescriptor();
-	}
-
-	@Override
-	public Enumeration<String> getServletNames() {
+	public Enumeration<?> getServletNames() {
 		return servletContext.getServletNames();
 	}
 

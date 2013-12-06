@@ -33,7 +33,7 @@ public final class IPUtils {
 	}
 
 	/**
-	 * Creates an byte[] based on an ipAddressString. No error handling is
+	 * Creates an byte[] based on an ipAdd  ressString. No error handling is
 	 * performed here.
 	 */
 	public static byte[] createByteArrayFromIPAddressString(
