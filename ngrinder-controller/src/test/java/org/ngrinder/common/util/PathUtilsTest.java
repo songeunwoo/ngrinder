@@ -23,19 +23,19 @@ import org.junit.Test;
  * @author Mavlarn
  * @since
  */
-public class PathUtilTest {
+public class PathUtilsTest {
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.PathUtil#removePrependedSlash(java.lang.String)}.
+	 * Test method for {@link PathUtils#removePrependedSlash(java.lang.String)}.
 	 */
 	@Test
 	public void testRemovePrependedSlash() {
 		String path = "/aaa/bbb/vvv";
-		String newPath = PathUtil.removePrependedSlash(path);
+		String newPath = PathUtils.removePrependedSlash(path);
 		assertTrue(path.contains(newPath));
 
 		String path2 = "//aaa/bbb/vvv";
-		newPath = PathUtil.removePrependedSlash(path2);
+		newPath = PathUtils.removePrependedSlash(path2);
 		assertTrue(newPath.equals(path));
 	}
 
