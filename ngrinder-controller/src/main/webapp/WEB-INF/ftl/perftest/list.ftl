@@ -137,7 +137,7 @@
 				<tbody>
 					<#assign testList = testListPage.content/>
 					<@list list_items=testList colspan="12"; test, test_index>
-							<#assign totalVuser = (test.vuserPerAgent!0) * (test.agentCount!0) />
+							<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
 							<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>

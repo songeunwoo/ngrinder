@@ -71,7 +71,7 @@
 			</legend>
 		</fieldSet>
 		<div style="mgin-left: 10px">
-			<@list list_items = logs others = "message" message = "perfTest.report.message.noLog"; eachLog >
+			<@list list_items=logs others="message" message="perfTest.report.message.noLog"; eachLog >
 				<div style="width:100%;" class="ellipsis">
 					<a href="${req.getContextPath()}/perftest/${test.id?c}/show_log/${eachLog}" target="log"
 					   title="open the log in the new window">

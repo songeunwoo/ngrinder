@@ -115,10 +115,10 @@
 
 				<div class="controls">
 					<@input_append  name="runCount"
-							value="${(test.runCount)!0}"
+							value="${test.runCount}"
 							message="perfTest.configuration.runCount"
-							others='number_limit="${(maxRunCount)}"'
-							append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
+							others='number_limit="${maxRunCount}"'
+							append_prefix="perfTest.configuration.max" append="${maxRunCount}" />
 				</div>
 			</div>
 			<div class="control-group">
