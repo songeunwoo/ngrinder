@@ -6,91 +6,68 @@
 		<#assign popover_place='bottom'/>
 	</#if>
 	<fieldset>
-		<div class="control-group">
-			<label class="control-label" for="user_id"><@spring.message "user.info.form.userId"/></label>
-			<div class="controls">
-				<#assign userIdMsg>
-					<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
-				</#assign>
 
-				<#assign others>
-					<#if user?? && user.userId??>readonly</#if>
-				</#assign>
+		<@control_group name = "userId" label_message_key = "user.info.form.userId">
+			<#assign userIdMsg>
+				<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
+			</#assign>
 
-				<@input_append name = "userId" value = "${(user.userId)!}"
-					class="span4" data_content=userIdMsg
-					data_placement='${popover_place}'
-					message="user.info.form.userId"
-					others=others />
+			<#assign others>
+				<#if user?? && user.userId??>readonly</#if>
+			</#assign>
 
-				<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
-			</div>
-		</div>
-		
-		<div class="control-group">
-			<label class="control-label" for="user_name"><@spring.message "user.option.name"/></label>
-			<div class="controls">
+			<@input_append name = "userId" value = "${(user.userId)!}"
+			class="span4" data_content=userIdMsg
+			data_placement='${popover_place}'
+			message="user.info.form.userId"
+			others=others />
+            <input type="hidden" id="id" name="id" value="${(user.id)!}"/>
+		</@control_group>
 
-				<@input_append name = "userName" value = "${(user.userName)!}"
-					class="span4" data_placement ='${popover_place}'
-					message = "user.option.name"/>
 
-			</div>
-		</div>
+		<@control_group name = "userName" label_message_key = "user.option.name">
+			<@input_append name = "userName" value = "${(user.userName)!}"
+				class="span4" data_placement ='${popover_place}'
+				message = "user.option.name"/>
+		</@control_group>
 
 		<#if !(action?has_content)>
-		<div class="control-group">
-			<label class="control-label" for="role"><@spring.message "user.option.role"/></label>
-			<div class="controls">
-				<select class="span4" name="role" id="role">
+			<@control_group name = "role" label_message_key = "user.option.role">
+                <select class="span4" name="role" id="role">
 					<#list roleSet as role>
-						<option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
+                        <option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
 					</#list>
-				</select>
-			</div>
-		</div>
+                </select>
+			</@control_group>
 		</#if>
 
-		<div class="control-group">
-			<label class="control-label" for="email"><@spring.message "user.info.form.email"/></label>
-			<div class="controls">
-
+		<@control_group name = "email" label_message_key = "user.info.form.email">
 			<@input_append name = "email" value = "${(user.email)!}"
-					class="span4" data_placement ='${popover_place}'
-					message = "user.info.form.email"/>
+				class="span4" data_placement ='${popover_place}'
+				message = "user.info.form.email"/>
+		</@control_group>
 
-			</div>
-		</div>
+		<@control_group name = "description" label_message_key = "common.label.description">
+            <textarea cols="30" id="description" name="description"
+                      rows="3" title="Description" class="tx_area span4"
+                      style="resize: none;">${(user.description)!}</textarea>
+		</@control_group>
 
-		<div class="control-group">
-			<label class="control-label" for="description"><@spring.message "common.label.description"/></label>
-			<div class="controls">
-				<textarea cols="30" id="description" name="description"
-					rows="3" title="Description" class="tx_area span4" 
-					style="resize: none;">${(user.description)!}</textarea>
-			</div>
-		</div>
-
-		<div class="control-group" >
-			<label class="control-label" for="mobile_phone"><@spring.message "user.info.form.phone"/></label>
-			<div class="controls">
-
+		<@control_group name = "mobilePhone" label_message_key = "user.info.form.phone">
 			<@input_append name = "mobilePhone" value = "${(user.mobilePhone)!}"
-					class="span4" data_placement ='${popover_place}'
-					message = "user.info.form.phone"/>
+				class="span4" data_placement ='${popover_place}'
+				message = "user.info.form.phone"/>
+		</@control_group>
 
-			</div>
-		</div>
 		<#if user?exists>
-		<div class="control-group" >
-			<label class="control-label" for=""><@spring.message "user.share.title"/></label>
-			<div class="controls">
-				<select id="user_switch_select" name="followersStr" style="width:300px" multiple>
+
+			<@control_group label_message_key = "user.share.title">
+                <select id="user_switch_select" name="followersStr" style="width:300px" multiple>
 					<#include "switch_options.ftl">
-				</select>
-			</div>
-		</div>
+                </select>
+			</@control_group>
 		</#if>
+
 		<#if !(demo!false)>
   		<div class="control-group">
   			<#if !(isSelfRegistration?? && isSelfRegistration)>
@@ -101,31 +78,23 @@
              	</div> 
 			</#if>
 			
-             <div id="user_password_section" style='display:none'> 
-	            <div class="accordion-inner" style="padding:9px 0" > 
-	           		<div class="control-group" >
-						<label class="control-label" for="password"><@spring.message "user.info.form.pwd"/></label>
-						<div class="controls">
+             <div id="user_password_section" style='display:none'>
+	            <div class="accordion-inner" style="padding:9px 0" >
 
-							<@input_append name = "password" value = "${(user.psw)!}"
-									class="span4" type = "password"
-									data_placement ='${popover_place}'
-									message = "user.info.form.pwd"/>
+					<@control_group name = "password" label_message_key = "user.info.form.pwd">
+						<@input_append name = "password" value = "${(user.psw)!}"
+							class="span4" type = "password"
+							data_placement ='${popover_place}'
+							message = "user.info.form.pwd"/>
+					</@control_group>
 
-						</div>
-					</div>
-						
-					<div class="control-group" >
-						<label class="control-label" for="confirm_password"><@spring.message "user.info.form.cpwd"/></label>
-						<div class="controls">
+					<@control_group name = "confirmPassword" label_message_key = "user.info.form.cpwd">
+						<@input_append name = "confirmPassword" value = "${(user.psw)!}"
+							class="span4" type = "password"
+							data_placement ='${popover_place}'
+							message = "user.info.form.cpwd"/>
+					</@control_group>
 
-							<@input_append name = "confirmPassword" value = "${(user.psw)!}"
-									class="span4" type = "password"
-									data_placement ='${popover_place}'
-									message = "user.info.form.cpwd"/>
-
-						</div>
-					</div>
 	             </div> 
 	 	 	 </div>
 		</div>

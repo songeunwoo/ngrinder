@@ -90,13 +90,10 @@
 	<div class="modal-body" > 
 		<div class="form-horizontal" style="margin-left:20px;overflow-y:hidden">
 			<fieldset>
-				<div class="control-group">
-					<label class="control-label" style="width:100px"><@spring.message "user.switch.title"/></label>
-					<div class="controls" style="margin-left:140px">
-						<select id="switch_user_select" style="width:310px">  
-						</select>
-					</div>
-				</div>
+				<@control_group label_style = "width:100px" controls_style = "margin-left:140px" label_message_key = "user.switch.title">
+                    <select id="switch_user_select" style="width:310px">
+                    </select>
+				</@control_group>
 			</fieldset>
 		</div>
 	</div>	

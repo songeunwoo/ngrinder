@@ -7,40 +7,29 @@
 		</fieldSet>
 		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
-				<div class="control-group"> 
-					<label class="control-label"><@spring.message "perfTest.testRunning.vusers"/></label>
-					<div class="controls">
-						<strong>${(test.vuserPerAgent)!}</strong>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
-					<div class="controls">
-						<span>${(test.agentCount)!}</span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.processes"/></label>
-					<div class="controls">
-						${(test.processes)!} 
-						<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.threads"/></label>
-					<div class="controls">
-						${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span></span>
-					</div>
-				</div>
+
+				<@control_group label_message_key = "perfTest.testRunning.vusers">
+					<strong>${(test.vuserPerAgent)!}</strong>
+				</@control_group>
+
+				<@control_group label_message_key = "perfTest.testRunning.agents">
+					<span>${(test.agentCount)!}</span>
+				</@control_group>
+
+				<@control_group label_message_key = "perfTest.testRunning.processes">
+					${(test.processes)!}
+					<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span></span>
+				</@control_group>
+
+				<@control_group label_message_key = "perfTest.testRunning.threads">
+					${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span></span>
+				</@control_group>
 				<hr>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
-					<div class="controls">
+				<@control_group label_message_key = "perfTest.configuration.targetHost">
 					<@list list_items = test.targetHosts?split(",") ; host >
-						${host?trim}<br>
+					${host?trim}<br>
 					</@list>
-					</div>
-				</div>
+				</@control_group>
 				<hr>
 				<div class="control-group">
 					<#if test.threshold == "D">

@@ -85,10 +85,10 @@
 	</#if>
 </#macro>
 
-<#macro control_group name = "", group_id = "", label_message_key = "",
+<#macro control_group name = "", group_id = "", label_message_key = "", lable_extra_class = ""
 	controls_style = "", label_style = "", err_style = "">
 	<div class="control-group" id="${group_id}">
-		<label class="control-label" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}"><@spring.message "${label_message_key}"/></label>
+		<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}"><@spring.message "${label_message_key}"/></label>
 
 		<div class="controls" style="${controls_style}">
 			<#nested>

@@ -181,20 +181,14 @@
 						<div class="control-group">
 							<div class="row">
 								<div class="span4-5">
-									<div class="control-group">
-										<label for="test_name" class="control-label"><@spring.message "perfTest.configuration.testName"/></label>
-			                    		<div class="controls" style="margin-left: 120px;">
-											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${test.testName}"/>
-										</div>  
-									</div>
+									<@control_group name = "testName" controls_style = "margin-left: 120px;" label_message_key = "perfTest.configuration.testName">
+										<input class="required span3 left-float" maxlength="80" size="30" type="text" id="test_name" name="testName" value="${test.testName}"/>
+									</@control_group>
 								</div>
 								<div class="span3-4">
-									<div class="control-group">
-										<label for="tag_string" class="control-label" style="width:60px;"><@spring.message "perfTest.configuration.tags"/></label>
-										<div class="controls" style="margin-left: 40px;"> 
-											<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${test.tagString}">
-										</div> 
-									</div>  
+									<@control_group name = "tagString" label_style = "width:60px;" controls_style = "margin-left: 40px;" label_message_key = "perfTest.configuration.tags">
+										<input class="span2-3" size="50" type="text" id="tag_string" name="tagString" value="${test.tagString}">
+									</@control_group>
 								</div>
 								<div class="span1">
 									<#if test.id??>

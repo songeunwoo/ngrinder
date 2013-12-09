@@ -6,38 +6,32 @@
 	<div class="modal-body">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 			<fieldset>
-				<div class="control-group">
-					<label for="file_name" class="control-label"><@spring.message "script.option.name"/></label>
-					<div class="controls">
-						<#assign name_message>
-							<@spring.message "common.form.rule.sampleName"/>
-						</#assign>
 
-						<@input_popover name = "fileName" rel = "create_script_modal_popover"
-							data_placement="right"
-							message = "script.option.name"
-							message_content = "${name_message?js_string}"
-							extra_css = "input-large" />
-							
-					  <span class="help-inline"></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label for="script_type" class="control-label"><@spring.message "script.list.label.type"/></label>
-					<div class="controls">
-						<input type="hidden" name="type" value="script"/>
-						<select id="script_type" name="scriptType">
-							<#list handlers as handler>
+				<@control_group name = "fileName" label_message_key = "script.option.name">
+					<#assign name_message>
+						<@spring.message "common.form.rule.sampleName"/>
+					</#assign>
+
+					<@input_popover name = "fileName" rel = "create_script_modal_popover"
+						data_placement="right"
+						message = "script.option.name"
+						message_content = "${name_message?js_string}"
+						extra_css = "input-large" />
+
+					<span class="help-inline"></span>
+				</@control_group>
+
+				<@control_group name = "scriptType" label_message_key = "script.list.label.type">
+					<input type="hidden" name="type" value="script"/>
+					<select id="script_type" name="scriptType">
+						<#list handlers as handler>
 							<option value="${handler.key}" extension="${handler.extension}" project_handler="${handler.isProjectHandler()?string}">${handler.title}</option>
-							</#list>
-						</select> 
-					  <span class="help-inline"></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label for="test_url" class="control-label"><@spring.message "script.list.label.url"/></label>
-					<div class="controls">
+						</#list>
+					</select>
+					<span class="help-inline"></span>
+				</@control_group>
 
+				<@control_group name = "testUrl" label_message_key = "script.list.label.url">
 					<#assign url_message>
 						<@spring.message "home.tip.url.content"/>
 					</#assign>
@@ -49,9 +43,9 @@
 						placeholder="home.placeholder.url"
 						extra_css = "input-large" />
 
-					  <span class="help-inline"></span>
-					</div>
-				</div>
+					<span class="help-inline"></span>
+				</@control_group>
+
 				<div class="control-group">
 					<div class="controls">
 						<label class="checkbox">

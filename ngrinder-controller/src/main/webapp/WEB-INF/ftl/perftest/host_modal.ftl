@@ -11,35 +11,30 @@
 	<div class="modal-body">
 		<div class="form-horizontal form-horizontal-4">
 			<fieldset>
-				<div class="control-group">
-					<label for="domain_input" style="text-align: right;" class="control-label">
-						<@spring.message "perfTest.configuration.domain"/>
-					</label>
-					<div class="controls">
-						<input type="text" class="input-medium" id="domain_input"
-							rel='modal_popover'
-							data-html='true'
-							data-content='<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>'
-							title='<@spring.message "perfTest.configuration.domain"/>'
-							data-placement='right'
+
+				<@control_group name = "domainInput" label_style = "text-align: right;" label_message_key = "perfTest.configuration.domain">
+					<input type="text" class="input-medium" id="domain_input"
+						rel='modal_popover'
+						data-html='true'
+						data-content='<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>'
+						title='<@spring.message "perfTest.configuration.domain"/>'
+						data-placement='right'
 						/>
-						 <span class="help-inline"></span>
-					</div>
-				</div>
-				<div class="control-group">
-					<label for="ip_input" style="text-align: right;" class="control-label">IP</label>
-					<div class="controls">
-						<input type="text" class="input-medium"  id="ip_input"
-							rel='modal_popover'
-							data-html='true'
-							data-content='<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>'
-							title='IP'
-							data-placement='right'
+					<span class="help-inline"></span>
+				</@control_group>
+
+
+				<@control_group name = "ipInput" label_style = "text-align: right;" label_message_key = "agent.table.IP">
+					<input type="text" class="input-medium"  id="ip_input"
+						rel='modal_popover'
+						data-html='true'
+						data-content='<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>'
+						title='IP'
+						data-placement='right'
 						/>
-						<span class="help-inline"></span>
-						
-					</div>
-				</div>
+					<span class="help-inline"></span>
+				</@control_group>
+
 			</fieldset>
 		</div>
 	</div>

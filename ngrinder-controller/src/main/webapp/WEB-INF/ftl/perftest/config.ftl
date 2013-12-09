@@ -106,21 +106,21 @@
 					<input id="hidden_duration_input" class="hide" data-step="1"/>
 				</div>
 			</div>
-            <div class="control-group">
-                <label for="run_count" class="control-label">
-                    <input type="radio" id="run_count_radio" name="threshold" value="R"
+			<div class="control-group">
+				<label for="run_count" class="control-label">
+					<input type="radio" id="run_count_radio" name="threshold" value="R"
 						   <#if test.threshold == "R" >checked</#if>/>
 					<@spring.message "perfTest.configuration.runCount"/>
-                </label>
+				</label>
 
-                <div class="controls">
+				<div class="controls">
 					<@input_append  name="runCount"
 							value="${(test.runCount)!0}"
 							message="perfTest.configuration.runCount"
 							others='number_limit="${(maxRunCount)}"'
 							append_prefix="perfTest.configuration.max" append="${(maxRunCount)!0}" />
-                </div>
-            </div>
+				</div>
+			</div>
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
