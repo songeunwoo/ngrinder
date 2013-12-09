@@ -7,7 +7,7 @@
 	</#if>
 	<fieldset>
 
-		<@control_group name = "userId" label_message_key = "user.info.form.userId">
+		<@control_group name="userId" label_message_key="user.info.form.userId">
 			<#assign userIdMsg>
 				<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>
 			</#assign>
@@ -25,14 +25,14 @@
 		</@control_group>
 
 
-		<@control_group name = "userName" label_message_key = "user.option.name">
-			<@input_append name = "userName" value = "${(user.userName)!}"
-				class="span4" data_placement ='${popover_place}'
-				message = "user.option.name"/>
+		<@control_group name="userName" label_message_key="user.option.name">
+			<@input_append name="userName" value="${(user.userName)!}"
+				class="span4" data_placement='${popover_place}'
+				message="user.option.name"/>
 		</@control_group>
 
 		<#if !(action?has_content)>
-			<@control_group name = "role" label_message_key = "user.option.role">
+			<@control_group name="role" label_message_key="user.option.role">
                 <select class="span4" name="role" id="role">
 					<#list roleSet as role>
                         <option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
@@ -41,27 +41,27 @@
 			</@control_group>
 		</#if>
 
-		<@control_group name = "email" label_message_key = "user.info.form.email">
-			<@input_append name = "email" value = "${(user.email)!}"
-				class="span4" data_placement ='${popover_place}'
-				message = "user.info.form.email"/>
+		<@control_group name="email" label_message_key="user.info.form.email">
+			<@input_append name="email" value="${(user.email)!}"
+				class="span4" data_placement='${popover_place}'
+				message="user.info.form.email"/>
 		</@control_group>
 
-		<@control_group name = "description" label_message_key = "common.label.description">
+		<@control_group name="description" label_message_key="common.label.description">
             <textarea cols="30" id="description" name="description"
                       rows="3" title="Description" class="tx_area span4"
                       style="resize: none;">${(user.description)!}</textarea>
 		</@control_group>
 
-		<@control_group name = "mobilePhone" label_message_key = "user.info.form.phone">
-			<@input_append name = "mobilePhone" value = "${(user.mobilePhone)!}"
-				class="span4" data_placement ='${popover_place}'
-				message = "user.info.form.phone"/>
+		<@control_group name="mobilePhone" label_message_key="user.info.form.phone">
+			<@input_append name="mobilePhone" value="${(user.mobilePhone)!}"
+				class="span4" data_placement='${popover_place}'
+				message="user.info.form.phone"/>
 		</@control_group>
 
 		<#if user?exists>
 
-			<@control_group label_message_key = "user.share.title">
+			<@control_group label_message_key="user.share.title">
                 <select id="user_switch_select" name="followersStr" style="width:300px" multiple>
 					<#include "switch_options.ftl">
                 </select>
@@ -81,18 +81,18 @@
              <div id="user_password_section" style='display:none'>
 	            <div class="accordion-inner" style="padding:9px 0" >
 
-					<@control_group name = "password" label_message_key = "user.info.form.pwd">
-						<@input_append name = "password" value = "${(user.psw)!}"
-							class="span4" type = "password"
-							data_placement ='${popover_place}'
-							message = "user.info.form.pwd"/>
+					<@control_group name="password" label_message_key="user.info.form.pwd">
+						<@input_append name="password" value="${(user.psw)!}"
+							class="span4" type="password"
+							data_placement='${popover_place}'
+							message="user.info.form.pwd"/>
 					</@control_group>
 
-					<@control_group name = "confirmPassword" label_message_key = "user.info.form.cpwd">
-						<@input_append name = "confirmPassword" value = "${(user.psw)!}"
-							class="span4" type = "password"
-							data_placement ='${popover_place}'
-							message = "user.info.form.cpwd"/>
+					<@control_group name="confirmPassword" label_message_key="user.info.form.cpwd">
+						<@input_append name="confirmPassword" value="${(user.psw)!}"
+							class="span4" type="password"
+							data_placement='${popover_place}'
+							message="user.info.form.cpwd"/>
 					</@control_group>
 
 	             </div> 

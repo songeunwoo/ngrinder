@@ -8,7 +8,7 @@
 			<div class="control-group">
                 <div class="row">
                     <div class="span4">
-						<@control_group name = "agentCount" label_message_key = "perfTest.configuration.agent" err_style = "margin-left:120px;">
+						<@control_group name="agentCount" label_message_key="perfTest.configuration.agent" err_style="margin-left:120px;">
 							<@input_append name="agentCount"
 								value="${test.agentCount}"
 								message="perfTest.configuration.agent"
@@ -40,7 +40,7 @@
 				</div>
 			</div>
 
-			<@control_group  name = "vuserPerAgent" label_message_key = "perfTest.configuration.vuserPerAgent">
+			<@control_group  name="vuserPerAgent" label_message_key="perfTest.configuration.vuserPerAgent">
 				<@input_append name="vuserPerAgent"
 					value="${(test.vuserPerAgent)!1}"
 					message="perfTest.configuration.vuserPerAgent"
@@ -61,7 +61,7 @@
 				</div>
 			</@control_group>
 
-			<@control_group group_id = "script_control" name = "scriptName" label_message_key = "perfTest.configuration.script">
+			<@control_group group_id="script_control" name="scriptName" label_message_key="perfTest.configuration.script">
 				<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
 				<input type="hidden" id="script_revision"
 					   name="scriptRevision"
@@ -78,13 +78,13 @@
 				</button>
 			</@control_group>
 
-			<@control_group name = "scriptResources" label_message_key = "perfTest.configuration.scriptResources">
+			<@control_group name="scriptResources" label_message_key="perfTest.configuration.scriptResources">
             	<div class="div-resources" id="script_resources"></div>
 			</@control_group>
 
 			<#assign targetHosts = test.targetHosts>
 
-			<@control_group label_message_key = "perfTest.configuration.targetHost">
+			<@control_group label_message_key="perfTest.configuration.targetHost">
 				<#include "host.ftl">
 			</@control_group>
 			<hr>
@@ -124,7 +124,7 @@
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
-						<@control_group name = "samplingInterval" label_message_key = "perfTest.configuration.samplingInterval">
+						<@control_group name="samplingInterval" label_message_key="perfTest.configuration.samplingInterval">
 							<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
 							<select class="select-item" id="sampling_interval" name="samplingInterval">
 								<#list samplingIntervalArray as eachInterval>
@@ -143,9 +143,9 @@
 						</@control_group>
 					</div>
 					<div class="span3">
-						<@control_group name = "ignoreSampleCount" label_message_key = "perfTest.configuration.ignoreSampleCount"
-							label_style = "width:150px;margin-left:-20px"
-							err_style = "margin-left:100px">
+						<@control_group name="ignoreSampleCount" label_message_key="perfTest.configuration.ignoreSampleCount"
+							label_style="width:150px;margin-left:-20px"
+							err_style="margin-left:100px">
 							<@input_popover name="ignoreSampleCount"
 								value="${test.ignoreSampleCount}"
 								message="perfTest.configuration.ignoreSampleCount"
@@ -175,14 +175,14 @@
 						</div>
 					</div>
 					<div class="span3">
-						<@control_group name = "param" label_message_key = "perfTest.configuration.param"
-							label_style = "width:70px;margin-left:-20px"
-							err_style = "margin-left:-25px"
-							controls_style = "margin-left:70px">
-							<@input_popover name = "param"
-								value = "${(test.param?html)}"
-								message ="perfTest.configuration.param"
-								others = 'style="width:120px"'/>
+						<@control_group name="param" label_message_key="perfTest.configuration.param"
+							label_style="width:70px;margin-left:-20px"
+							err_style="margin-left:-25px"
+							controls_style="margin-left:70px">
+							<@input_popover name="param"
+								value="${(test.param?html)}"
+								message="perfTest.configuration.param"
+								others='style="width:120px"'/>
 						</@control_group>
 					</div>					
 				</div>

@@ -8,24 +8,24 @@
 		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
 
-				<@control_group label_message_key = "perfTest.testRunning.vusers">
+				<@control_group label_message_key="perfTest.testRunning.vusers">
 					<strong>${(test.vuserPerAgent)!}</strong>
 				</@control_group>
 
-				<@control_group label_message_key = "perfTest.testRunning.agents">
+				<@control_group label_message_key="perfTest.testRunning.agents">
 					<span>${(test.agentCount)!}</span>
 				</@control_group>
 
-				<@control_group label_message_key = "perfTest.testRunning.processes">
+				<@control_group label_message_key="perfTest.testRunning.processes">
 					${(test.processes)!}
 					<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span></span>
 				</@control_group>
 
-				<@control_group label_message_key = "perfTest.testRunning.threads">
+				<@control_group label_message_key="perfTest.testRunning.threads">
 					${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span></span>
 				</@control_group>
 				<hr>
-				<@control_group label_message_key = "perfTest.configuration.targetHost">
+				<@control_group label_message_key="perfTest.configuration.targetHost">
 					<@list list_items = test.targetHosts?split(",") ; host >
 					${host?trim}<br>
 					</@list>

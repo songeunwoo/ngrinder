@@ -160,7 +160,7 @@
 					<li><a><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/></a></li>
                     <li>
                         <ul class="nav nav-list">
-						<@list list_items = test.targetHostIP others = "no_message" ; targetIP >
+						<@list list_items=test.targetHostIP others="no_message" ; targetIP >
                             <li><a class="pointer-cursor target-montor" ip="${targetIP}"><i
                                     class="icon-chevron-right"></i> ${targetIP}</a></li>
 						</@list>
