@@ -86,7 +86,7 @@
 </#macro>
 
 <#macro control_group name = "", group_id = "", label_message_key = "", lable_extra_class = ""
-	controls_style = "", label_style = "", err_style = "">
+	controls_style = "", label_style = "", err_style = "" inline_help = "false">
 	<div class="control-group" id="${group_id}">
 		<label class="control-label ${lable_extra_class}" <#if name!="">for="${toUnderscore(name)}"</#if> style="${label_style}"><@spring.message "${label_message_key}"/></label>
 
@@ -94,6 +94,9 @@
 			<#nested>
 		</div>
 
+		<#if inline_help="true">
+        	<span class="help-inline"></span>
+		</#if>
 		<#if err_style!="">
 			<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
 			</div>

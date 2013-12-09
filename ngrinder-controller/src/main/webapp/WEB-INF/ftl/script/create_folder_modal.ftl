@@ -6,22 +6,17 @@
 	<div class="modal-body">
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
 			<fieldset>
-
-				<@control_group name = "folderName" label_message_key = "script.list.label.folderName">
+				<@control_group name="folderName" inline_help="true" label_message_key="script.list.label.folderName">
 					<#assign content_message>
 						<@spring.message "common.form.rule.sampleName"/>
 					</#assign>
                     <input type="hidden" name="type" value="folder"/>
-
-					<@input_popover name = "folderName" rel = "create_folder_modal_popover"
+					<@input_popover name="folderName" rel="create_folder_modal_popover"
 						data_placement="right"
-						message = "script.list.label.folderName"
-						message_content = "${content_message?js_string}"
-						extra_css = "input-medium" />
-
-                    <span class="help-inline"></span>
+						message="script.list.label.folderName"
+						message_content="${content_message?js_string}"
+						extra_css="input-medium" />
 				</@control_group>
-
 			</fieldset> 
 		</form>
 	</div>

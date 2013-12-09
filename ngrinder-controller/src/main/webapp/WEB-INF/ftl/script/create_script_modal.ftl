@@ -7,43 +7,38 @@
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 			<fieldset>
 
-				<@control_group name = "fileName" label_message_key = "script.option.name">
+				<@control_group name="fileName" inline_help="true" label_message_key="script.option.name">
 					<#assign name_message>
 						<@spring.message "common.form.rule.sampleName"/>
 					</#assign>
 
-					<@input_popover name = "fileName" rel = "create_script_modal_popover"
+					<@input_popover name="fileName" rel="create_script_modal_popover"
 						data_placement="right"
-						message = "script.option.name"
-						message_content = "${name_message?js_string}"
-						extra_css = "input-large" />
-
-					<span class="help-inline"></span>
+						message="script.option.name"
+						message_content="${name_message?js_string}"
+						extra_css="input-large" />
 				</@control_group>
 
-				<@control_group name = "scriptType" label_message_key = "script.list.label.type">
+				<@control_group name="scriptType" inline_help="true" label_message_key="script.list.label.type">
 					<input type="hidden" name="type" value="script"/>
 					<select id="script_type" name="scriptType">
 						<#list handlers as handler>
 							<option value="${handler.key}" extension="${handler.extension}" project_handler="${handler.isProjectHandler()?string}">${handler.title}</option>
 						</#list>
 					</select>
-					<span class="help-inline"></span>
 				</@control_group>
 
-				<@control_group name = "testUrl" label_message_key = "script.list.label.url">
+				<@control_group name="testUrl" inline_help="true" label_message_key="script.list.label.url">
 					<#assign url_message>
 						<@spring.message "home.tip.url.content"/>
 					</#assign>
 
-					<@input_popover name = "testUrl" rel = "create_script_modal_popover"
+					<@input_popover name="testUrl" rel="create_script_modal_popover"
 						data_placement="right"
 						message="home.tip.url.title"
 						message_content="${url_message}"
 						placeholder="home.placeholder.url"
-						extra_css = "input-large" />
-
-					<span class="help-inline"></span>
+						extra_css="input-large" />
 				</@control_group>
 
 				<div class="control-group">
@@ -53,13 +48,13 @@
 							<@spring.message "script.tip.libAndResource"/>
 						</#assign>
 
-						<@input_popover name = "createLibAndResource"
-							rel = "create_script_modal_popover"
+						<@input_popover name="createLibAndResource"
+							rel="create_script_modal_popover"
 							data_placement="right"
 							type="checkbox"
 							message="script.list.label.createResourceAndLib"
 							message_content="${lib_message}"
-							extra_css = "input-medium" />
+							extra_css="input-medium" />
 
 							<@spring.message "script.list.label.createResourceAndLib"/>
 					  	</label>

@@ -12,7 +12,8 @@
 		<div class="form-horizontal form-horizontal-4">
 			<fieldset>
 
-				<@control_group name = "domainInput" label_style = "text-align: right;" label_message_key = "perfTest.configuration.domain">
+				<@control_group name="domainInput" label_style="text-align: right;"
+					inline_help="true" label_message_key="perfTest.configuration.domain">
 					<input type="text" class="input-medium" id="domain_input"
 						rel='modal_popover'
 						data-html='true'
@@ -20,11 +21,11 @@
 						title='<@spring.message "perfTest.configuration.domain"/>'
 						data-placement='right'
 						/>
-					<span class="help-inline"></span>
 				</@control_group>
 
 
-				<@control_group name = "ipInput" label_style = "text-align: right;" label_message_key = "agent.table.IP">
+				<@control_group name="ipInput" label_style="text-align: right;"
+					inline_help="true" label_message_key="agent.table.IP">
 					<input type="text" class="input-medium"  id="ip_input"
 						rel='modal_popover'
 						data-html='true'
@@ -32,7 +33,6 @@
 						title='IP'
 						data-placement='right'
 						/>
-					<span class="help-inline"></span>
 				</@control_group>
 
 			</fieldset>
