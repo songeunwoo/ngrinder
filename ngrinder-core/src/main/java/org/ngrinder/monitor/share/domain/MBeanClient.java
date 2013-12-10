@@ -13,85 +13,60 @@
  */
 package org.ngrinder.monitor.share.domain;
 
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
+import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.concurrent.*;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
- * 
  * Client for the JMX monitor server.
- * 
+ *
  * @author Mavlarn
  * @since 2.0
  */
 public class MBeanClient {
-	private static final Logger LOG = LoggerFactory.getLogger(MBeanClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MBeanClient.class);
 
 	private static final String JMX_URI = "/jndi/rmi://%s:%s/jmxrmi";
 
-	/**
-	 * Enum class for connection state.
-	 */
-	public enum ConnectionState {
-		CONNECTED, DISCONNECTED, CONNECTING
-	}
-
-	private ConnectionState connectionState = ConnectionState.DISCONNECTED;
-
-	private String hostName = null;
-	private int port = 0;
 	private JMXServiceURL jmxUrl = null;
 
-	private volatile boolean isDead = true;
+	private volatile boolean connected = false;
 
 	private MBeanServerConnection server = null;
 	private JMXConnector jmxConnector = null;
 
 	/**
 	 * Used to connect remote monitor JMX.
-	 * 
-	 * @param hostName
-	 *            is the server name of target server
-	 * @param port
-	 *            is the JMX server's listener port of target monitor server
-	 * @throws IOException
-	 *             wraps JMX MalformedURLException exception
+	 *
+	 * @param hostName is the server name of target server
+	 * @param port     is the JMX server's listener port of target monitor server
+	 * @throws IOException wraps JMX MalformedURLException exception
 	 */
 	public MBeanClient(String hostName, int port) throws IOException {
-		JMXServiceURL url = new JMXServiceURL("rmi", hostName, port, String.format(JMX_URI, hostName, port));
-		this.jmxUrl = url;
-		this.hostName = url.getHost();
-		this.port = url.getPort();
+		this.jmxUrl = new JMXServiceURL("rmi", hostName, port, String.format(JMX_URI, hostName, port));
 	}
 
 	/**
 	 * connect with target JMX.
 	 */
 	public void connect() {
-		setConnectionState(ConnectionState.CONNECTING);
-		boolean bConnect = true;
-
 		try {
 			connectClient();
-		} catch (IOException ex) {
-			LOG.debug(ex.getMessage());
-			LOG.trace(ex.getMessage(), ex.getCause());
-			bConnect = false;
-		}
-
-		if (!bConnect) {
-			setConnectionState(ConnectionState.DISCONNECTED);
-		} else {
-			setConnectionState(ConnectionState.CONNECTED);
+		} catch (Exception ex) {
+			LOGGER.info("Error while connecting to {}:{} monitor : {}", jmxUrl.getHost(), jmxUrl.getPort());
+			LOGGER.info("Details is ", ex.getMessage());
 		}
 	}
 
@@ -101,50 +76,51 @@ public class MBeanClient {
 	 */
 	public void disconnect() {
 		IOUtils.closeQuietly(jmxConnector);
-
 		server = null;
-
-		if (!isDead) {
-			isDead = true;
-			setConnectionState(ConnectionState.DISCONNECTED);
-		}
+		connected = false;
 	}
+
 
 	/**
 	 * get the monitor object of the object name and attribute name. See
 	 * {@link MonitorCollectionInfoDomain}.
-	 * 
-	 * @param objName
-	 *            is the object name of the object in JMX MBean server.
-	 * @param attrName
-	 *            is the attribute name
+	 *
+	 * @param objName  is the object name of the object in JMX MBean server.
+	 * @param attrName is the attribute name
 	 * @return the monitor object from MBean
-	 * @throws Exception
-	 *             wraps all JMX related exception
+	 * @throws Exception wraps all JMX related exception
 	 */
 	public Object getAttribute(ObjectName objName, String attrName) throws Exception {
 		return server.getAttribute(objName, attrName);
 	}
 
 	private void connectClient() throws IOException {
-		if (jmxUrl == null && "localhost".equals(hostName) && port == 0) {
+		if (jmxUrl == null || ("localhost".equals(jmxUrl.getHost()) && jmxUrl.getPort() == 0)) {
 			server = ManagementFactory.getPlatformMBeanServer();
 		} else {
-			jmxConnector = JMXConnectorFactory.connect(jmxUrl);
+			jmxConnector = connectWithTimeout(jmxUrl, 1000);
 			server = jmxConnector.getMBeanServerConnection();
 		}
-		this.isDead = false;
+		this.connected = true;
 	}
 
-	private void setConnectionState(ConnectionState connectionState) {
-		this.connectionState = connectionState;
-	}
+	private JMXConnector connectWithTimeout(final JMXServiceURL jmxUrl, int timeout) throws NGrinderRuntimeException {
+		try {
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Future<JMXConnector> future = executor.submit(new Callable<JMXConnector>() {
+				public JMXConnector call() throws IOException {
+					return JMXConnectorFactory.connect(jmxUrl);
+				}
+			});
 
-	public ConnectionState getConnectionState() {
-		return connectionState;
+			return future.get(timeout, TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			throw processException(e);
+		}
+
 	}
 
 	public boolean isConnected() {
-		return !isDead;
+		return connected;
 	}
 }

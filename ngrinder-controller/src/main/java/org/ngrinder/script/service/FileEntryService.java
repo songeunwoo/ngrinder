@@ -13,8 +13,6 @@
  */
 package org.ngrinder.script.service;
 
-import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.config.Config;
@@ -76,8 +74,6 @@ public class FileEntryService {
 	@Autowired
 	private Config config;
 
-	@Autowired
-	private HttpContainerContext httpContainerContext;
 
 	@Autowired
 	@Qualifier("cacheManager")
@@ -108,7 +104,7 @@ public class FileEntryService {
 	}
 
 	/**
-	 * invalidate the file_entry_seach_cache.
+	 * invalidate the file_entry_search_cache.
 	 *
 	 * @param userId userId.
 	 */
@@ -151,7 +147,7 @@ public class FileEntryService {
 	 * @return cached {@link FileEntry} list
 	 */
 	@Cacheable(value = "file_entry_search_cache", key = "#user.userId")
-	public List<FileEntry> getAllFileEntries(User user) {
+	public List<FileEntry> getAll(User user) {
 		return fileEntityRepository.findAll(user);
 	}
 
@@ -163,24 +159,23 @@ public class FileEntryService {
 	 * @param revision revision number. -1 if HEAD.
 	 * @return file entry list
 	 */
-	public List<FileEntry> getFileEntries(User user, String path, Long revision) {
+	public List<FileEntry> getAll(User user, String path, Long revision) {
 		// If it's not created, make one.
 		prepare(user);
 		return fileEntityRepository.findAll(user, path, revision);
 	}
 
 	/**
-	 * Get single file entity.
-	 *
-	 * The return value has content byte.
+	 * Get file entity for the given revision.
 	 *
 	 * @param user     the user
-	 * @param path     path in the svn repo
-	 * @param revision file revision.
-	 * @return single file entity
+	 * @param path     path in the repo
+	 * @param revision revision. if -1, HEAD
+	 * @return file entity
 	 */
-	public FileEntry getFileEntry(User user, String path, long revision) {
-		return fileEntityRepository.findOne(user, path, SVNRevision.create(revision));
+	public FileEntry getOne(User user, String path, Long revision) {
+		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD : SVNRevision.create(revision);
+		return fileEntityRepository.findOne(user, path, svnRev);
 	}
 
 	/**
@@ -192,8 +187,8 @@ public class FileEntryService {
 	 * @param path path in the svn repo
 	 * @return single file entity
 	 */
-	public FileEntry getFileEntry(User user, String path) {
-		return fileEntityRepository.findOne(user, path, SVNRevision.HEAD);
+	public FileEntry getOne(User user, String path) {
+		return getOne(user, path, -1L);
 	}
 
 	/**
@@ -204,7 +199,7 @@ public class FileEntryService {
 	 * @return true if exists.
 	 */
 	public boolean hasFileEntry(User user, String path) {
-		return fileEntityRepository.hasFileEntry(user, path);
+		return fileEntityRepository.hasOne(user, path);
 	}
 
 	/**
@@ -223,18 +218,6 @@ public class FileEntryService {
 		fileEntityRepository.save(user, entry, null);
 	}
 
-	/**
-	 * Get file entity for the given revision.
-	 *
-	 * @param user     the user
-	 * @param path     path in the repo
-	 * @param revision revision. if -1, HEAD
-	 * @return file entity
-	 */
-	public FileEntry getFileEntry(User user, String path, Long revision) {
-		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD : SVNRevision.create(revision);
-		return fileEntityRepository.findOne(user, path, svnRev);
-	}
 
 	/**
 	 * Save File entry.
@@ -361,34 +344,6 @@ public class FileEntryService {
 		map.put("userName", user.getUserName());
 		map.put("name", name);
 		return handler.getScriptTemplate(map);
-	}
-
-	/**
-	 * Get SVN URL for the given user and the given subpath. Base path and the
-	 * subpath is separated by ####.
-	 *
-	 * @param user user
-	 * @param path subpath
-	 * @return SVN URL
-	 */
-	public String getSvnUrl(User user, String path) {
-		String contextPath = getCurrentContextPathFromUserRequest();
-		StringBuilder url = new StringBuilder(contextPath);
-		url.append("/svn/").append(user.getUserId());
-		if (StringUtils.isNotEmpty(path)) {
-			url.append("/").append(path.trim());
-		}
-		return url.toString();
-	}
-
-	/**
-	 * Get current context path url by user request.
-	 *
-	 * @return context path
-	 */
-	public String getCurrentContextPathFromUserRequest() {
-		return config.getSystemProperties().getProperty("http.url",
-				httpContainerContext.getCurrentContextUrlFromUserRequest());
 	}
 
 	/**

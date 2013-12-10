@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.CompressionUtil.*;
+import static org.ngrinder.common.util.CompressionUtils.*;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 /**
@@ -40,8 +40,8 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 @Service
 public class AgentPackageService {
-
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentPackageService.class);
+	public static final int EXEC = 0x81ed;
 	@Autowired
 	private Config config;
 
@@ -83,7 +83,7 @@ public class AgentPackageService {
 	 * Get the agent package containing folder.
 	 */
 	public File getAgentPackagesDir() {
-		return config.isCluster() ? config.getExHome().getSubFile("download") : config.getHome().getSubFile("download");
+		return config.isClustered() ? config.getExHome().getSubFile("download") : config.getHome().getSubFile("download");
 	}
 
 	public synchronized File createAgentPackage() {
@@ -104,7 +104,9 @@ public class AgentPackageService {
 	synchronized File createAgentPackage(URLClassLoader classLoader, String connectionIP, String region,
 	                                     String owner) {
 		File agentPackagesDir = getAgentPackagesDir();
-		agentPackagesDir.mkdirs();
+		if (agentPackagesDir.mkdirs()) {
+			LOGGER.info("{} is created", agentPackagesDir.getPath());
+		}
 		final String packageName = getDistributionPackageName("ngrinder-core", connectionIP, region, owner, false);
 		File agentTar = new File(agentPackagesDir, packageName);
 		if (agentTar.exists()) {
@@ -132,7 +134,7 @@ public class AgentPackageService {
 							ZipEntry zipEntry = (ZipEntry) object;
 							return zipEntry.getName().endsWith("sh") || zipEntry.getName().endsWith("bat");
 						}
-					}, basePath, 0100755));
+					}, basePath, EXEC));
 				} else if (isAgentDependentLib(eachClassPath, libs)) {
 					addFileToTar(tarOutputStream, eachClassPath, libPath + eachClassPath.getName());
 				}
@@ -169,9 +171,9 @@ public class AgentPackageService {
 			dependencyStream = cl.getResourceAsStream("dependencies.txt");
 			final String dependencies = IOUtils.toString(dependencyStream);
 			for (String each : StringUtils.split(dependencies, ",;")) {
-				libs.add(each.trim());
-				libs.add(getPackageName("ngrinder-core") + ".jar");
+				libs.add(each.trim().replace(".jar", "").replace("-SNAPSHOT", ""));
 			}
+			libs.add(getPackageName("ngrinder-core").replace("-SNAPSHOT", ""));
 		} catch (Exception e) {
 			IOUtils.closeQuietly(dependencyStream);
 			LOGGER.error("Error while loading dependencies.txt", e);
@@ -184,7 +186,7 @@ public class AgentPackageService {
 		Map<String, Object> confMap = newHashMap();
 		confMap.put("controllerIP", forServer);
 		final int port = config.getSystemProperties()
-				.getPropertyInt(NGrinderConstants.NGRINDER_PROP_AGENT_CONTROL_PORT,
+				.getPropertyInt(Constants.NGRINDER_PROP_AGENT_CONTROL_PORT,
 						AgentControllerCommunicationDefaults.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		confMap.put("controllerPort", String.valueOf(port));
 		if (StringUtils.isEmpty(region)) {
@@ -226,7 +228,9 @@ public class AgentPackageService {
 	 * @return true if dependent lib
 	 */
 	public boolean isAgentDependentLib(File libFile, Set<String> libs) {
-		return libs.contains(libFile.getName());
+		String name = libFile.getName();
+		name = name.replace(".jar", "").replace("-SNAPSHOT", "");
+		return libs.contains(name);
 	}
 
 	/**

@@ -4,7 +4,7 @@
 		<h4><@spring.message "script.list.button.createScript"/></h4>
 	</div>
 	<div class="modal-body">
-		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
+		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/new/${currentPath}">
 			<fieldset>
 
 				<@control_group name="fileName" inline_help="true" label_message_key="script.option.name">

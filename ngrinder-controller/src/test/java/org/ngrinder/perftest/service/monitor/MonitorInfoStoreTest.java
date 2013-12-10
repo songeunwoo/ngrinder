@@ -24,14 +24,14 @@ import static org.junit.Assert.assertThat;
 
 
 public class MonitorInfoStoreTest extends AbstractAgentReadyTest {
-	
+
 	@Test
-	public void test(){
+	public void testMonitorInfoRetrieval() {
 		String ip = "127.0.0.1";
 		MonitorInfoStore monitorStore = applicationContext.getBean(MonitorInfoStore.class);
 		SystemInfo systemInfo = monitorStore.getSystemInfo(ip, 13243);
 		assertThat(systemInfo, not(nullValue()));
 		assertThat(systemInfo.getFreeMemory(), not(0L));
-		monitorStore.remove(ip);
+		monitorStore.close(ip);
 	}
 }

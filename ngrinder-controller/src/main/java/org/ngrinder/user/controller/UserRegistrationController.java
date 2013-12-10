@@ -15,9 +15,8 @@ package org.ngrinder.user.controller;
 
 
 import com.google.common.collect.Lists;
-import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -36,64 +35,54 @@ import static org.ngrinder.common.util.Preconditions.checkArgument;
 
 /**
  * User registration controller.
- * 
+ *
  * @author Matt
  * @since 3.3
- * 
  */
 @Controller
 @RequestMapping("/registration")
-public class UserRegistrationController extends NGrinderBaseController {
+public class UserRegistrationController extends BaseController {
 
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private Config config;
 
 	/**
 	 * New user sign up form login page.
-	 * 
-	 * @param model
-	 *            mode
+	 *
+	 * @param model mode
 	 * @return "user/user_sign_up_modal"
 	 */
 	@RequestMapping("/sign_up")
 	public String getUserForm(ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.of(Role.USER));
-		model.addAttribute("isSelfRegistration", config.isSelfUserRegistration());
 		model.addAttribute("followers", Lists.newArrayList());
 		model.addAttribute("shareUserList", Lists.newArrayList());
+		model.addAttribute("isSelfRegistration", getConfig().isSelfUserRegistration());
 		return "user/user_sign_up_modal";
 	}
-	
+
 	/**
 	 * Check the user id existence.
-	 * 
-	 * @param model
-	 *            model
-	 * @param userId
-	 *            userId to be checked
+	 *
+	 * @param userId userId to be checked
 	 * @return success json if true.
 	 */
 	@RestAPI
 	@RequestMapping("/api/{userId}/check_duplication")
-	public HttpEntity<String> checkUserId(ModelMap model, @PathVariable String userId) {
-		User user = userService.getUserById(userId);
+	public HttpEntity<String> checkUserId(@PathVariable String userId) {
+		User user = userService.getOne(userId);
 		return (user == null) ? successJsonHttpEntity() : errorJsonHttpEntity();
 	}
-	
+
 	/**
 	 * Save user detail info.
-	 * 
-	 * @param model
-	 *            model
-	 * @param newUser
-	 *            user to be created.
+	 *
+	 * @param newUser user to be created.
 	 * @return "redirect:/home"
 	 */
 	@RequestMapping("/save")
-	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User newUser) {
+	public String saveOrUpdateUserDetail(@ModelAttribute("user") User newUser) {
 		checkArgument(newUser.getRole().equals(Role.USER), "User role must be General user !");
 		userService.createUser(newUser);
 		return "redirect:/home";

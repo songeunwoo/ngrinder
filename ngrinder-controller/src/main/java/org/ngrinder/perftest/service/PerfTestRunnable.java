@@ -13,23 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.util.AccessUtils.getSafe;
-import static org.ngrinder.model.Status.CANCELED;
-import static org.ngrinder.model.Status.DISTRIBUTE_FILES;
-import static org.ngrinder.model.Status.DISTRIBUTE_FILES_FINISHED;
-import static org.ngrinder.model.Status.START_AGENTS;
-import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
-import static org.ngrinder.model.Status.START_CONSOLE;
-import static org.ngrinder.model.Status.START_TESTING;
-import static org.ngrinder.model.Status.TESTING;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.StopReason;
@@ -37,51 +20,65 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.TypeConvertUtil;
+import org.ngrinder.common.constant.Constants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.infra.schedule.ScheduledTaskService;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
-import org.ngrinder.perftest.service.samplinglistener.AgentDieHardListener;
-import org.ngrinder.perftest.service.samplinglistener.AgentLostDetectionListener;
-import org.ngrinder.perftest.service.samplinglistener.MonitorCollectorListener;
-import org.ngrinder.perftest.service.samplinglistener.PerfTestSamplingCollectorListener;
-import org.ngrinder.perftest.service.samplinglistener.PluginRunListener;
+import org.ngrinder.perftest.service.monitor.MonitorScheduledTask;
+import org.ngrinder.perftest.service.samplinglistener.*;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static org.ngrinder.common.util.AccessUtils.getSafe;
+import static org.ngrinder.model.Status.*;
 
 /**
  * {@link PerfTest} run scheduler.
  *
  * This class is responsible to execute/finish the performance test. The job is
- * started from {@link #startTest()} and {@link #finishTest()} method. These
+ * started from {@link #start()} and {@link #finish()} method. These
  * methods are scheduled by Spring Task.
  *
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
-public class PerfTestRunnable implements NGrinderConstants {
+@Profile("production")
+@Component
+public class PerfTestRunnable implements Constants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
 	@Autowired
 	private PerfTestService perfTestService;
+
+	@Autowired
+	private ScheduledTaskService scheduledTaskService;
+
+	@Autowired
+	private CacheManager cacheManager;
 
 	@Autowired
 	private ConsoleManager consoleManager;
@@ -95,18 +92,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private Config config;
 
-
-	@Autowired
-	private ApplicationContext applicationContext;
-
-
 	/**
 	 * Scheduled method for test execution. This method dispatches the test
 	 * candidates and run one of them. This method is responsible until a test
 	 * is executed.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
-	public void startTest() {
+	public void startPeriodically() {
+		doStart();
+	}
+
+	void doStart() {
 		if (config.hasNoMoreTestLock()) {
 			return;
 		}
@@ -175,7 +171,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			ScriptHandler prepareDistribution = perfTestService.prepareDistribution(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
-			distributeFileOn(perfTest, grinderProperties, checkCancellation(singleConsole));
+			distributeFileOn(perfTest, checkCancellation(singleConsole));
 
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 			runTestOn(perfTest, grinderProperties, checkCancellation(singleConsole));
@@ -216,7 +212,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.markStatusAndProgress(perfTest, START_CONSOLE, "Console is being prepared.");
 		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
-		SingleConsole singleConsole = consoleManager.getAvailableConsole(perfTest.getTestIdentifier(), consoleProperty);
+		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		singleConsole.start();
 		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort());
 		return singleConsole;
@@ -225,11 +221,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 	/**
 	 * Distribute files to agents.
 	 *
-	 * @param perfTest          perftest
-	 * @param grinderProperties grinder properties
-	 * @param singleConsole     console to be used.
+	 * @param perfTest      perftest
+	 * @param singleConsole console to be used.
 	 */
-	void distributeFileOn(final PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
+	void distributeFileOn(final PerfTest perfTest, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
@@ -259,7 +254,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		});
 
 		// the files have prepared before
-		singleConsole.distributeFiles(perfTestService.getPerfTestDistributionPath(perfTest), listener,
+		singleConsole.distributeFiles(perfTestService.getDistributionPath(perfTest), listener,
 				isSafeDistPerfTest(perfTest));
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED,
 				"All necessary files are distributed.");
@@ -267,17 +262,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	protected int getSafeTransmissionThreshold() {
 		// For backward compatibility
-		int safeTransmissionThreshold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD, 0);
-		if (safeTransmissionThreshold == 0) {
-			safeTransmissionThreshold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHOLD,
-					1 * 1024 * 1024);
-		}
-		return safeTransmissionThreshold;
+		return config.getSystemProperties().getPropertyIntWithBackwardCompatibility
+				(NGRINDER_PROP_DIST_SAFE_THRESHOLD, NGRINDER_PROP_DIST_SAFE_THRESHOLD_OLD, 1 * 1024 * 1024);
 	}
 
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
 		boolean safeDist = getSafe(perfTest.getSafeDistribution());
-		if (config.isCluster()) {
+		if (config.isClustered()) {
 			String distSafeRegion = config.getSystemProperties().getProperty(NGRINDER_PROP_DIST_SAFE_REGION,
 					StringUtils.EMPTY);
 			for (String each : StringUtils.split(distSafeRegion, ",")) {
@@ -336,25 +327,36 @@ public class PerfTestRunnable implements NGrinderConstants {
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
-		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
+		singleConsole.startSampling();
 
 	}
 
 	protected void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
-		// Add the SamplingLifeCycleFollowUpListener
-		singleConsole.addSamplingLifeCycleFollowUpCycleListener(new MonitorCollectorListener(this.applicationContext,
-				perfTest.getId(), createMonitorTargets(perfTest), singleConsole.getReportPath()));
-
+		singleConsole.addSamplingLifeCycleFollowUpCycleListener(createMonitorCollectionListener(perfTest, singleConsole));
 		// Add SamplingLifeCycleListener
 		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
-				perfTest.getId(), perfTestService));
+				perfTest.getId(), perfTestService, scheduledTaskService));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
-				perfTestService));
+				perfTestService, scheduledTaskService));
 		List<OnTestSamplingRunnable> testSamplingPlugins = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(testSamplingPlugins, singleConsole,
 				perfTest, perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
-				agentManager));
+				agentManager, scheduledTaskService));
+	}
+
+	private MonitorCollectorListener createMonitorCollectionListener(final PerfTest perfTest,
+	                                                                 final SingleConsole singleConsole) {
+		final MonitorScheduledTask monitorScheduledTask = new MonitorScheduledTask(cacheManager, perfTestService);
+		monitorScheduledTask.setCorrespondingPerfTestId(perfTest.getId());
+		// To speed up, make the monitor connection in the async way.
+		scheduledTaskService.runAsync(new Runnable() {
+			@Override
+			public void run() {
+				monitorScheduledTask.add(createMonitorTargets(perfTest), singleConsole.getReportPath());
+			}
+		});
+		return new MonitorCollectorListener(monitorScheduledTask, scheduledTaskService, perfTest.getSamplingInterval());
 	}
 
 	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {
@@ -400,8 +402,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * </ul>
 	 */
 	@Scheduled(fixedDelay = PERFTEST_TERMINATION_FREQUENCY_MILLISECONDS)
-	public void finishTest() {
-		for (PerfTest each : perfTestService.getAbnormalTestingPerfTest()) {
+	public void finishPeriodically() {
+		doFinish();
+	}
+
+	protected void doFinish() {
+		for (PerfTest each : perfTestService.getAllAbnormalTesting()) {
 			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doTerminate(each, consoleUsingPort);
@@ -409,7 +415,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			notifyFinish(each, StopReason.TOO_MANY_ERRORS);
 		}
 
-		for (PerfTest each : perfTestService.getStopRequestedPerfTest()) {
+		for (PerfTest each : perfTestService.getAllStopRequested()) {
 			LOG.info("Stop test {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doCancel(each, consoleUsingPort);
@@ -417,15 +423,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 			notifyFinish(each, StopReason.CANCEL_BY_USER);
 		}
 
-		for (PerfTest each : perfTestService.getTestingPerfTest()) {
+		for (PerfTest each : perfTestService.getAllTesting()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
-				doFinish(each, consoleUsingPort);
+				doNormal(each, consoleUsingPort);
 				cleanUp(each);
 				notifyFinish(each, StopReason.NORMAL);
 			}
 		}
-
 	}
 
 	/**
@@ -516,7 +521,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param singleConsoleInUse {@link SingleConsole} which is being used for the given
 	 *                           {@link PerfTest}
 	 */
-	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	public void doNormal(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 				singleConsoleInUse.getCurrentRunningTime());

@@ -21,7 +21,7 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
-import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.DateUtils;
 import org.ngrinder.common.util.PathUtils;
 
 import javax.persistence.*;
@@ -303,14 +303,17 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.port = getSafe(this.port);
 		this.processes = getSafe(this.processes, 1);
 		this.threads = getSafe(this.threads, 1);
-		this.ignoreSampleCount = getSafe(this.ignoreSampleCount);
-		this.useRampUp = getSafe(this.useRampUp);
 		this.scriptName = getSafe(this.scriptName, "");
 		this.testName = getSafe(this.testName, "");
 		this.progressMessage = getSafe(this.progressMessage, "");
 		this.lastProgressMessage = getSafe(this.lastProgressMessage, "");
 		this.testComment = getSafe(this.testComment, "");
 		this.threshold = getSafe(this.threshold, "D");
+		if (isThresholdRunCount()) {
+			this.setIgnoreSampleCount(0);
+		} else {
+			this.ignoreSampleCount = getSafe(this.ignoreSampleCount);
+		}
 		this.runCount = getSafe(this.runCount);
 		this.duration = getSafe(this.duration, 60000L);
 		this.samplingInterval = getSafe(this.samplingInterval, 2);
@@ -417,7 +420,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getLastModifiedDateToStr() {
-		return DateUtil.dateToString(getLastModifiedDate());
+		return DateUtils.dateToString(getLastModifiedDate());
 	}
 
 	public void setDescription(String description) {
@@ -635,7 +638,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * @return formatted duration string
 	 */
 	public String getDurationStr() {
-		return DateUtil.ms2Time(this.duration);
+		return DateUtils.ms2Time(this.duration);
 	}
 
 
@@ -647,7 +650,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getRuntimeStr() {
 		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
 				- this.startTime.getTime();
-		return DateUtil.ms2Time(ms);
+		return DateUtils.ms2Time(ms);
 	}
 
 	@Override
@@ -823,5 +826,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setParam(String param) {
 		this.param = param;
+	}
+
+	public void prepare(boolean isClone) {
+		if (isClone) {
+			this.setId(null);
+		}
 	}
 }

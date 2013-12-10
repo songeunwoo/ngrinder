@@ -13,24 +13,23 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.ngrinder.model.Status.START_AGENTS;
-import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
-
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
-
-import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.PerfTest;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import static org.ngrinder.model.Status.START_AGENTS;
+import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
 
 /**
  * Mock PerfTest which disable spring task schedule.
  *
  * @author JunHo Yoon
  */
-@TestOnlyComponent
+@Profile("unit-test")
+@Component
 public class MockPerfTestRunnable extends PerfTestRunnable {
-
 
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
@@ -51,5 +50,15 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 	@Override
 	protected int getSafeTransmissionThreshold() {
 		return 1;
+	}
+
+	@Override
+	public void startPeriodically() {
+		// do nothing.
+	}
+
+	@Override
+	public void finishPeriodically() {
+		// No nothing on the periodic finish
 	}
 }
