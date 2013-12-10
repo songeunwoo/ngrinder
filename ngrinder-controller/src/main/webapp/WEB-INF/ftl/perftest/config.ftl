@@ -89,38 +89,33 @@
 			</@control_group>
 			<hr>
 
-			<div class="control-group">
-				<label class="control-label"> 
-					<input type="radio" id="duration_ratio" name="threshold" value="D"
-						<#if test.threshold == "D">checked</#if>/>
-					<@spring.message "perfTest.configuration.duration"/>
-				</label>
-				<div class="controls docs-input-sizes">
-					<select class="select-item" id="select_hour"></select> : 
-					<select class="select-item" id="select_min"></select> : 
-					<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
-					<code>HH:MM:SS</code>
-					<input type="hidden" id="duration" name="duration" value="${test.duration}"/>
-					<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
-					<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
-					<input id="hidden_duration_input" class="hide" data-step="1"/>
-				</div>
-			</div>
-			<div class="control-group">
-				<label for="run_count" class="control-label">
-					<input type="radio" id="run_count_radio" name="threshold" value="R"
-						   <#if test.threshold == "R" >checked</#if>/>
-					<@spring.message "perfTest.configuration.runCount"/>
-				</label>
+			<#assign duration_checked><#if test.threshold == "D">checked</#if></#assign>
 
-				<div class="controls">
+			<@control_group label_message_key="perfTest.configuration.duration" controls_extra_class="docs-input-sizes"
+				input_id="duration_ratio" input_name="threshold" input_value="D" radio_checked="${duration_checked}" >
+
+				<select class="select-item" id="select_hour"></select> :
+				<select class="select-item" id="select_min"></select> :
+				<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
+				<code>HH:MM:SS</code>
+				<input type="hidden" id="duration" name="duration" value="${test.duration}"/>
+				<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
+				<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
+				<input id="hidden_duration_input" class="hide" data-step="1"/>
+
+			</@control_group>
+
+			<#assign count_checked><#if test.threshold == "R">checked</#if></#assign>
+
+			<@control_group label_message_key="perfTest.configuration.runCount"
+				input_id="run_count_radio" input_name="threshold" input_value="R" radio_checked="${count_checked}" >
 					<@input_append  name="runCount"
-							value="${test.runCount}"
-							message="perfTest.configuration.runCount"
-							others='number_limit="${maxRunCount}"'
-							append_prefix="perfTest.configuration.max" append="${maxRunCount}" />
-				</div>
-			</div>
+						value="${test.runCount}"
+						message="perfTest.configuration.runCount"
+						others='number_limit="${maxRunCount}"'
+						append_prefix="perfTest.configuration.max" append="${maxRunCount}" />
+			</@control_group>
+
 			<div class="control-group">
 				<div class="row">
 					<div class="span3">
