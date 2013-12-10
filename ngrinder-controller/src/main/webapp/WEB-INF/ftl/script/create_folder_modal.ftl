@@ -10,7 +10,7 @@
 					<#assign content_message>
 						<@spring.message "common.form.rule.sampleName"/>
 					</#assign>
-                    <input type="hidden" name="type" value="folder"/>
+					<input type="hidden" name="type" value="folder"/>
 					<@input_popover name="folderName" rel="create_folder_modal_popover"
 						data_placement="right"
 						message="script.list.label.folderName"

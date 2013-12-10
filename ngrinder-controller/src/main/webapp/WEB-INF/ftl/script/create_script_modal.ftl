@@ -57,10 +57,10 @@
 							extra_css="input-medium" />
 
 							<@spring.message "script.list.label.createResourceAndLib"/>
-					  	</label>
-					  <span class="help-inline well"><@spring.message "script.list.label.createResourceAndLib.help"/>
-					  	 <a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
-					  </span>
+						</label>
+						<span class="help-inline well"><@spring.message "script.list.label.createResourceAndLib.help"/>
+						<a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
+						</span>
 					</div> 
 				</div>
 			</fieldset>

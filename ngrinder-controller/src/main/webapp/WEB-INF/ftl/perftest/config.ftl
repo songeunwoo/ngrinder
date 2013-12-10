@@ -64,9 +64,9 @@
 			<@control_group group_id="script_control" name="scriptName" label_message_key="perfTest.configuration.script">
 				<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>" />
 				<input type="hidden" id="script_revision"
-					   name="scriptRevision"
-					   value="${(test.scriptRevision)!-1}"
-					   old_revision="${(test.scriptRevision)!-1}"/>
+					name="scriptRevision"
+					value="${(test.scriptRevision)!-1}"
+					old_revision="${(test.scriptRevision)!-1}"/>
 				<button class="btn btn-mini btn-info pull-right" type="button"
 						id="show_script_btn"
 						style="margin-top: 3px; display: none;">R

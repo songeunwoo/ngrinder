@@ -165,7 +165,7 @@
 								<td class="ellipsis">
 									<div class="ellipsis"
 										rel="popover"
-										data-html="   "
+										data-html="true"
 										data-content="${test.scriptName}<br/> - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}"
 										title="<@spring.message "perfTest.table.scriptName"/>">
 										<#if isAdmin??>
@@ -312,7 +312,7 @@
 				}else{
 					$("#"+perftestChartTrId).next('tr').remove();
 					$("#"+perftestChartTrId).remove();
-                }
+				}
 
 			});
 

@@ -1004,10 +1004,10 @@ function updateScriptResources(first) {
 		return;
 	}
 
-    var obj = new AjaxObj("${req.getContextPath()}/perftest/api/resource" , "<@spring.message "common.error.error"/>");
-    obj.params = {
-        'scriptPath' : scriptName,
-        'r' : $("#script_revision").val()
+	var obj = new AjaxObj("${req.getContextPath()}/perftest/api/resource" , "<@spring.message "common.error.error"/>");
+	obj.params = {
+		'scriptPath' : scriptName,
+		'r' : $("#script_revision").val()
 		<@security.authorize ifAnyGranted="A, S">
 			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>

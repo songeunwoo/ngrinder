@@ -105,19 +105,19 @@
 			}
 
 			function getState(){
-                var obj = new AjaxObj("${req.getContextPath()}/agent/api/${agent.id}/state" , "Error!");
-                obj.params = {'ip': '${(agent.ip)!}','name': '${(agent.hostName)!}','imgWidth':700};
+				var obj = new AjaxObj("${req.getContextPath()}/agent/api/${agent.id}/state" , "Error!");
+				obj.params = {'ip': '${(agent.ip)!}','name': '${(agent.hostName)!}','imgWidth':700};
 				obj.async = false;
-                obj.success = function(res) {
-                    getChartData(res);
-                    maxCPU = getMax(maxCPU, cpuUsage.aElement);
-                    showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
-                    maxMemory = getMax(maxMemory, memoryUsage.aElement);
-                    showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
-                    return true;
-                };
+				obj.success = function(res) {
+					getChartData(res);
+					maxCPU = getMax(maxCPU, cpuUsage.aElement);
+					showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+					maxMemory = getMax(maxMemory, memoryUsage.aElement);
+					showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+					return true;
+				};
 
-                callAjaxAPI(obj);
+				callAjaxAPI(obj);
 			}
 
 			function showChart(containerId, data, index, formatYaxis, maxY) {
