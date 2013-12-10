@@ -43,17 +43,17 @@
 					<div class="prompt">
 						<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remeber me :
 						<select  id="native_language" name="native_language" style="margin-left:60px;"> 
-							  <option value="en">English</option>
-							  <option value="kr">한국어</option>
-							  <option value="cn">中文</option>
+							<option value="en">English</option>
+							<option value="kr">한국어</option>
+							<option value="cn">中文</option>
 						</select> 
 					</div>
 					
 					<div class="prompt">
 						<select  id="user_timezone"  name="user_timezone" style="width:240px">
-						  <#list timezones as eachtimezone>
+							<#list timezones as eachtimezone>
 							  <option value="${eachtimezone.ID}">${eachtimezone.ID} - ${eachtimezone.displayName}</option>
-					      </#list>
+							</#list>
 						</select> 
 					</div> 
 					
@@ -69,7 +69,7 @@
 					<div class="center">
 						<hr>
 						<footer>
-						    <p>nGrinder ver ${nGrinderVersion}</p>
+							<p>nGrinder ver ${nGrinderVersion}</p>
 						</footer>
 					</div>
 				</div>

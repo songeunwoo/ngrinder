@@ -103,8 +103,8 @@
 					<col width="50">
 					<col>
 					<col>
-			        <col width="70">
-			        <#if clustered>
+					<col width="70">
+					<#if clustered>
 						<col width="70">
 					</#if>
 					<col width="120">
@@ -245,7 +245,7 @@
 	<script>
 		$(document).ready(function() {
 
-            var columnCount = $('#head_tr_id th').length;
+			var columnCount = $('#head_tr_id th').length;
 
 			$("#tag").select2({
 				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
@@ -266,22 +266,22 @@
 				}
 
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-				    if (result) {
-				    	var ids = list.map(function() {
+					if (result) {
+						var ids = list.map(function() {
 							return $(this).val();
 						}).get().join(",");
 
 						deleteTests(ids);
-				    }
+					}
 				});
 			});
 
 			$("i.test-remove").click(function() {
 				var id = $(this).attr("sid");
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-				    if (result) {
-				    	deleteTests(id);
-				    }
+					if (result) {
+						deleteTests(id);
+					}
 				});
 			});
 
@@ -308,10 +308,10 @@
 
 					callAjaxAPI(obj);
 
-                    testInfoTr.show("slow");
+					testInfoTr.show("slow");
 				}else{
-                    $("#"+perftestChartTrId).next('tr').remove();
-                    $("#"+perftestChartTrId).remove();
+					$("#"+perftestChartTrId).next('tr').remove();
+					$("#"+perftestChartTrId).remove();
                 }
 
 			});
@@ -469,7 +469,7 @@
 			};
 
 			callAjaxAPI(obj);
-	    })();
+		})();
 	</script>
 	</body>
 </html>

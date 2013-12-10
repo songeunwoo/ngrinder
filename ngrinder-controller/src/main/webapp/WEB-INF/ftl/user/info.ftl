@@ -21,7 +21,7 @@
 			data_placement='${popover_place}'
 			message="user.info.form.userId"
 			others=others />
-            <input type="hidden" id="id" name="id" value="${(user.id)!}"/>
+			<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
 		</@control_group>
 
 
@@ -33,11 +33,11 @@
 
 		<#if !(action?has_content)>
 			<@control_group name="role" label_message_key="user.option.role">
-                <select class="span4" name="role" id="role">
+				<select class="span4" name="role" id="role">
 					<#list roleSet as role>
-                        <option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
+						<option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
 					</#list>
-                </select>
+				</select>
 			</@control_group>
 		</#if>
 
@@ -48,9 +48,9 @@
 		</@control_group>
 
 		<@control_group name="description" label_message_key="common.label.description">
-            <textarea cols="30" id="description" name="description"
-                      rows="3" title="Description" class="tx_area span4"
-                      style="resize: none;">${(user.description)!}</textarea>
+			<textarea cols="30" id="description" name="description"
+				rows="3" title="Description" class="tx_area span4"
+				style="resize: none;">${(user.description)!}</textarea>
 		</@control_group>
 
 		<@control_group name="mobilePhone" label_message_key="user.info.form.phone">
@@ -62,9 +62,9 @@
 		<#if user?exists>
 
 			<@control_group label_message_key="user.share.title">
-                <select id="user_switch_select" name="followersStr" style="width:300px" multiple>
+				<select id="user_switch_select" name="followersStr" style="width:300px" multiple>
 					<#include "switch_options.ftl">
-                </select>
+				</select>
 			</@control_group>
 		</#if>
 
@@ -72,14 +72,14 @@
   		<div class="control-group">
   			<#if !(isSelfRegistration?? && isSelfRegistration)>
 				<div class="accordion-heading"> 
-	               	<a id="change_password_btn" class="pointer-cursor"> 
-	                 	<@spring.message "user.info.form.button.changePwd"/>
-	               	</a> 
+					<a id="change_password_btn" class="pointer-cursor">
+						<@spring.message "user.info.form.button.changePwd"/>
+					</a>
              	</div> 
 			</#if>
 			
-             <div id="user_password_section" style='display:none'>
-	            <div class="accordion-inner" style="padding:9px 0" >
+			<div id="user_password_section" style='display:none'>
+				<div class="accordion-inner" style="padding:9px 0" >
 
 					<@control_group name="password" label_message_key="user.info.form.pwd">
 						<@input_append name="password" value="${(user.psw)!}"
@@ -95,8 +95,8 @@
 							message="user.info.form.cpwd"/>
 					</@control_group>
 
-	             </div> 
-	 	 	 </div>
+				</div>
+			</div>
 		</div>
 		</#if>
 		<div class="control-group">
@@ -186,43 +186,43 @@
 	    			</#if>
 	    			rangelength: [6,15]
 	    		},
-                confirmPassword: {
+				confirmPassword: {
 	    			<#if !(user?has_content)>
 	    			required: true,
 	    			</#if>
 	    			rangelength: [6,15]
 	    		}
 	    	}, 
-	        messages:{
+			messages:{
 	        	user_id: {
 	        		required: "<@spring.message "user.info.warning.userId.required"/>"
 	        	},
 	        	userName: {
 	            	required: "<@spring.message "user.option.name.help"/>"
-	            },
-	            email: {
-	                required:"<@spring.message "user.info.form.email.help"/>",
-	                email:"<@spring.message "user.info.warning.email.rule"/>"
-	            },
-	            password: {
-	                required:"<@spring.message "user.info.warning.pwd.required"/>"
-	            },
-                confirmPassword: {
-	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
-	                equalTo:"<@spring.message "user.info.form.cpwd.help"/>"
-	            }
-	        },
-	        errorClass: "help-inline",
-	        errorElement: "span",
-	        highlight:function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').addClass('error');
-	            $(element).parents('.control-group').removeClass('success');
-	        },
-	        unhighlight: function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').removeClass('error');
-	            $(element).parents('.control-group').addClass('success');
-	        }
-	    });
+				},
+				email: {
+					required:"<@spring.message "user.info.form.email.help"/>",
+					email:"<@spring.message "user.info.warning.email.rule"/>"
+				},
+				password: {
+					required:"<@spring.message "user.info.warning.pwd.required"/>"
+				},
+				confirmPassword: {
+					required:"<@spring.message "user.info.warning.cpwd.required"/>",
+					equalTo:"<@spring.message "user.info.form.cpwd.help"/>"
+				}
+			},
+			errorClass: "help-inline",
+			errorElement: "span",
+			highlight:function(element, errorClass, validClass) {
+				$(element).parents('.control-group').addClass('error');
+				$(element).parents('.control-group').removeClass('success');
+			},
+			unhighlight: function(element, errorClass, validClass) {
+				$(element).parents('.control-group').removeClass('error');
+				$(element).parents('.control-group').addClass('success');
+			}
+		});
 		
 		<#if !(user?has_content)>
 			showPassword();

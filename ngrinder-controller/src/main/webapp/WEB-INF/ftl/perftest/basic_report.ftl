@@ -10,18 +10,18 @@
 		<fieldset>
 			<legend>
 				<@spring.message "perfTest.report.summary"/>
-			</legend>
+            </legend>
 		</fieldset>
 		<div class="form-horizontal form-horizontal-3"
 			style="margin-left: 10px">
 			<fieldset>
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.tps">
-                    <strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
+            		<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.meantime">
 					${(test.meanTestTime)?string("0.##")}
-                    <code>MS</code>
+					<code>MS</code>
 				</@control_group>
 
 				<@control_group lable_extra_class="control-label-wide non-cursor" label_message_key="perfTest.report.peakTPS">

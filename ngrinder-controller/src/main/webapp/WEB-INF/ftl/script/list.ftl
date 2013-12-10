@@ -30,15 +30,15 @@
 						               		title="Subversion" data-placement="bottom"
 						               		data-content='<@spring.message "script.list.message.svn"/>'
 						               		data-html="true"> 
-						               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
+										<span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
 						        	</div>  
 					        	</#if>
 				        		</td>
 				        	</tr>
 			        	</table>
-			        </td>	
-			     </tr>
-			     <tr>
+					</td>
+				</tr>
+				<tr>
 			     	<td>
 						<table  style="width:100%; margin-top:5px">
 							<colgroup>

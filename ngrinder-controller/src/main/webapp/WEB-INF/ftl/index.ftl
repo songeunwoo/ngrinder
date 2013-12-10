@@ -73,7 +73,7 @@
 						</tr>
 						</#if>
 					</table>
-  			    </div>
+  				</div>
 			</div>
 			<div class="span6">
 				<div class="page-header">
@@ -131,18 +131,18 @@
 				return false;
 			})
 			
-	        $("#quick_start").validate({
-	            errorPlacement: function(error, element) {
+			$("#quick_start").validate({
+				errorPlacement: function(error, element) {
 	            	$("div.quick-start").popover("show");
-		        }
-		    });
-		   	
+				}
+			});
+
 		    $("#url").change(function() {
 		    	if ($(this).valid()) {
 		    		$("div.quick-start").popover("hide");
 		    	}
-		    });
-	    });
+			});
+		});
 	</script>
 	</body>
 </html>

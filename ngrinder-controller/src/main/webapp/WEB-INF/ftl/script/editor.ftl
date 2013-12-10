@@ -33,7 +33,7 @@
 				min-width:500px; 
 				margin-bottom:12px; 
 				padding:5px 
-		    }
+			}
 		</style>
 	</head>
 
@@ -113,14 +113,14 @@
 					title="Tip" data-html="ture"
 					data-placement="left"
 				 	data-content="
-			      Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/> 
-			      Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
-			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
-			      Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
-			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
-			      F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
-			      ESC : <@spring.message 'script.editor.tip.back'/>
-			      "><code>Tip</code></div> 
+						Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/>
+						Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
+						Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
+						Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
+						Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
+						F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
+						ESC : <@spring.message 'script.editor.tip.back'/>
+						"><code>Tip</code></div>
 			</div>
 		</div>
 		<div id="validation_result_panel" style="display:none;">
@@ -133,8 +133,8 @@
 	
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
-    <#include "../perftest/host_modal.ftl">
-    <script>
+	<#include "../perftest/host_modal.ftl">
+	<script>
     	var changed = false;
     	var curRevision = ${curRevision!0};
     	var lastRevision = ${lastRevision!0};
@@ -149,30 +149,30 @@
     	}
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
-			   mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
-			   theme: "eclipse",
-			   lineNumbers: true,
-			   lineWrapping: true,
-			   indentUnit:4,
-			   tabSize:4,
-			   indentWithTabs:true,
-			   smartIndent:false,
-			   extraKeys: {
-		         "F11": function(cm) {
-		           setFullScreen(cm, !isFullScreen(cm));
-		         },
-		         "Esc": function(cm) {
-		           if (isFullScreen(cm)) setFullScreen(cm, false);
-		         },
-		         Tab: "indentMore"
-		       },
-			   onCursorActivity: function() {
-			     editor.setLineClass(hlLine, null, null);
-			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-			   },
-			   onChange : function() {
+				mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
+				theme: "eclipse",
+				lineNumbers: true,
+				lineWrapping: true,
+				indentUnit:4,
+				tabSize:4,
+				indentWithTabs:true,
+				smartIndent:false,
+				extraKeys: {
+				 "F11": function(cm) {
+				   setFullScreen(cm, !isFullScreen(cm));
+				 },
+				 "Esc": function(cm) {
+				   if (isFullScreen(cm)) setFullScreen(cm, false);
+				 },
+				 Tab: "indentMore"
+				},
+				onCursorActivity: function() {
+				 editor.setLineClass(hlLine, null, null);
+				 hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+				},
+				onChange : function() {
 				   changed = true;
-			   }
+				}
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 

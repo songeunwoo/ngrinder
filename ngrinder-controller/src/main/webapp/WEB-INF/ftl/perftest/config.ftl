@@ -6,15 +6,15 @@
 		<div class="form-horizontal form-horizontal-2">
 
 			<div class="control-group">
-                <div class="row">
-                    <div class="span4">
+				<div class="row">
+					<div class="span4">
 						<@control_group name="agentCount" label_message_key="perfTest.configuration.agent" err_style="margin-left:120px;">
 							<@input_append name="agentCount"
 								value="${test.agentCount}"
 								message="perfTest.configuration.agent"
 								append_prefix="perfTest.configuration.max" append='<span id="maxAgentCount"></span>' />
 						</@control_group>
-                    </div>
+					</div>
 
 					<div class="span2">
 						<#if clustered == true>
