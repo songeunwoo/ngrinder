@@ -234,13 +234,12 @@
 	}
 	
 	function stopTests(ids) {
-		var obj = new AjaxObj("${req.getContextPath()}/perftest/api/stop" , "<@spring.message "perfTest.table.message.error.stop"/>");
-		obj.type = "POST";
-		obj.params = {"ids":ids};
-		obj.success = function(res) {
-			showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-		};
-		callAjaxAPI(obj);
+		var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/stop",
+				"<@spring.message "perfTest.table.message.success.stop"/>",
+				"<@spring.message "perfTest.table.message.error.stop"/>");
+		ajaxObj.type = "POST";
+		ajaxObj.params = { "ids":ids };
+		ajaxObj.call();
 	}
 	
 	$(document).ready(function() {

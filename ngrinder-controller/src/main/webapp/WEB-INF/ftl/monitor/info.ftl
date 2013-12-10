@@ -43,7 +43,7 @@
 
 	function getState() {
 		var result = false;
-		var obj = new AjaxObj("${req.getContextPath()}/monitor/state");
+		var obj = new AjaxObj("/monitor/state");
 		obj.params = {'ip' : '${(targetIP)!}'};
 		obj.async = false;
 		obj.success = function(res) {

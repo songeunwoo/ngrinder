@@ -154,7 +154,7 @@
 									</div>
 								</td>
 								<td class="ellipsis ${test.dateString!""}">
-									<div
+									<div class="ellipsis"
 										 rel="popover"
 										 data-html="true"
 										 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"
@@ -297,17 +297,15 @@
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
 
-					var obj = new AjaxObj("${req.getContextPath()}/perftest/api/"+ id +"/graph" , "Failed to get graph.");
-					obj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
-					obj.success = function(res) {
+					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph", null, "Failed to get graph.");
+					ajaxObj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
+					ajaxObj.success = function(res) {
 						drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
 						drawListPlotChart(meanTimeChartId , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
 						drawListPlotChart(errorChartId , res.Errors.data, ["Errors"], res.chartInterval);
 						return true;
 					};
-
-					callAjaxAPI(obj);
-
+                    ajaxObj.call();
 					testInfoTr.show("slow");
 				}else{
 					$("#"+perftestChartTrId).next('tr').remove();
@@ -376,28 +374,25 @@
 		}
 
 		function deleteTests(ids) {
-			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/delete" , "<@spring.message "perfTest.table.message.error.delete"/>");
-			obj.type = "POST";
-			obj.params = {"ids" : ids};
-			obj.success = function(res) {
-				showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
+			var ajaxObj = new AjaxPostObj("/perftest/api/delete",
+                    { "ids" : ids },
+					"<@spring.message "perfTest.table.message.success.delete"/>",
+					"<@spring.message "perfTest.table.message.error.delete"/>");
+			ajaxObj.success = function(res) {
 				setTimeout(function() {
 					getList(1);
 				}, 500);
 			};
-
-			callAjaxAPI(obj);
+            ajaxObj.call();
 		}
 
 		function stopTests(ids) {
-			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/stop" , "<@spring.message "perfTest.table.message.error.stop"/>");
-			obj.type = "POST";
-			obj.params = {"ids" : ids};
-			obj.success = function(res) {
-				showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-			};
-
-			callAjaxAPI(obj);
+			var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/stop",
+                    "<@spring.message "perfTest.table.message.success.stop"/>",
+					"<@spring.message "perfTest.table.message.error.stop"/>");
+			ajaxObj.type = "POST";
+			ajaxObj.params = { "ids" : ids };
+			ajaxObj.call();
 		}
 
 		function getSortColumn(colNum) {
@@ -439,13 +434,13 @@
 					return this.value;
 		  	}).get();
 
-			var obj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
-			obj.type = "POST";
-			obj.params = {"ids": ids.join(",")};
-			obj.success = function (data) {
-				var perfTestData = eval(data);
-				var status = perfTestData.status;
-				var perfTest = perfTestData.perfTestInfo;
+			var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
+			ajaxObj.type = "POST";
+			ajaxObj.params = {"ids": ids.join(",")};
+			ajaxObj.success = function (data) {
+				data = eval(data);
+				var status = data.status;
+				var perfTest = data.perfTestInfo;
 				var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
 				$("#current_running_status").text(springMessage);
 				for (var i = 0; i < status.length; i++) {
@@ -463,12 +458,11 @@
 				}
 				setTimeout(updateStatuses, 2000);
 			};
-			obj.error = function () {
+			ajaxObj.error = function () {
 				var springMessage = "0 <@spring.message "perfTest.currentRunning.summary"/>";
 				$("#current_running_status").text(springMessage);
 			};
-
-			callAjaxAPI(obj);
+            ajaxObj.call();
 		})();
 	</script>
 	</body>

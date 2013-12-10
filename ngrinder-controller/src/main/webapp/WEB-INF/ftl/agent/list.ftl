@@ -178,28 +178,24 @@
 	});
 
 	function stopAgents(ids) {
-		var obj = new AjaxObj("${req.getContextPath()}/agent/api/stop" , "<@spring.message "agent.table.message.error.stop"/>!");
-		obj.type = 'POST';
-		obj.params = { "ids": ids };
-		obj.success = function (res) {
-			showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
+		var ajaxObj = new AjaxPostObj("/agent/api/stop",
+                { "ids": ids },
+				"<@spring.message "agent.table.message.success.stop"/>",
+				"<@spring.message "agent.table.message.error.stop"/>!");
+        ajaxObj.success = function (res) {
 			setTimeout(function () {
 				location.reload();
 			}, 2000);
 		};
-
-		callAjaxAPI(obj);
+        ajaxObj.call();
 	}
 
 	function updateAgents(ids) {
-		var obj = new AjaxObj("${req.getContextPath()}/agent/api/update" , "<@spring.message "agent.table.message.error.update"/>");
-		obj.type = 'POST';
-		obj.params = { "ids": ids };
-		obj.success = function (res) {
-			showSuccessMsg("<@spring.message "agent.table.message.success.update"/>");
-		};
-
-		callAjaxAPI(obj);
+		var ajaxObj = new AjaxPostObj("/agent/api/update",
+                { "ids": ids },
+				"<@spring.message "agent.table.message.success.update"/>",
+				"<@spring.message "agent.table.message.error.update"/>");
+        ajaxObj.call();
 	}
 
 	(function updateStatuses() {
@@ -207,8 +203,8 @@
 			return this.value;
 		}).get();
 
-		var obj = new AjaxObj("${req.getContextPath()}/agent/api/states" , "<@spring.message "common.error.error"/>");
-        obj.success = function (data) {
+		var ajaxObj = new AjaxObj("/agent/api/states", null, "<@spring.message "common.error.error"/>");
+        ajaxObj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
 				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
 			}
@@ -216,10 +212,8 @@
 				return;
 			}
 			setTimeout(updateStatuses, 2000);
-		};
-
-		callAjaxAPI(obj);
-
+		}
+        ajaxObj.call();
 	})();
 
 	function updateStatus(id, icon, port, state) {

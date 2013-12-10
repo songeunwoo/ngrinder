@@ -364,20 +364,18 @@ $(document).ready(function () {
 			return;
 		}
 
-		var obj = new AjaxObj("${req.getContextPath()}/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status" , "Error!");
-		obj.success = function(perfTestData) {
-			perfTestData = eval(perfTestData);
-			data = perfTestData.status;
+		var ajaxObj = new AjaxObj("/perftest/api/<#if test.id??>${(test.id)?c}</#if>/status");
+		ajaxObj.success = function(data) {
+			data = eval(data);
+			data = data.status;
 			for ( var i = 0; i < data.length; i++) {
 				updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 			}
 		};
-		obj.complete = function() {
+		ajaxObj.complete = function() {
 			setTimeout(refreshContent, 3000);
 		};
-
-		callAjaxAPI(obj);
-
+        ajaxObj.call();
 	})();
 });
 
@@ -414,19 +412,14 @@ function initTags() {
 		maximumSelectionSize: 5,
 		query: function(query) {
 			var data = {results:[]};
-
-			var obj = new AjaxObj("${req.getContextPath()}/perftest/search_tag" , "Error!");
-			obj.cache = true;
-			obj.type = "POST";
-			obj.params = {'query' : query.term};
-			obj.success = function(res) {
+			var ajaxObj = new AjaxPostObj("/perftest/search_tag", {'query' : query.term});
+			ajaxObj.success = function(res) {
 				for (var i = 0; i < res.length; i++) {
 					data.results.push({id:"q_" + res[i], text:res[i]});
 				}
 				query.callback(data);
 			};
-
-			callAjaxAPI(obj);
+            ajaxObj.call();
 		}
 	}).change(formatTags);
 	
@@ -964,15 +957,14 @@ function initChartData(size) {
 }
 
 function updateScript() {
-
-	var obj = new AjaxObj("${req.getContextPath()}/perftest/api/script" , "<@spring.message "common.error.error"/>");
-	obj.params = {
-				<@security.authorize ifAnyGranted="A, S">
-						<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
-				</@security.authorize>
+	var ajaxObj = new AjaxObj("/perftest/api/script", null, "<@spring.message "common.error.error"/>");
+	ajaxObj.params = {
+		<@security.authorize ifAnyGranted="A, S">
+				<#if test.id??>'ownerId' : '${test.createdUser.userId}'</#if>
+		</@security.authorize>
 	};
-	obj.success = function(res) {
-		$scriptSelection = $("#script_name");
+	ajaxObj.success = function(res) {
+		var $scriptSelection = $("#script_name");
 		var selectedScript = $scriptSelection.attr("old_script");
 		var exists = false;
 		for (var i = 0; i < res.length; i++) {
@@ -992,10 +984,12 @@ function updateScript() {
 		}
 
 		bindNewScript($scriptSelection, true);
-		hideProgressBar();
 	};
+    ajaxObj.complete = function() {
+        hideProgressBar();
+    };
 
-	callAjaxAPI(obj);
+    ajaxObj.call();
 }
 
 function updateScriptResources(first) {
@@ -1004,15 +998,15 @@ function updateScriptResources(first) {
 		return;
 	}
 
-	var obj = new AjaxObj("${req.getContextPath()}/perftest/api/resource" , "<@spring.message "common.error.error"/>");
-	obj.params = {
+	var ajaxObj = new AjaxObj("/perftest/api/resource", null, "<@spring.message "common.error.error"/>");
+	ajaxObj.params = {
 		'scriptPath' : scriptName,
 		'r' : $("#script_revision").val()
 		<@security.authorize ifAnyGranted="A, S">
 			<#if test.id??>,'ownerId' : '${test.createdUser.userId}'</#if>
 		</@security.authorize>
     };
-	obj.success = function(res) {
+	ajaxObj.success = function(res) {
 		var html = "";
 		var len = res.resources.length;
 		if (first == false) {
@@ -1024,11 +1018,10 @@ function updateScriptResources(first) {
 		}
 		$("#script_resources").html(html);
 	};
-	obj.complete = function() {
+	ajaxObj.complete = function() {
 		hideProgressBar();
 	};
-
-	callAjaxAPI(obj);
+	ajaxObj.call();
 }
 
 function updateVuserPolicy(vuser) {

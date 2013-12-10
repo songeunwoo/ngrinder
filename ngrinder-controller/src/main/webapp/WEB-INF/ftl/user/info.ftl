@@ -70,7 +70,7 @@
 
 		<#if !(demo!false)>
   		<div class="control-group">
-  			<#if !(isSelfRegistration?? && isSelfRegistration)>
+  			<#if (selfRegistration)!false >
 				<div class="accordion-heading"> 
 					<a id="change_password_btn" class="pointer-cursor">
 						<@spring.message "user.info.form.button.changePwd"/>
@@ -123,24 +123,17 @@
 	
 			$.validator.addMethod("userIdExist", function(userId, element) {
 				if(userId != null && userId.length > 0){
-					<#if isSelfRegistration?? && isSelfRegistration>
-						url = "${req.getContextPath()}/registration/api/" + userId + "/check_duplication";
-					<#else>
-						url = "${req.getContextPath()}/user/api/" + userId + "/check_duplication";
-					</#if>
-					var result ;
-
-					var obj = new AjaxObj(url , "Error!");
-					obj.async = false;
-					obj.success = function(res) {
-						result = res.success;
+					var result = false;
+					var url = "/<#if (selfRegistration)!false>registration<#else>user</#if>/api/" + userId + "/check_duplication";
+					var ajaxObj = new AjaxObj(url);
+					ajaxObj.async = false;
+					ajaxObj.success = function(res) {
+                        result = res.success;
+                        if (!result) {
+                            removeSuccess(element);
+                        }
 					};
-					callAjaxAPI(obj);
-
-					if (!result) {
-						removeSuccess(element);
-					}
-					
+                    ajaxObj.call();
 					return result;
 				}
 				return false;
@@ -245,7 +238,7 @@
 		$("#user_switch_select").val(switchedUsers).select2();
 	    
 		$("#update_or_create_user_btn").click(function() {
-			<#if isSelfRegistration?? && isSelfRegistration>
+			<#if (selfRegistration)!false>
 				url = "${req.getContextPath()}/registration/save";
 			<#else>
 				url = "${req.getContextPath()}/user/save";

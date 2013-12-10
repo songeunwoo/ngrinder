@@ -206,27 +206,26 @@
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 
-				var obj = new AjaxObj("${req.getContextPath()}/script/api/validate");
-				obj.type = "POST"
-				obj.params = {'path':scriptPath, 'content': newContent,
-								<@security.authorize ifAnyGranted="A, S">
-										<#if ownerId??>'ownerId': "${ownerId}",	</#if>
-								</@security.authorize>
-								'hostString': hostString };
-				obj.success = function(res) {
+				var ajaxObj = new AjaxPostObj("/script/api/validate",
+									null,
+									"<@spring.message 'script.editor.error.validate'/>");
+				ajaxObj.params = {'path':scriptPath, 'content': newContent,
+									<@security.authorize ifAnyGranted="A, S"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
+									'hostString': hostString };
+				ajaxObj.success = function(res) {
 					validating = false;
 					$('#validation_result_pre_div').text(res);
 					$('#validation_result_panel').show();
 					$('#validated').val("1");//should control the validation success or not later.
 					$("#old_content").val(newContent);
-					hideProgressBar();
 				};
-				obj.error = function() {
+				ajaxObj.complete = function() {
+                    hideProgressBar();
+                }
+				ajaxObj.error = function() {
 					validating = false;
-					hideProgressBar();
-					showErrorMsg("<@spring.message 'script.editor.error.validate'/>");
 				}
-				callAjaxAPI(obj);
+                ajaxObj.call();
 
 			});
 			

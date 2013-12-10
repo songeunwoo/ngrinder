@@ -161,13 +161,13 @@
 							return $(this).val();
 						}).get().join(",");
 
-						var obj = new AjaxObj("${req.getContextPath()}/script/delete/${currentPath}" , "Error!");
-						obj.type = "POST"
-						obj.params = {'filesString': scriptsStr};
-						obj.success = function (res) {
+						var ajaxObj = new AjaxObj("${req.getContextPath()}/script/delete/${currentPath}");
+						ajaxObj.type = "POST"
+						ajaxObj.params = {'filesString': scriptsStr};
+						ajaxObj.success = function (res) {
 							document.location.reload();
 						};
-						callAjaxAPI(obj);
+						ajaxObj.call();
 					}
 				});
 			});
