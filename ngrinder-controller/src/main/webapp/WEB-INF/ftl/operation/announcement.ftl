@@ -35,28 +35,28 @@
 	<script>
 		$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("announcement_editor"), {
-			   mode: "text/html",
-			   theme: "eclipse",
-			   alignCDATA: true,
-			   lineNumbers: true,
-			   lineWrapping: true,
-			   indentUnit:4,
-			   tabSize:4,
-			   indentWithTabs:true,
-			   smartIndent:false,
-			   extraKeys: {
-		         "F11": function(cm) {
-		           setFullScreen(cm, !isFullScreen(cm));
-		         },
-		         "Esc": function(cm) {
-		           if (isFullScreen(cm)) setFullScreen(cm, false);
-		         },
-		         Tab: "indentMore"
-		       },
-			   onCursorActivity: function() {
-			     editor.setLineClass(hlLine, null, null);
-			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
-			   }
+				mode: "text/html",
+				theme: "eclipse",
+				alignCDATA: true,
+				lineNumbers: true,
+				lineWrapping: true,
+				indentUnit:4,
+				tabSize:4,
+				indentWithTabs:true,
+				smartIndent:false,
+				extraKeys: {
+					"F11": function(cm) {
+						setFullScreen(cm, !isFullScreen(cm));
+					},
+					"Esc": function(cm) {
+						if (isFullScreen(cm)) setFullScreen(cm, false);
+					},
+				Tab: "indentMore"
+				},
+				onCursorActivity: function() {
+					editor.setLineClass(hlLine, null, null);
+					hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+				}
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 			
@@ -80,7 +80,7 @@
 				$("#announcement_container").slideDown();
 			});
 			String.prototype.replaceAll = function(s1,s2) { 
-			    return this.replace(new RegExp(s1,"gm"),s2); 
+				return this.replace(new RegExp(s1,"gm"),s2);
 			}
 			<#if success?exists>
 				<#if success>

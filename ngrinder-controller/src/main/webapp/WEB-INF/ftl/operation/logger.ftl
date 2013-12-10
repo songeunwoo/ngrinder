@@ -43,7 +43,7 @@
 			};
 
 			callAjaxAPI(obj);
-	  })();
+		})();
 	</script>
 </body>
 </html>
