@@ -151,23 +151,18 @@
 			</div>
 			<div class="control-group">
 				<div class="row">
-					<div class="span3"> 
-						<div class="control-group">
-							<label for="safeDistribution" class="control-label"> 
-								<@spring.message "perfTest.configuration.safeDistribution"/>
-							</label>
-							<div class="controls">
-								<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
-								<#if test.safeDistribution == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> />
-								<span style="margin-top: 10px; margin-left: 10px" 
-									rel='popover' data-html='true'
-									data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>' 
-									title='<@spring.message "perfTest.configuration.safeDistribution"/>'
-									id="dist_comment"> 
-									<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
-								</span> 
-							</div>
-						</div>
+					<div class="span3">
+						<@control_group name="safeDistribution" label_message_key="perfTest.configuration.safeDistribution">
+							<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
+							<#if test.safeDistribution == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> />
+							<span style="margin-top: 10px; margin-left: 10px"
+								rel='popover' data-html='true'
+								data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>'
+								title='<@spring.message "perfTest.configuration.safeDistribution"/>'
+								id="dist_comment">
+								<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
+							</span>
+						</@control_group>
 					</div>
 					<div class="span3">
 						<@control_group name="param" label_message_key="perfTest.configuration.param"
