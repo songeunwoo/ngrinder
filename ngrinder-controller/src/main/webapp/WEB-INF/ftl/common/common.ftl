@@ -8,7 +8,7 @@
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" /> 
 <link href="${req.getContextPath()}/css/bootstrap.min.css?${nGrinderVersion}" rel="stylesheet"/>
 <link href="${req.getContextPath()}/css/ngrinder.css?${nGrinderVersion}" rel="stylesheet"/>
-<script type="text/javascript" src="${req.getContextPath()}/js/jquery-1.7.2.min.js?${nGrinderVersion}"></script> 
+<script type="text/javascript" src="${req.getContextPath()}/js/jquery-1.10.2.min.js?${nGrinderVersion}"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/bootstrap.min.js?${nGrinderVersion}"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/bootbox.min.js?${nGrinderVersion}"></script>
 
