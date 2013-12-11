@@ -275,7 +275,6 @@
 					</div>
 					
 					<div class="tab-pane" id="running_section">
-						<#include "running.ftl">
 					</div>
 				</div>
 				<!-- end tab content -->
@@ -327,10 +326,9 @@
 // vuser calc
 ${processthread_policy_script}
 
-var jqplotObj;
 var objTimer;
-var testTpsData = new Queue();
 var durationMap = [];
+var tpsQueue;
 
 $(document).ready(function () {
 	$.ajaxSetup({
@@ -950,12 +948,6 @@ function updateTotalVuser() {
 	$("#total_vuser").text($("#agent_count").val() * $("#vuser_per_agent").val());
 }
 
-function initChartData(size) {
-	for ( var i = 0; i < size; i++) {
-		testTpsData.enQueue(0);
-	}
-}
-
 function updateScript() {
 	var ajaxObj = new AjaxObj("/perftest/api/script", null, "<@spring.message "common.error.error"/>");
 	ajaxObj.params = {
@@ -1075,6 +1067,18 @@ function getOption(cnt) {
 	return contents.join("\n");
 }
 
+
+function openRunningDiv(onFinishHook) {
+	$("#running_section").load("${req.getContextPath()}/perftest/${(test.id!0)?c}/running_div",
+			function() {
+				if (onFinishHook !== undefined) {
+					onFinishHook();
+				}
+			}
+	);
+}
+
+
 function openReportDiv(onFinishHook) {
 	$("#report_section").load("${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
 		function() {
@@ -1134,10 +1138,12 @@ function displayConfigAndRunningSection() {
 	$("#running_section_tab a").tab('show');
 	$("#running_section").show();
 	$("#report_section_tab").hide();
-	samplingInterval = $("#sampling_interval").val();
-	initChartData(60 / samplingInterval);
-	refreshData();
-	objTimer = window.setInterval("refreshData()", 1000 * samplingInterval);
+	openRunningDiv(function() {
+
+	});
+	tpsQueue = new Queue(60 / $("#sampling_interval").val());
+	refreshData(tpsQueue);
+	objTimer = window.setInterval("refreshData(tpsQueue)", 1000 * samplingInterval);
 }
 
 function displayConfigAndReportSection() {

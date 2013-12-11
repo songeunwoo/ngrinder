@@ -460,6 +460,26 @@ public class PerfTestController extends BaseController {
 		return resultMap;
 	}
 
+
+
+	/**
+	 * Get the running division in perftest configuration page.
+	 *
+	 	 *
+	 * @param user     user
+	 * @param model    model
+	 * @param id       test id
+	 * @param imgWidth image width
+	 * @return perftest/basic_report
+	 */
+	@RequestMapping(value = "{id}/running_div")
+	public String getReportSection(User user, ModelMap model, @PathVariable long id) {
+		PerfTest test = getOneWithPermissionCheck(user, id, false);
+		model.addAttribute(PARAM_TEST, test);
+		return "perftest/running";
+	}
+
+
 	/**
 	 * Get the basic report content in perftest configuration page.
 	 *

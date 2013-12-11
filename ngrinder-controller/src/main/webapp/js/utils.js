@@ -203,26 +203,6 @@ function getValueByID(id) {
 }
 
 
-function deleteSelection() {
-    if (window.getSelection) {
-        // Mozilla
-        var selection = window.getSelection();
-        if (selection.type != "Range") {
-            return;
-        }
-        if (selection.rangeCount > 0) {
-            window.getSelection().deleteFromDocument();
-            window.getSelection().removeAllRanges();
-        }
-    } else if (document.selection) {
-        // Internet Explorer
-        var ranges = document.selection.createRangeCollection();
-        for (var i = 0; i < ranges.length; i++) {
-            ranges[i].text = "";
-        }
-    }
-}
-
 function markInput(obj, success, message) {
     if (success) {
         obj.next("span").empty();

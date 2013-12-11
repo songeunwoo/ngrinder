@@ -112,13 +112,13 @@
 					<col width="65">
 					<col width="65">
 					<col width="70">
-					<col width="60">
+					<col width="70">
 					<col width="50">
 				</colgroup>
 				<thead>
 					<tr id="head_tr_id">
 						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
-						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
+						<th class="center nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="test_name" name="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="script_name" name="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier.oneline"/></#if></th>
@@ -131,7 +131,7 @@
 						<th id="mean_test_time" name="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 						<th id="errors" class="ellipsis" name="errors"><@spring.message "perfTest.table.errorRate"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
-						<th class="nothing" title="<@spring.message "common.label.actions"/>"></th>
+						<th class="nothing"><@spring.message "common.label.actions"/></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -297,7 +297,7 @@
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
 
-					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph", null, "Failed to get graph.");
+					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph");
 					ajaxObj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
 					ajaxObj.success = function(res) {
 						drawListPlotChart(tpsId, res.TPS.data , ["Tps"], res.chartInterval);
