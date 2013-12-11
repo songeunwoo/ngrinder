@@ -261,15 +261,12 @@ function AjaxObj(url, successMessage, errorMessage) {
     this.dataType = 'json';
     this.async = true;
     this.successMessage = successMessage;
-    this.errorMessage = errorMessage||"Error";
+    this.errorMessage = errorMessage;
     this.complete = function() {
     };
     this.success = function() {
     };
-    this.error = function (xhr) {
-        if (xhr.status != 0) {
-            showErrorMsg(errorMessage);
-        }
+    this.error = function () {
         return false;
     };
 };
@@ -290,11 +287,15 @@ AjaxObj.prototype.call = function () {
             that.success(res);
         },
         complete : this.complete,
-        error: function(xhr) {
-            if (that.errorMessage !== null) {
-                showErrorMsg(that.errorMessage);
+        error: function(xhr, res) {
+            if (xhr.status != 0) {
+                if (that.errorMessage != null) {
+                    showErrorMsg(that.errorMessage);
+                } else if (res.message !== undefined) {
+                    showErrorMsg(res.message);
+                }
             }
-            that.error(xhr);
+            that.error();
         }
     });
 }
