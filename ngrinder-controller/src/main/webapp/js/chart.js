@@ -34,6 +34,9 @@ function Chart(containerId, data, xAxisFormatter, yAxisFormatter, interval, labe
     this.yAxisFormatter = yAxisFormatter || function (format, value) {
         return value.toFixed(0);
     };
+    if (yAxisFormatter == formatPercentage) {
+        this.yLimit = 100;
+    }
     interval = interval || 1;
     this.that = this;
     this.xAxisFormatter = xAxisFormatter || function (format, value) {
@@ -69,10 +72,14 @@ Chart.prototype.calcYmax = function () {
     if (ymax < 5) {
         ymax = 5;
     }
-    this.ymax = parseInt((ymax / 5) + 1) * 6;
+    ymax = parseInt((ymax / 5) + 1) * 6;
+    if (this.yLimit !== undefined) {
+        ymax = Math.min(ymax, this.yLimit)
+    }
+    return ymax;
 };
 
-Chart.prototype.isEmpty = function() {
+Chart.prototype.isEmpty = function () {
     if (this.values[0].length == 0) {
         return true;
     }
@@ -89,7 +96,10 @@ Chart.prototype.plot = function () {
     if (this.isEmpty()) {
         return this;
     }
-    this.calcYmax();
+    var preYmax = this.ymax;
+    var newYmax = this.calcYmax();
+    var ymaxChanged = (newYmax != preYmax);
+    this.ymax = this.calcYmax();
     if (this.plotObj === undefined) {
         this.plotObj = $.jqplot(this.containerId, this.values, {
             gridPadding: {top: 20, right: 20, bottom: 35, left: 60},
@@ -141,22 +151,40 @@ Chart.prototype.plot = function () {
             legend: this.legend
         });
     } else {
-        this.plotObj.axes.yaxis.min = 0;
-        this.plotObj.axes.yaxis.max = this.ymax;
-        this.plotObj.axes.yaxis.numberTicks = 7;
-        this.plotObj.axes.yaxis.tickOptions = {
-            show: true,
-            formatter: this.yAxisFormatter
-        };
-        this.plotObj.axes.xaxis.min = 0;
-        this.plotObj.axes.xaxis.max = this.values[0].length;
-        this.plotObj.axes.xaxis.numberTicks = 10;
-        this.plotObj.axes.xaxis.tickOptions = {
-            show: true,
-            formatter: this.xAxisFormatter
-        };
-
-        this.plotObj.replot({resetAxes:true});
+        var axes = {};
+        if (ymaxChanged) {
+            axes = {
+                xaxis: {
+                    min: 1,
+                        max: this.values[0].length,
+                        pad: 2,
+                        numberTicks: 10,
+                        tickOptions: {
+                        show: true,
+                            formatter: this.xAxisFormatter
+                    }
+                },
+                yaxis: {
+                    labelOptions: {
+                        fontFamily: 'Helvetica',
+                            fontSize: '10pt'
+                    },
+                    tickOptions: {
+                        formatter: this.yAxisFormatter
+                    },
+                    max: this.ymax,
+                        min: 0,
+                        numberTicks: 7,
+                        pad: 0,
+                        show: true
+                }
+            }
+        }
+        this.plotObj.replot({
+            resetAxes: ymaxChanged,
+            data: this.values,
+            axes: axes
+        });
     }
     return this;
 }
