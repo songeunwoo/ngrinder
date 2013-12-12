@@ -67,6 +67,8 @@
 	</beans:bean>
 
 	<!-- static resource -->
+
+	<http pattern="/fonts/**" security="none" />
 	<http pattern="/css/**" security="none" />
 	<http pattern="/img/**" security="none" />
 	<http pattern="/js/**" security="none" />

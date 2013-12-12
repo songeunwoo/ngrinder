@@ -1,4 +1,5 @@
 <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache"/>
 <#include "ngrinder_macros.ftl">
@@ -8,6 +9,10 @@
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" /> 
 <link href="${req.getContextPath()}/css/bootstrap.min.css?${nGrinderVersion}" rel="stylesheet"/>
 <link href="${req.getContextPath()}/css/ngrinder.css?${nGrinderVersion}" rel="stylesheet"/>
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<![endif]-->
 <script type="text/javascript" src="${req.getContextPath()}/js/jquery-1.10.2.min.js?${nGrinderVersion}"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/bootstrap.min.js?${nGrinderVersion}"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/bootbox.min.js?${nGrinderVersion}"></script>
@@ -38,9 +43,7 @@
 	});
 
 
-</script>  
-<input type="hidden" id="contextPath" value="${req.getContextPath()}"/>
-
+</script>
 <#setting number_format="computer">
 <#if currentUser?? && currentUser.timeZone??>
 	<#setting time_zone="${currentUser.timeZone}"> 

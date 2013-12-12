@@ -7,9 +7,10 @@
 	</head>
 
 	<body>
-    <#include "../common/navigator.ftl">
+	<div id="wrap">
+	<#include "../common/navigator.ftl">
 	<div class="container">
-		<img src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}"/>
+		<img  src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}" class="img-responsive" style="width:100%"/>
 		<div class="well form-inline search-bar" style="margin-top:0px" > 
 			<table style="width:100%">
 				<tr>
@@ -21,7 +22,8 @@
 							</colgroup>
 							<tr>
 								<td>
-									<input type="text" class="search-query span3" placeholder="Keywords" id="searchText" value="${query!}">
+									<input type="text" class="form-control col-md-2" placeholder="Keywords"
+										   id="searchText" value="${query!}">
 									<button type="submit" class="btn" id="search_btn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								</td>
 								<td>
@@ -75,7 +77,7 @@
 			</table>	
 		</div>
 		
-		<table class="table table-striped table-bordered ellipsis" id="script_list_table" style="width:940px">
+		<table class="table table-striped table-bordered ellipsis" id="script_list_table">
 			<colgroup>
 				<col width="30">
 				<col width="32">
@@ -138,8 +140,9 @@
 				</@list>
 			</tbody>
 		</table>
-	<#include "../common/copyright.ftl">
 	</div>
+	</div>
+	<#include "../common/copyright.ftl">
 	<#if !(query??)>
 	<#include "create_script_modal.ftl">
 	<#include "create_folder_modal.ftl">

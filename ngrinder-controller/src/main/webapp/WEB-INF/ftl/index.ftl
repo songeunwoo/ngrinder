@@ -25,8 +25,9 @@
 		<div class="hero-unit"/>	
 			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickstart" method="POST">
 				<div class="quick-start" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
-					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
-					<select class="select-item span2" id="script_type" name="scriptType">
+					<input type="text" name="url" id="url" class="col-xd-2 form-control url_ex required"
+						   placeholder="<@spring.message "home.placeholder.url"/>"/>
+					<select class="select-item col-md-2 form-control" id="script_type" name="scriptType">
 						<#list handlers as handler>
 							<option value="${handler.key}">${handler.title}</option>
 						</#list>
@@ -36,7 +37,7 @@
 			</form>
 		</div>
 		<div class="row">
-			<div class="span6">
+			<div class="col-md-6">
 				<div class="page-header">
 	 				 <h4><@spring.message "home.qa.title"/></h4>  
 				</div>
@@ -44,8 +45,8 @@
 			  		<br/>
 					<table class="table table-striped ellipsis">
 						<colgroup>
-							<col width="350px"/>
-							<col />
+							<col width="*"/>
+							<col width="100px"/>
 						</colgroup>
 						<@list list_items=left_panel_entries ; each_left_entry , each_left_entry_index>
 							<#if each_left_entry_index lt 6>
@@ -75,7 +76,7 @@
 					</table>
   				</div>
 			</div>
-			<div class="span6">
+			<div class="col-md-6">
 				<div class="page-header">
 	 				 <h4><@spring.message "home.developerResources.title"/></h4> 
 				</div>
@@ -84,8 +85,8 @@
 			  		<br/>
 					<table class="table table-striped ellipsis">
 						<colgroup>
-							<col width="350px"/>
-							<col />
+							<col width="*"/>
+							<col width="100px"/>
 						</colgroup>
 						<@list list_items=right_panel_entries ; each_right_entry , each_right_entry_index>
 							<#if each_right_entry_index lt 6>

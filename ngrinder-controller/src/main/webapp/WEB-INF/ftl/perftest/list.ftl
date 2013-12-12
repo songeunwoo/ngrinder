@@ -46,58 +46,62 @@
     	<#include "../common/navigator.ftl">
 
 		<div class="container">
-			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
-
-			<form id="test_list_form" class="well form-inline search-bar" style="margin-top:0px;height:30px;"
-					action="${req.getContextPath()}/perftest/list" method="POST">
-				<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
-				<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
-
-				<div class="left-float">
-					<select id="tag" name="tag" style="width:150px">
-					<option value=""></option>
-						<@list list_items = availTags  ; eachTag >
-						<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
-						</@list>
-					</select>
-					<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords"
-							name="query" id="query" value="${query!}">
-
-					<button type="submit" class="btn" id="search_btn">
-						<iclass="icon-search"></i> <@spring.message "common.button.search"/></button>
+			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"
+				 class="img-responsive" style="width:100%"/>
+			<div class="pull-right" I>
+				<code id="current_running_status" style="width:300px"></code>
+			</div>
+			<div class="well" style="margin-top:0px">
+				<form id="test_list_form" class="form-inline"
+				  action="${req.getContextPath()}/perftest/list" method="POST" role="form">
+					<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
+					<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
+					<div class="col-md-2">
+						<select id="tag" name="tag" style="width:100%">
+							<option value=""></option>
+							<@list list_items = availTags  ; eachTag >
+							<option value="${eachTag}" <#if tag?? && eachTag == tag>selected</#if> >${eachTag}</option>
+							</@list>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<input type="text" class="form-control input-sm" placeholder="Keywords"
+							   name="query"	id="query" value="${query!}">
+					</div>
+					<button type="submit" class="btn"	id="search_btn">
+						<i class="icon-search"></i> <@spring.message "common.button.search"/>
+					</button>
 					<label class="checkbox" style="position:relative; margin-left:5px">
-						<input type="checkbox" id="running_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'R'>checked</#if>
-							value="R">
+						<input class="checkbox" type="checkbox" id="running_only_checkbox" name="queryFilter" <#if
+						queryFilter??
+							&& queryFilter == 'R'>checked</#if> value="R">
 							<@spring.message "perfTest.formInline.running"/>
 					</label>
 					<label class="checkbox" style="position:relative; margin-left:5px">
-					<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if>
-							value="S">
-							<@spring.message "perfTest.formInline.scheduled"/>
+					<input class="checkbox" type="checkbox" id="scheduled_only_checkbox" name="queryFilter"
+						<#if queryFilter?? && queryFilter == 'S'>checked</#if> value="S">
+						<@spring.message "perfTest.formInline.scheduled"/>
 					</label>
-				</div>
 
-				<div class="right-float">
-					<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
-					<i class="icon-file icon-white"></i>
-						<@spring.message "perfTest.formInline.createTest"/>
-					</a>
-					<a class="pointer-cursor btn btn-danger" id="delete_btn">
-					<i class="icon-remove icon-white"></i>
-						<@spring.message "perfTest.formInline.deletetSelectedTest"/>
-					</a>
-				</div>
-
-				<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
-				<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
-			</form>
-			<div class="pull-right" style="margin-top:-20px">
-				<code id="current_running_status" style="width:300px"></code>
+					<form-group class="right-float">
+						<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn">
+						<i class="icon-file icon-white"></i>
+							<@spring.message "perfTest.formInline.createTest"/>
+						</a>
+						<a class="pointer-cursor btn btn-danger" id="delete_btn">
+						<i class="icon-remove icon-white"></i>
+							<@spring.message "perfTest.formInline.deletetSelectedTest"/>
+						</a>
+					</form-group>
+					<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
+					<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
+				</form>
 			</div>
 			<@security.authorize ifAnyGranted="A, S">
 				<#assign isAdmin = true />
 			</@security.authorize>
-			<table class="table table-striped table-bordered ellipsis" id="test_table" style="width:940px">
+			<div class="table-responsive">
+			<table class="table table-striped table-bordered ellipsis" id="test_table">
 				<colgroup>
 					<col width="30">
 					<col width="50">
@@ -119,8 +123,8 @@
 					<tr id="head_tr_id">
 						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
 						<th class="center nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
-						<th id="test_name" name="testName"><@spring.message "perfTest.table.testName"/></th>
-						<th id="script_name" name="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
+						<th id="test_name" name="testName"><div class="ellipsis"><@spring.message "perfTest.table.testName"/></div></th>
+						<th id="script_name" name="scriptName"><div class="ellipsis"><@spring.message "perfTest.table.scriptName"/></div></th>
 						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier.oneline"/></#if></th>
 						<#if clustered>
 						<th id="region" name="region"><@spring.message "agent.table.region"/></th>
@@ -231,6 +235,7 @@
 					</@list>
 				</tbody>
 			</table>
+			</div>
 			<#if testList?has_content>
 				<#include "../common/paging.ftl">
 				<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>

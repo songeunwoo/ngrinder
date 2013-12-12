@@ -32,8 +32,8 @@
 	<#if (endPage > totalPage) >
 		<#assign endPage = 	totalPage >
 	</#if>
-	<div class="dataTables_paginate pagination">
-		<ul>
+	<div class="dataTables_paginate">
+		<ul class="pagination">
 			<li <#if pageNo == 1> class="disabled"</#if>>
 				<a href="javascript:<#if pageNo == 1>void(0)<#else>doSubmit('${pageNo - 1}')</#if>">&larr; <@spring.message "common.paging.previous"/></a>
 			</li>

@@ -5,63 +5,76 @@
 		z-index:1152;
 	}
 </style>
-<div class="navbar navbar-inverse navbar-fixed-top">
-	<div class="navbar-inner" style="filter:none">
-		<div class="container">
+<input type="hidden" id="contextPath" value="${req.getContextPath()}"/>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
 			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/></a>
-			<div>
-				<ul class="nav">
-				  <li id="nav_test"><a href="${req.getContextPath()}/perftest/"><@spring.message "navigator.perfTest"/></a></li>
-				  <li id="nav_script"><a href="${req.getContextPath()}/script/"><@spring.message "navigator.script"/></a></li>
-				</ul>
-				
-				<ul class="nav pull-right">
-					<#if clustered?? && clustered>
-						<li style="padding-top:5px"><img src="${req.getContextPath()}/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode"></li>  
-						<li class="divider-vertical"></li>
-					</#if>
-					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle pointer-cursor">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
-		            	<ul class="dropdown-menu">
-		            		<#if (currentUser.ownerUser)?exists>
-			            		<li><a href="${req.getContextPath()}/user/switch?to="><@spring.message "common.button.return"/></a></li>
-		            		<#else>
-			                	<li><a id="user_profile_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.profile"/></a></li>
-			                	<li><a id="switch_user_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.switchUser"/></a></li>
-		                	</#if>
-		                	 
-			            	<@security.authorize ifAnyGranted="A">
-			            		<li class="divider"></li> 
-		               			<li><a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropdown.userManagement"/></a></li>
-				                <li><a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
-							<#if clustered == false>
-				            	<li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
-				            </#if>
-				                <li><a href="${req.getContextPath()}/operation/script_console"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
-			                	<li><a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
-			            	</@security.authorize>
-			            	<@security.authorize ifAnyGranted="S, A">
-			            		<li class="divider"></li>  
-			            		<li><a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropdown.announcement"/></a></li>
-			            	</@security.authorize>
-		                	<li class="divider"></li> 
-			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
-		            	</ul>
-		            </li>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+			  <li id="nav_test"><a href="${req.getContextPath()}/perftest/"><@spring.message "navigator.perfTest"/></a></li>
+			  <li id="nav_script"><a href="${req.getContextPath()}/script/"><@spring.message "navigator.script"/></a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<#if clustered?? && clustered>
+					<li style="padding-top:5px"><img src="${req.getContextPath()}/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode"></li>
 					<li class="divider-vertical"></li>
-					<li><a href="${helpUrl}" target="_blank"><@spring.message "navigator.help"/></a></li>
-         		</ul>      		    
-			</div>
+				</#if>
+				<li class="dropdown">
+					<a data-toggle="dropdown" class="dropdown-toggle pointer-cursor">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<#if (currentUser.ownerUser)?exists>
+							<li><a href="${req.getContextPath()}/user/switch?to="><@spring.message "common.button.return"/></a></li>
+						<#else>
+							<li><a id="user_profile_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.profile"/></a></li>
+							<li><a id="switch_user_menu" class="pointer-cursor"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+						</#if>
+
+						<@security.authorize ifAnyGranted="A">
+							<li class="divider"></li>
+							<li><a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropdown.userManagement"/></a></li>
+							<li><a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
+						<#if clustered == false>
+							<li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
+						</#if>
+							<li><a href="${req.getContextPath()}/operation/script_console"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>
+							<li><a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
+						</@security.authorize>
+						<@security.authorize ifAnyGranted="S, A">
+							<li class="divider"></li>
+							<li><a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropdown.announcement"/></a></li>
+						</@security.authorize>
+						<li class="divider"></li>
+						<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
+					</ul>
+				</li>
+				<li class="divider-vertical"></li>
+				<li><a href="${helpUrl}" target="_blank"><@spring.message "navigator.help"/></a></li>
+			</ul>
 		</div>
 	</div>
 </div>
 <div class="container <#if announcement?has_content><#else>hidden</#if>" style=" margin-bottom:-20px" id="announcement_container">
-	<div class="alert alert-block" style="padding:5px 20px;">  
+	<div class="alert alert-warning">
 		<div class="page-header" style="margin:0; padding-bottom:2px">
-			<span>
-				<h5 style="margin-top:0px; margin-bottom:0px"><#if announcement_new?? && announcement_new==true><span class="label label-important">new</span> </#if><@spring.message "announcement.alert.title"/></h5>
-				<a  class="pointer-cursor" id="hide_announcement"><i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
-			</a></span> 
+			<#if announcement_new?? && announcement_new==true><span class="label label-important">new</span></#if>
+			<span><@spring.message "announcement.alert.title"/></span>
+			<span class="pull-right">
+				<span id="hide_announcement"
+					  class="pull-right pointer-cursor glyphicon <#if
+							announcement_hide?has_content
+							&& announcement_hide==
+							true>glyphicon-plus<#else>glyphicon-minus</#if> pull-right" id="announcement_icon"
+							style="font-size: 2em;">
+				</span>
+			</span>
 		</div>
 		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>" id="announcement_content">
 			<#if announcement?has_content>
@@ -111,11 +124,11 @@
 		$("#hide_announcement").click( function() {
 			if ($("#announcement_content").is(":hidden")) {
 				$("#announcement_content").show("slow");
-				$("#announcement_icon").removeClass("icon-plus").addClass("icon-minus");
+				$("#announcement_icon").removeClass("glyphicon-plus").addClass("glyphicon-minus");
 				cookie("announcement_hide", "false", 6);
 			} else {
 				$("#announcement_content").slideUp();
-				$("#announcement_icon").removeClass("icon-minus").addClass("icon-plus");
+				$("#announcement_icon").removeClass("glyphicon-minus").addClass("glyphicon-plus");
 				cookie("announcement_hide", "true", 6);
 			}
 		});
