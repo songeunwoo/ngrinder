@@ -1,6 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
 <#-- @ftlvariable name="test" type="org.ngrinder.model.PerfTest" -->
-<#import "../common/spring.ftl" as spring/>
+<#include "../common/common.ftl">
+<#include "../common/jqplot.ftl">
 <#include "../common/ngrinder_macros.ftl">
+</head>
+<body>
 <div class="row">
 	<div class="span5">
 		<fieldSet>
@@ -16,39 +22,37 @@
 				<span>${test.agentCount}</span>
 			</@control_group>
 			<@control_group label_message_key="perfTest.testRunning.processes">
-				${test.processes}
+			${test.processes}
 				<span class="badge badge-info pull-right">
-					<@spring.message "perfTest.testRunning.running"/> <span	id="process_data"></span>
+					<@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span>
 				</span>
 			</@control_group>
 
 			<@control_group label_message_key="perfTest.testRunning.threads">
-				${test.threads}
+			${test.threads}
 				<span class="badge badge-info pull-right">
-					<@spring.message "perfTest.testRunning.running"/> <span	id="thread_data"></span>
+					<@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span>
 				</span>
 			</@control_group>
 				<hr>
 			<@control_group label_message_key="perfTest.configuration.targetHost">
 				<@list list_items = test.targetHosts?split(",") ; host >
-					${host?trim}<br>
+				${host?trim}<br>
 				</@list>
 			</@control_group>
 				<hr>
 				<div class="control-group">
 				<#if test.threshold == "D">
-					<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
-					<div class="controls">
+					<@control_group label_message_key="perfTest.configuration.duration">
 						<span>${test.durationStr}</span>
 						<code>HH:MM:SS</code>
-					</div>
+					</@control_group>
 				<#else>
-					<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
-
-					<div class="controls">
-						${test.runCount}
-						<span class="badge badge-success pull-right"> <span	id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
-					</div>
+					<@control_group label_message_key="perfTest.configuration.runCount">
+					${test.runCount}
+						<span class="badge badge-success pull-right"> <span
+								id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
+					</@control_group>
 				</#if>
 				</div>
 				<div class="control-group">
@@ -117,7 +121,7 @@
 							</th>
 						</tr>
 						</thead>
-						<tbody>
+						<tbody id="last_sample_result">
 						</tbody>
 					</table>
 				</div>
@@ -145,7 +149,7 @@
 							<th class="no-click" title="<@spring.message "perfTest.testRunning.mtsd.help"/>">MTSD</th>
 						</tr>
 						</thead>
-						<tbody>
+						<tbody id="accumulated_sample_result">
 						</tbody>
 					</table>
 				</div>
@@ -154,58 +158,129 @@
 	</div>
 	<!-- end running content right -->
 </div>
+
+<script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
-	var curPeakTps = 0;
-	var curTps = 0;
-	var curRunningTime = 0;
-	var curRunningProcesses = 0;
-	var curRunningThreads = 0;
-	var curRunningCount = 0;
-	var curStatus = false;
-	var curAgentPerfStates = [];
-	var agentPerfStates = [];
+	var curPerf;
+	var curAgentStat
+	var curMonitorStat;
 	var tpsQueue = new Queue(60 / ${test.samplingInterval});
-	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], null, null, ${test.samplingInterval});
-	function refreshData() {
-		var refreshDiv = $("<div></div>");
-		var peakTps = 50;
-		refreshDiv.load(
-				"${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/running/sample",
-				function () {
-					debugger;
-					$("#running_time").text(showRunTime(curRunningTime));
-					if (curStatus == true) {
-						$("#last_sample_table tbody").html(refreshDiv.find("#last_sample_table_item"));
-						$("#accumulated_sample_table tbody").html(refreshDiv.find("#accumulated_sample_table_item"));
-						$("#process_data").text(curRunningProcesses);
-						$("#thread_data").text(curRunningThreads);
-						$("#running_count").text(curRunningCount);
-						$("#agent_state").html(createMonitoringStatusString(curAgentStat));
-						$("#monitor_state").html(createMonitoringStatusString(curMonitorStat));
-						tpsQueue.enQueue(curTps);
-						tpsChart.plot();
-					} else {
-						if ($('#running_section_tab:hidden')[0]) {
-							window.clearInterval(objTimer);
-						}
-					}
-					return true;
-				}
-		);
+	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval});
+
+	var samplingAjax = new AjaxObj("/perftest/${test.id}/api/sample");
+	var $runningtime = $("#running_time");
+	var $processdata = $("#process_data");
+	var $threaddata = $("#thread_data");
+	var $runningcount = $("#running_count");
+	var $agentstate = $("#agent_state");
+	var $monitorstate = $("#monitor_state");
+	var $accumulatedSampleResult = $("#accumulated_sample_result");
+	var $lastSampleResult = $("#last_sample_result");
+
+	function showLastPerTestResult(container, statistics) {
+		var existing = container.find("tr");
+		for (var i = 0; i < statistics.length; i++) {
+			var record = existing.get(i);
+			if (record == undefined) {
+				container.append("<tr></tr>");
+				record = container.find("tr").get(i);
+			}
+			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
+			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>"
+			output = output + "<td'>" + toNum(statistics[i].Tests) + "</td>";
+			output = output + "<td'>" + toNum(statistics[i].Errors) + "</td>";
+			output = output + "<td'>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
+			output = output + "<td'>" + toNum(statistics[i].TPS) + "</td>";
+			output = output + "<td'>" + toSize(statistics[i].Response_bytes_per_second) + "</td>";
+			output = output + "<td'>" + toSize(statistics[i].Mean_time_to_first_byte) + "</td>";
+			$(record).html(output);
+		}
 	}
+
+
+	function showAccumulatedPerTestResult(container, statistics) {
+		var existing = container.find("tr");
+		for (var i = 0; i < statistics.length; i++) {
+			var record = existing.get(i);
+			if (record == undefined) {
+				container.append("<tr></tr>");
+				record = container.find("tr").get(i);
+			}
+			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
+			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>"
+			output = output + "<td>" + toNum(statistics[i].Tests) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
+			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].Peak_TPS) + "</td>";
+			output = output + "<td>" + toNum(statistics[i]["Test_Time_Standard_Deviation_(ms)"]) + "</td>";
+			$(record).html(output);
+		}
+	}
+
+	samplingAjax.success = function (res) {
+		if (res.status == "TESTING") {
+			curPerf = res.perf;
+			curAgentStat = res.agent;
+			curMonitorStat = res.monitor;
+			$runningtime.text(showRunTime(curPerf.testTime));
+			$processdata.text($.number(curPerf.process));
+			$threaddata.text($.number(curPerf.thread));
+			$runningcount.text($.number(curPerf.totalStatistics.Tests + curPerf.totalStatistics.Errors));
+			$agentstate.html(createMonitoringStatusString(curAgentStat));
+			$monitorstate.html(createMonitoringStatusString(curMonitorStat));
+			showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
+			showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
+			tpsQueue.enQueue($.number(curPerf.tpsChartData, 1));
+			tpsChart.plot();
+		} else {
+			if ($('#running_section_tab:hidden')[0]) {
+				window.clearInterval(objTimer);
+			}
+		}
+	}
+
+	samplingAjax.error = function () {
+		if ($('#running_section_tab:hidden')[0]) {
+			window.clearInterval(objTimer);
+		}
+	}
+
+	function toNum(num, precision) {
+		if (num == undefined) {
+			return "-";
+		}
+		precision = precision || 0;
+		return $.number(num, precision);
+	}
+
+	function toPercent(num) {
+		return $.number(num / 100, 1) + "%"
+	}
+
+	function toSize(bytes) {
+		var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+		if (bytes == 0) return 'n/a';
+		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+		if (i == 0) return bytes + ' ' + sizes[i];
+		return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+	}
+
 
 	function createMonitoringStatusString(status) {
 		var monitorStatusString = "<ul>";
-		for (var i = 0; i < status.length; i++) {
-			var each = status[i];
+		$.each(status, function (name, value) {
 			monitorStatusString = monitorStatusString +
-					"<li class='monitor_state'>" +
-					"<div style='wdith:100%;' class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent
-					+ "</b></span> CPU-" + each.cpu + "% MEM-" + each.mem + "% ";
-			if (each.receivedPerSec != "0B" || each.sentPerSec != "0B") {
-				monitorStatusString = monitorStatusString + "/ RX-" + each.receivedPerSec + " TX-" + each.sentPerSec + "</dv></li>";
+					"<li class='monitor_state'><div style='width:100%;' class='ellipsis'>";
+			monitorStatusString = monitorStatusString +
+					"<span title='" + name + "'><b>" + name + "</b></span> " +
+					"CPU-" + toPercent(value.cpuUsedPercentage) + " MEM-" + toPercent(value.totalMemory / value
+					.freeMemory);
+			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {
+				monitorStatusString = monitorStatusString + "/ RX-" + toSize(value.receivedPerSec) +
+						" TX-" + toSize(value.sentPerSec) + "</dv></li>";
 			}
-		}
+		});
 		monitorStatusString += "</ul>";
 		return monitorStatusString;
 	}
@@ -239,6 +314,8 @@
 			}
 		});
 	});
-	refreshData();
-	objTimer = window.setInterval("refreshData()", 1000 * ${test.samplingInterval});
+	samplingAjax.call();
+	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
 </script>
+</body>
+</html>

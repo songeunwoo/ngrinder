@@ -204,8 +204,7 @@
 </div>
 <#include "../common/messages.ftl">
 
-<!-- For jqplot legend -->
-<script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
+
 <script src="${req.getContextPath()}/js/generate-img.js"></script>
 <script>
 	var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";

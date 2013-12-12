@@ -71,6 +71,7 @@ import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
@@ -895,7 +896,7 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, HashMap> getAgentStat(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getAgentState(), HashMap.class);
+		return gson.fromJson(defaultIfNull(perfTest.getAgentState(), "{}"), HashMap.class);
 	}
 
 	/*
@@ -1145,10 +1146,10 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param perfTest perfTest
 	 */
 	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
-		perfTest.setRunningSample("");
-		perfTest.setAgentState("");
-		perfTest.setMonitorState("");
-		save(perfTest);
+//		perfTest.setRunningSample("");
+//		perfTest.setAgentState("");
+//		perfTest.setMonitorState("");
+//		save(perfTest);
 	}
 
 	/**
@@ -1180,9 +1181,8 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param perfTest perf test
 	 * @return map of monitor name and monitor status.
 	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
-		return gson.fromJson(perfTest.getMonitorState(), HashMap.class);
+		return gson.fromJson(defaultIfNull(perfTest.getMonitorState(), "{}"), HashMap.class);
 	}
 
 	/**

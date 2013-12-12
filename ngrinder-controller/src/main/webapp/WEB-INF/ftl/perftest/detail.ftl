@@ -321,7 +321,6 @@
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 <script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
-<script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
 // vuser calc
 ${processthread_policy_script}
@@ -449,7 +448,7 @@ function initDuration() {
 			durationMap[i] = durationMap[i - 1] + 1;
 		} else if (i <= 20) {
 			durationMap[i] = durationMap[i - 1] + 5;
-		} else if (i <= 32) { //untill 180 min
+		} else if (i <= 32) { //until 180 min
 			durationMap[i] = durationMap[i - 1] + 10;
 		} else if (i <= 38) { //360 min
 			durationMap[i] = durationMap[i - 1] + 30;
@@ -1046,8 +1045,7 @@ function getDurationMS() {
 
 function getOption(cnt) {
 	var contents = [];
-	var index;
-	for (i = 0; i < cnt; i++) {
+	for (var i = 0; i < cnt; i++) {
 		contents.push("<option value='" + i + "'>" + (i < 10 && cnt > 9 ? "0" + i : i) + "</option>");
 	}
 	return contents.join("\n");
@@ -1142,9 +1140,6 @@ function displayConfigAndReportSection() {
 	openReportDiv(function() {
 		$("#foot_div").show();
 	});
-	if (objTimer) {
-		window.clearInterval(objTimer);
-	}
 }
 
 function initScheduleTime() {

@@ -152,7 +152,6 @@ public interface Constants {
 	public static final String PARAM_SAFE_FILE_DISTRIBUTION = "safeFileDistribution";
 
 	public static final String PARAM_SECURITY_MODE = "securityMode";
-	public static final String PARAM_RESULT_SUB = "resultsub";
 	public static final String PARAM_RESULT_AGENT_PERF = "agentStat";
 	public static final String PARAM_RESULT_MONITOR_PERF = "monitorStat";
 

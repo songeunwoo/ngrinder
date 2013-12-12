@@ -1,3 +1,4 @@
+
 <#if resultsub?exists>
 	<script>
 			curPeakTps = ${(resultsub.peakTpsForGraph!0)?c};

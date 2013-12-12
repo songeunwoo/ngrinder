@@ -35,10 +35,7 @@ import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Role;
-import org.ngrinder.model.Status;
-import org.ngrinder.model.User;
+import org.ngrinder.model.*;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -268,9 +265,9 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping("/quickstart")
 	public String getQuickStart(User user,
-								@RequestParam(value = "url", required = true) String urlString,
-								@RequestParam(value = "scriptType", required = true) String scriptType,
-								ModelMap model) {
+	                            @RequestParam(value = "url", required = true) String urlString,
+	                            @RequestParam(value = "scriptType", required = true) String scriptType,
+	                            ModelMap model) {
 		URL url = checkValidURL(urlString);
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
 				scriptHandlerFactory.getHandler(scriptType));
@@ -461,11 +458,9 @@ public class PerfTestController extends BaseController {
 	}
 
 
-
 	/**
 	 * Get the running division in perftest configuration page.
 	 *
-	 	 *
 	 * @param user     user
 	 * @param model    model
 	 * @param id       test id
@@ -574,61 +569,16 @@ public class PerfTestController extends BaseController {
 	 * @param id    test id
 	 * @return "perftest/sample"
 	 */
-	@RequestMapping(value = "/{id}/running/sample")
-	public String refreshTestRunning(User user, @PathVariable("id") long id, ModelMap model) {
-		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : "
-				+ id);
-		if (test.getStatus().equals(Status.TESTING)) {
-			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test));
-			model.addAttribute(PARAM_RESULT_AGENT_PERF, getStatString(perfTestService.getAgentStat(test)));
-			model.addAttribute(PARAM_RESULT_MONITOR_PERF, getStatString(perfTestService.getMonitorStat(test)));
-		}
-		return "perftest/sample";
-	}
-
-	@SuppressWarnings("rawtypes")
-	private String getStatString(Map<String, HashMap> statMap) {
-		if (statMap == null) {
-			return StringUtils.EMPTY;
-		}
-		List<String> perfStringList = Lists.newArrayList();
-		DecimalFormat format = new DecimalFormat("#00.0");
-		for (Entry<String, HashMap> each : statMap.entrySet()) {
-			Map value = each.getValue();
-			if (value == null) {
-				continue;
-			}
-			double totalMemory = MapUtils.getLong(value, "totalMemory", 0L);
-			double freeMemory = MapUtils.getLong(value, "freeMemory", 0L);
-			Float cpuUsedPercentage = MapUtils.getFloat(value, "cpuUsedPercentage", 0f);
-			long sentPerSec = MapUtils.getLong(value, "sentPerSec", 0L);
-			long receivedPerSec = MapUtils.getLong(value, "receivedPerSec", 0L);
-
-			double memUsage = 0;
-			if (totalMemory != 0) {
-				memUsage = ((totalMemory - freeMemory) / totalMemory) * 100;
-			}
-			String perfString = String.format(" {'agent' : '%s', 'agentFull' : '%s', 'cpu' : '%s',"
-					+ " 'mem' : '%s', 'sentPerSec' : '%s', 'receivedPerSec' : '%s'}",
-					StringUtils.abbreviate(each.getKey(), 15), each.getKey(), format.format(Math.min(cpuUsedPercentage, 99.9f)),
-					format.format(Math.min(memUsage, 99.9f)), UnitUtils.byteCountToDisplaySize(sentPerSec),
-					UnitUtils.byteCountToDisplaySize(receivedPerSec));
-			perfStringList.add(perfString);
-		}
-		return StringUtils.join(perfStringList, ",");
-	}
-
-	/**
-	 * Get the detailed perf test report. This is kept for the compatibility.
-	 *
-	 * @param model  model
-	 * @param testId perf test id
-	 * @return perftest/detail_report
-	 * @deprecated
-	 */
-	@RequestMapping(value = "/detail_report")
-	public String getRawReport(ModelMap model, @RequestParam long testId) {
-		return getReport(model, testId);
+	@RequestMapping(value = "/{id}/api/sample")
+	@RestAPI
+	public HttpEntity<String> refreshTestRunning(User user, @PathVariable("id") long id, ModelMap model) {
+		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
+		Map<String, Object> map = newHashMap();
+		map.put("status", test.getStatus());
+		map.put("perf", perfTestService.getStatistics(test));
+		map.put("agent", perfTestService.getAgentStat(test));
+		map.put("monitor", perfTestService.getMonitorStat(test));
+		return toJsonHttpEntity(map);
 	}
 
 	/**

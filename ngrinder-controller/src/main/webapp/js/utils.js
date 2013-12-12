@@ -264,7 +264,7 @@ AjaxObj.prototype.call = function () {
             if (that.successMessage != null) {
                 showSuccessMsg(that.successMessage);
             }
-            that.success(res);
+            return that.success(res);
         },
         complete : this.complete,
         error: function(xhr, res) {
@@ -275,7 +275,7 @@ AjaxObj.prototype.call = function () {
                     showErrorMsg(res.message);
                 }
             }
-            that.error();
+            return that.error();
         }
     });
 }
