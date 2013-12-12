@@ -27,9 +27,10 @@
 								</span>
 							</label> 
 							<select id="region" name="region" class="pull-right" style="width: 110px">
-								<#list regionList as eachRegion>
-									<option value="${eachRegion}" <#if (test.region?? && test.region == eachRegion)>selected</#if> >
-										<@spring.message "${eachRegion}"/>
+								<option value="NONE">-</option>
+								<#list regionList as each>
+									<option value="${each}" <#if (test.region?? && test.region == each)>selected</#if> >
+										<@spring.message "${each}"/>
 									</option> 
 								</#list>
 							</select> 
