@@ -98,10 +98,11 @@
 
 		<div class="controls ${controls_extra_class}" style="${controls_style}">
 			<#nested>
+			<#if inline_help="true">
+				<span class="help-inline"></span>
+			</#if>
 		</div>
-		<#if inline_help="true">
-			<span class="help-inline"></span>
-		</#if>
+
 		<#if err_style!="">
 			<div id="err_${toUnderscore(name)}" class="small_error_box" style="${err_style}">
 			</div>
