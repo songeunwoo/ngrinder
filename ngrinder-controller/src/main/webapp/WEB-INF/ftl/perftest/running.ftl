@@ -299,9 +299,9 @@
 
 	function stopTests(ids) {
 		var ajaxObj = new AjaxPostObj("${req.getContextPath()}/perftest/api/stop",
+				{ "ids": ids },
 				"<@spring.message "perfTest.table.message.success.stop"/>",
 				"<@spring.message "perfTest.table.message.error.stop"/>");
-		ajaxObj.params = { "ids": ids };
 		ajaxObj.call();
 	}
 
