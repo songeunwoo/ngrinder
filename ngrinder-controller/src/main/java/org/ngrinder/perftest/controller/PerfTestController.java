@@ -17,9 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.grinder.util.LogCompressUtils;
 import net.grinder.util.Pair;
-import net.grinder.util.UnitUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -35,7 +33,10 @@ import org.ngrinder.common.util.FileDownloadUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.spring.RemainedPath;
-import org.ngrinder.model.*;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.Status;
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -64,9 +65,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.Map.Entry;
 
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CollectionUtils.*;
@@ -187,8 +186,7 @@ public class PerfTestController extends BaseController {
 	 */
 	@RequestMapping("/{id}")
 	public String getOne(User user, @PathVariable("id") Long id, ModelMap model) {
-		PerfTest test = null;
-
+		PerfTest test;
 		if (id != null) {
 			test = getOneWithPermissionCheck(user, id, true);
 		} else {
@@ -564,14 +562,13 @@ public class PerfTestController extends BaseController {
 	/**
 	 * Get the running perf test info having the given id.
 	 *
-	 * @param user  user
-	 * @param model model
-	 * @param id    test id
+	 * @param user user
+	 * @param id   test id
 	 * @return "perftest/sample"
 	 */
 	@RequestMapping(value = "/{id}/api/sample")
 	@RestAPI
-	public HttpEntity<String> refreshTestRunning(User user, @PathVariable("id") long id, ModelMap model) {
+	public HttpEntity<String> refreshTestRunning(User user, @PathVariable("id") long id) {
 		PerfTest test = checkNotNull(getOneWithPermissionCheck(user, id, false), "given test should be exist : " + id);
 		Map<String, Object> map = newHashMap();
 		map.put("status", test.getStatus());

@@ -347,7 +347,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		test.setPort(11011);
 		ModelMap model = new ModelMap();
 		try {
-			controller.refreshTestRunning(getTestUser(), test.getId(), model);
+			controller.refreshTestRunning(getTestUser(), test.getId());
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
