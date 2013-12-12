@@ -64,11 +64,21 @@ function Chart(containerId, data, interval, opts) {
 Chart.prototype.calcYmax = function () {
     var ymax = 0;
     for (var i = 0; i < this.values.length; i++) {
-        for (var j = 0; j < this.values[i].length; j++) {
-            var each = this.values[i][j];
+        var series = this.values[i];
+        var prev = 0;
+        var pprev = 0;
+        for (var j = 0; j < series.length; j++) {
+            var each = series[j];
             if (each !== null && each > ymax) {
                 ymax = each;
             }
+            if ((prev == null || prev === undefined) && each != null) {
+                each = (pprev + each) / 2;
+                series[j] = each;
+            }
+            pprev = prev;
+            prev = each;
+
         }
     }
     if (ymax < 5) {

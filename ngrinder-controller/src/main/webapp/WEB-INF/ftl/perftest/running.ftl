@@ -73,7 +73,7 @@
 			<legend>
 			<@spring.message "perfTest.testRunning.tpsStatistics"/>
 				<span class="badge badge-success" style="vertical-align:middle;">
-					<@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span>
+					<span id="running_time"></span>
 				</span>
 				<a id="stop_test_btn" class="btn btn-danger pull-right" sid="${(test.id)!}">
 				<@spring.message "common.button.stop"/>
@@ -83,12 +83,14 @@
 		<div id="running_tps_chart" class="chart" style="width: 530px; height: 300px"></div>
 		<div class="tabbable">
 			<ul class="nav nav-tabs" style="" id="sample_tab">
-				<li><a href="#last_sample_tab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
+				<li class="active">
+					<a href="#last_sample_tab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a>
+				</li>
 				<li><a href="#accumulated_sample_tab"
 					   tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane" id="last_sample_tab">
+				<div class="tab-pane active" id="last_sample_tab">
 					<table class="table table-striped table-bordered ellipsis" id="last_sample_table">
 						<colgroup>
 							<col width="30px">
@@ -139,7 +141,7 @@
 							<th class="no-click" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.table.tps"/></th>
 							<th class="no-click"><@spring.message "perfTest.detail.peakTPS"/></th>
-							<th class="no-click" title="<@spring.message "perfTest.testRunning.mtsd.help"/>">MTSD</th>
+							<th class="no-click"><@spring.message "perfTest.testRunning.responseBytePerSecond"/></th>
 						</tr>
 						</thead>
 						<tbody id="accumulated_sample_result">
@@ -180,12 +182,12 @@
 			}
 			var output = "<td>" + toNum(statistics[i].testNumber) + "</td>";
 			output = output + "<td class='ellipsis'>" + statistics[i].testDescription + "</td>"
-			output = output + "<td'>" + toNum(statistics[i].Tests) + "</td>";
-			output = output + "<td'>" + toNum(statistics[i].Errors) + "</td>";
-			output = output + "<td'>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
-			output = output + "<td'>" + toNum(statistics[i].TPS) + "</td>";
-			output = output + "<td'>" + toSize(statistics[i].Response_bytes_per_second) + "</td>";
-			output = output + "<td'>" + toSize(statistics[i].Mean_time_to_first_byte) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].Tests) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].Errors) + "</td>";
+			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
+			output = output + "<td>" + toSize(statistics[i].Response_bytes_per_second) + "</td>";
+			output = output + "<td>" + toNum(statistics[i].Mean_time_to_first_byte, 0) + "</td>";
 			$(record).html(output);
 		}
 	}
@@ -206,7 +208,7 @@
 			output = output + "<td>" + toNum(statistics[i]["Mean_Test_Time_(ms)"]) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].TPS) + "</td>";
 			output = output + "<td>" + toNum(statistics[i].Peak_TPS) + "</td>";
-			output = output + "<td>" + toNum(statistics[i]["Test_Time_Standard_Deviation_(ms)"]) + "</td>";
+			output = output + "<td>" + toSize(statistics[i].Response_bytes_per_second) + "</td>";
 			$(record).html(output);
 		}
 	}
@@ -224,7 +226,7 @@
 			$monitorstate.html(createMonitoringStatusString(curMonitorStat));
 			showLastPerTestResult($lastSampleResult, curPerf.lastSampleStatistics);
 			showAccumulatedPerTestResult($accumulatedSampleResult, curPerf.cumulativeStatistics);
-			tpsQueue.enQueue($.number(curPerf.tpsChartData, 1));
+			tpsQueue.enQueue(curPerf.tpsChartData.toFixed(0));
 			tpsChart.plot();
 		} else {
 			if ($('#running_section_tab:hidden')[0]) {
@@ -252,11 +254,15 @@
 	}
 
 	function toSize(bytes) {
+		if (bytes == undefined) {
+			return "-";
+		}
+		bytes = bytes.toFixed(0);
 		var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
 		if (bytes == 0) return 'n/a';
-		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-		if (i == 0) return bytes + ' ' + sizes[i];
-		return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+		var i = parseInt(Math.floor(Math.log(Math.round(bytes)) / Math.log(1024)));
+		if (i == 0) return bytes +  sizes[i];
+		return (bytes / Math.pow(1024, i)).toFixed(1) + sizes[i];
 	}
 
 
@@ -307,6 +313,12 @@
 			}
 		});
 	});
+
+	$('#sample_tab a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	});
+	$('#sample_tab a:first').tab('show');
 	samplingAjax.call();
 	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
 </script>

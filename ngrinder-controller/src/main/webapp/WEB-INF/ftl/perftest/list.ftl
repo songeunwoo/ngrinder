@@ -113,7 +113,7 @@
 					<col width="65">
 					<col width="70">
 					<col width="70">
-					<col width="50">
+					<col width="70">
 				</colgroup>
 				<thead>
 					<tr id="head_tr_id">
@@ -196,11 +196,12 @@
 									<#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
 								<td
-									<#if test.threshhold?? && test.threshold == "D">	>
-									${(test.durationStr)!}
+									<#if test.isThresholdDuration()>
+									title="<@spring.message "perfTest.configuration.duration"/>" >
+									${test.durationStr}
 									<#else>
 									title="<@spring.message "perfTest.configuration.runCount"/>" >
-									${(test.runCount)!}
+									${test.runCount}
 									</#if>
 								</td>
 								<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>

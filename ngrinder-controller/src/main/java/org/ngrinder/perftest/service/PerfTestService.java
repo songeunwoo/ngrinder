@@ -1146,10 +1146,10 @@ public class PerfTestService extends AbstractPerfTestService implements Constant
 	 * @param perfTest perfTest
 	 */
 	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
-//		perfTest.setRunningSample("");
-//		perfTest.setAgentState("");
-//		perfTest.setMonitorState("");
-//		save(perfTest);
+		perfTest.setRunningSample("");
+		perfTest.setAgentState("");
+		perfTest.setMonitorState("");
+		save(perfTest);
 	}
 
 	/**
