@@ -510,6 +510,11 @@ function addValidation() {
 				digits: true,
 				min: 0
 			},
+			<#if clustered>
+			region : {
+				required: true
+			},
+			</#if>
 			vuserPerAgent: {
 				required: true,
 				digits: true,
@@ -562,6 +567,11 @@ function addValidation() {
 	        testName: {
 	        	required: "<@spring.message 'perfTest.warning.testName'/>"
 	        },
+		<#if clustered>
+			region : {
+				required: "<@spring.message 'perfTest.warning.region'/>"
+			},
+		</#if>
 	        agentCount: {
 	        	required: "<@spring.message 'perfTest.warning.agentNumber'/>"
 	        },
@@ -815,9 +825,9 @@ function bindEvent() {
 	});
 	
 	$("#threads, #processes").change(function() {
-		var $vuer = $("#vuser_per_agent");
-		$vuer.val($("#processes").val() * $("#threads").val());
-		if ($vuer.valid()) {
+		var $vuser = $("#vuser_per_agent");
+		$vuser.val($("#processes").val() * $("#threads").val());
+		if ($vuser.valid()) {
 			updateVuserGraph();
 			updateTotalVuser();
 		}
@@ -1100,14 +1110,6 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 		displayConfigOnly();
 	}
 }
-
-function isRunningStatusType(statusType) {
-	return statusType == "TESTING";
-}
-function isFinishedStatusType(statusType) {
-	return statusType == "FINISHED" || statusType == "STOP_BY_ERROR" || statusType == "STOP_ON_ERROR" || statusType == "CANCELED";
-}
-
 
 var finished = false;
 var testId = $('#test_id').val();

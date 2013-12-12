@@ -23,13 +23,14 @@
 	$.validator.addMethod('positiveNumber',
 		    function (value) { 
 		        return Number(value) > 0;
-		    }, '<@spring.message "common.form.validate.positiveNumber"/>');
+		    }, '<@spring.message "common.message.validate.positiveNumber"/>');
 	$.validator.addMethod('countNumber',
 		    function (value) { 
 		        return Number(value) >= 0;
 		    }, '<@spring.message "common.form.validate.countNumber"/>');
+
 	$.extend(jQuery.validator.messages, {
-	    required: "<@spring.message "common.form.validate.empty"/>",
+	    required: "<@spring.message "common.message.validate.empty"/>",
 	    digits: "<@spring.message "common.message.validate.digits"/>",
 		range: $.validator.format("<@spring.message "common.message.validate.range"/>"),
 		max: $.validator.format("<@spring.message "common.message.validate.max"/>"),
@@ -40,8 +41,6 @@
 
 
 </script>  
-<input type="hidden" id="contextPath" value="${req.getContextPath()}"/>
-
 <#setting number_format="computer">
 <#if currentUser?? && currentUser.timeZone??>
 	<#setting time_zone="${currentUser.timeZone}"> 

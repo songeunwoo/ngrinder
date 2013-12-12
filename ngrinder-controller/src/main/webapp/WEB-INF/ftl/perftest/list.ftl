@@ -88,8 +88,8 @@
 					</a>
 				</div>
 
-				<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
-				<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
+				<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
+				<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 			</form>
 			<div class="pull-right" style="margin-top:-20px">
 				<code id="current_running_status" style="width:300px"></code>
@@ -447,8 +447,9 @@
 		(function updateStatuses() {
 			var ids = $('input.perf_test').map(function() {
 		    	var perTestStatus = $(this).attr("status");
-				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_BY_ERROR"|| perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
+				if(!(isFinishedStatusType(perTestStatus)) {
 					return this.value;
+				}
 		  	}).get();
 
 			var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
