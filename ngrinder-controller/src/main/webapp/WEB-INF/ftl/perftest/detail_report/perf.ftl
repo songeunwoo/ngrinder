@@ -9,10 +9,10 @@
 <h6>
 	TPS
 	<span rel="popover"
-		  data-content='<@spring.message "perfTest.report.tps.help"/>'
-		  title='<@spring.message "perfTest.report.tps"/>'
-		  data-html='true'>
-		<i class="icon-question-sign" style="vertical-align:middle;"></i>
+		data-content='<@spring.message "perfTest.report.tps.help"/>'
+		title='<@spring.message "perfTest.report.tps"/>'
+		data-html='true' id="tps_title">
+		<i class="icon-question-sign pointer-cursor" style="vertical-align:middle;"></i>
 	</span>
 </h6>
 <div class="bigchart" id="tps_chart"></div>
@@ -26,6 +26,8 @@
 <div class="chart" id="error_chart"></div>
 
 <script>
+	$("#tps_title").popover({trigger: 'hover', container:'body'});
+
 	function getGraphDataAndDraw(testId) {
 		var ajaxObj = new AjaxObj("/perftest/api/" + testId + "/perf");
 		ajaxObj.params = {
