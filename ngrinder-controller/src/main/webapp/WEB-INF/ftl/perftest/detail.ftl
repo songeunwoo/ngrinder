@@ -919,22 +919,10 @@ function changeAgentMaxCount(region, isValid) {
 }
 
 function validateForm() {
-	var result = true;
-	// For IE 7, 8
-	if ($.browser.msie  && parseInt($.browser.version, 10) <= 8) {
-		var rules = validationOptions["rules"];
-		$.each(rules, function(key, value) {
-			if (!$("select[name='" + key +"'],input[name='" + key +"']").valid() && result == true) { 
-				result = false;
-			}
-		});		
-	} else {
-		result = $("#test_config_form").valid();
-	}
+	var result = $("#test_config_form").valid();
 	if (!result) {
 		$("#test_config_section_tab a").tab('show');
 	}
-	
 	return result;
 }
 
@@ -1142,8 +1130,6 @@ function displayConfigAndRunningSection() {
 
 	});
 	tpsQueue = new Queue(60 / $("#sampling_interval").val());
-	refreshData(tpsQueue);
-	objTimer = window.setInterval("refreshData(tpsQueue)", 1000 * samplingInterval);
 }
 
 function displayConfigAndReportSection() {

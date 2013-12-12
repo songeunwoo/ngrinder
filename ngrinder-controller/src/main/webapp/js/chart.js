@@ -1,4 +1,4 @@
-function Chart(containerId, data, xAxisFormatter, yAxisFormatter, interval, labels) {
+function Chart(containerId, data, interval, opts) {
     function prepare(data) {
         var values = data;
         for (var i = 0; i < values.length; i++) {
@@ -28,26 +28,28 @@ function Chart(containerId, data, xAxisFormatter, yAxisFormatter, interval, labe
         }
         return display;
     }
-
+    this.opts = opts || {};
     this.containerId = containerId;
     this.values = prepare(data);
-    this.yAxisFormatter = yAxisFormatter || function (format, value) {
+    this.yAxisFormatter = this.opts.yAxisFormatter || function (format, value) {
         return value.toFixed(0);
     };
-    if (yAxisFormatter == formatPercentage) {
+    if (this.yAxisFormatter == formatPercentage) {
         this.yLimit = 100;
     }
     interval = interval || 1;
     this.that = this;
-    this.xAxisFormatter = xAxisFormatter || function (format, value) {
+    this.xAxisFormatter = this.opts.xAxisFormatter || function (format, value) {
         return formatTimeForXaxis(parseInt((value - 1) * interval));
     };
-    if (labels !== undefined && labels.length > 1) {
+    this.gridPadding = this.opts.gridPadding||{top: 20, right: 20, bottom: 35, left: 60};
+    this.numXTicks = this.opts.numXTicks||10;
+    if (this.opts.labels !== undefined) {
         this.legend = {
             renderer: $.jqplot.EnhancedLegendRenderer,
             show: true,
             placement: "insideGrid",
-            labels: labels,
+            labels: opts.labels,
             location: "ne",
             rowSpacing: "2px",
             rendererOptions: {
@@ -102,7 +104,7 @@ Chart.prototype.plot = function () {
     this.ymax = this.calcYmax();
     if (this.plotObj === undefined) {
         this.plotObj = $.jqplot(this.containerId, this.values, {
-            gridPadding: {top: 20, right: 20, bottom: 35, left: 60},
+            gridPadding: this.gridPadding,
             seriesDefaults: {
                 markerRenderer: $.jqplot.MarkerRenderer,
                 markerOptions: {
@@ -116,7 +118,7 @@ Chart.prototype.plot = function () {
                     min: 1,
                     max: this.values[0].length,
                     pad: 2,
-                    numberTicks: 10,
+                    numberTicks: this.numXTicks,
                     tickOptions: {
                         show: true,
                         formatter: this.xAxisFormatter

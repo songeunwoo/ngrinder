@@ -97,41 +97,22 @@
 					<col>
 				</colgroup>
 				<tr>
-					<th><@spring.message "perfTest.report.vusersPerAgent"/></th>
-					<td><strong>${test.vuserPerAgent}</strong></td>
+					<th><@spring.message "perfTest.report.totalVuser"/></th>
+					<td><strong>${test.vuserPerAgent * test.agentCount}</strong></td>
 				</tr>
 				<tr>
 					<th><@spring.message "perfTest.report.agent"/></th>
 					<td><span>${test.agentCount}</span>
 				</tr>
 				<tr>
-					<th><@spring.message "perfTest.report.process"/></th>
-					<td>${test.processes}</td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.thread"/></th>
-					<td>${test.threads}</td>
+					<th><@spring.message "perfTest.report.process"/><br/><@spring.message "perfTest.report.thread"/></th>
+					<td>${test.processes} / ${test.threads}</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="divider"></td>
 				</tr>
-				<#if test.threshold == "D">
 				<tr>
-					<th><@spring.message "perfTest.configuration.duration"/></th>
-					<td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
-				</tr>
-				<#else>
-				<tr>
-					<th><@spring.message "perfTest.configuration.runCount"/></th>
-					<td><span>${test.runCount}</td>
-				</tr>
-				</#if>
-				<tr>
-					<th><@spring.message "perfTest.configuration.runtime"/></th>
-					<td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
+					<th><@spring.message "perfTest.report.ignoreSampleCount"/></th>
 					<td><span>${test.ignoreSampleCount}</span></td>
 				</tr>
 				<tr>
@@ -166,20 +147,20 @@
 			<div class="well" style="max-width: 340px; padding: 8px 0;">
 				<ul class="nav nav-list">
 					<li class="active pointer-cursor perf  nav-header">
-						<a href="#"><@spring.message "perfTest.report.performanceReport"/></a>
+						<a class="pointer-cursor"><@spring.message "perfTest.report.performanceReport"/></a>
 					</li>
 					<li class="nav-header"><@spring.message "perfTest.report.targetHost"/></li>
 
 					<@list list_items=test.targetHostIP others="no_message" ; targetIP >
 						<li class="monitor pointer-cursor" ip="${targetIP}">
-							<a href="#"> ${targetIP}</a>
+							<a class="pointer-cursor">${targetIP}</a>
 						</li>
 					</@list>
 
 				<li  class="nav-header"><@spring.message "perfTest.report.plugins"/></li>
 					<@list list_items=plugins others="no_message" ; each >
 						<li class="plugin pointer-cursor" plugin="${each.first}" ip="${each.second}">
-							<a href="#">${each.first} - ${each.second}</a>
+							<a class="pointer-cursor">${each.first} - ${each.second}</a>
 						</li>
 					</@list>
 				</ul>
@@ -198,6 +179,17 @@
 					<td>${(test.startTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
 					<th><@spring.message "perfTest.table.finishTime"/></th>
 					<td>${(test.finishTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
+				</tr>
+				<#if test.threshold == "D">
+				<tr>
+					<th><@spring.message "perfTest.configuration.duration"/></th>
+					<td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
+				<#else>
+					<th><@spring.message "perfTest.configuration.runCount"/></th>
+					<td><span>${test.runCount}</td>
+				</#if>
+					<th><@spring.message "perfTest.configuration.runtime"/></th>
+					<td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
 				</tr>
 				<tr>
 					<th><@spring.message "perfTest.report.testcomment"/></th>

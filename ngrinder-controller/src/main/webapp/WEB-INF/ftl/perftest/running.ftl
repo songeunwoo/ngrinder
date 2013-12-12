@@ -1,3 +1,5 @@
+<#import "../common/spring.ftl" as spring/>
+<#include "../common/ngrinder_macros.ftl">
 <div class="row">
 	<div class="span5">
 		<fieldSet>

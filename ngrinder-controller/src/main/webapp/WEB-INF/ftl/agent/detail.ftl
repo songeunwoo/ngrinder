@@ -64,7 +64,7 @@
 		<script>
 
 			function drawChart(id, data, yFormat, interval) {
-				var result = new Chart(id, data, null, yFormat, interval);
+				var result = new Chart(id, data, interval, {xAxisFormatter:yFormat});
 				return result.plot();
 			}
 

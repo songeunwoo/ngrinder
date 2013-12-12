@@ -194,7 +194,7 @@
 				<div class="row">
 					<div class="span3">
 						<@input_label name="initProcesses"
-							value="${test.initProcesses}" message="perfTest.configuration.initalProcesses" />
+							value="${test.initProcesses}" message="perfTest.configuration.initialProcesses" />
 					</div>
 
 					<div class="span3">
@@ -206,7 +206,7 @@
 					<div class="span3">
 						<@input_label name="initSleepTime"
 							value="${test.initSleepTime}"
-							message="perfTest.configuration.initalSleepTime" others="<code>MS</code>" />
+							message="perfTest.configuration.initialSleepTime" others="<code>MS</code>" />
 					</div>
 					<div class="span3">
 						<@input_label name="processIncrementInterval"
