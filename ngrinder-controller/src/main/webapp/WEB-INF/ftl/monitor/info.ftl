@@ -16,9 +16,9 @@
 	var interval = 3;
 	var cpuUsage = new Queue(60 / interval);
 	var memoryUsage = new Queue(60 / interval);
-	var cpuChart = new Chart("cpu_usage_chart", cpuUsage.getArray(), interval,
+	var cpuChart = new Chart("cpu_usage_chart", [cpuUsage.getArray()], interval,
 			{yAxisFormatter: formatPercentage}).plot();
-	var memoryChart = new Chart("memory_usage_chart", memoryUsage.getArray(), interval,
+	var memoryChart = new Chart("memory_usage_chart", [memoryUsage.getArray()], interval,
 			{yAxisFormatter: formatMemory}).plot();
 	var errorCount = 0;
 
@@ -42,4 +42,5 @@
 			window.clearInterval(timer);
 		}
 	});
+	//@ sourceURL=monitor/info
 </script>

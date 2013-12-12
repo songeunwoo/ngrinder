@@ -10,7 +10,7 @@ function Chart(containerId, data, interval, opts) {
     }
 
     function formatTimeForXaxis(timeInSecond) {
-        if (timeInSecond < 0) {
+        if (timeInSecond == null || timeInSecond < 0) {
             timeInSecond = 0;
         }
         var hour = parseInt((timeInSecond % (60 * 60 * 24)) / 3600);
@@ -32,6 +32,7 @@ function Chart(containerId, data, interval, opts) {
     this.containerId = containerId;
     this.values = prepare(data);
     this.yAxisFormatter = this.opts.yAxisFormatter || function (format, value) {
+        value = value || 0;
         return value.toFixed(0);
     };
     if (this.yAxisFormatter == formatPercentage) {
@@ -67,20 +68,11 @@ Chart.prototype.calcYmax = function () {
     var ymax = 0;
     for (var i = 0; i < this.values.length; i++) {
         var series = this.values[i];
-        var prev = 0;
-        var pprev = 0;
         for (var j = 0; j < series.length; j++) {
             var each = series[j];
             if (each !== null && each > ymax) {
                 ymax = each;
             }
-            if ((prev == null || prev === undefined) && each != null) {
-                each = (pprev + each) / 2;
-                series[j] = each;
-            }
-            pprev = prev;
-            prev = each;
-
         }
     }
     if (ymax < 5) {
@@ -163,7 +155,7 @@ Chart.prototype.plot = function () {
                 zoom: true
             },
             legend: this.legend
-        });
+        }).replot();
     } else {
         var axes = {};
         if (ymaxChanged) {
@@ -204,9 +196,8 @@ Chart.prototype.plot = function () {
 }
 
 var formatMemory = function (format, value) {
-    if (value === null) {
-        return "";
-    } else if (value < 1024) {
+    value = value || 0;
+    if (value < 1024) {
         return value.toFixed(1) + "K ";
     } else if (value < 1048576) { //1024 * 1024
         return (value / 1024).toFixed(1) + "M ";
@@ -216,9 +207,8 @@ var formatMemory = function (format, value) {
 };
 
 var formatNetwork = function (format, value) {
-    if (value === null) {
-        return "";
-    } else if (value < 1024) {
+    value = value || 0;
+    if (value < 1024) {
         return value.toFixed(1) + "B ";
     } else if (value < 1048576) { //1024 * 1024
         return (value / 1024).toFixed(1) + "K ";
@@ -228,9 +218,8 @@ var formatNetwork = function (format, value) {
 };
 
 var formatPercentage = function (format, value) {
-    if (value === null) {
-        return "";
-    } else if (value < 10) {
+    value = value || 0;
+    if (value < 10) {
         return value.toFixed(1) + "% ";
     } else {
         return value.toFixed(0) + "% ";
@@ -239,9 +228,8 @@ var formatPercentage = function (format, value) {
 
 // data is in Byte
 var formatMemoryInByte = function (format, value) {
-    if (value === null) {
-        return "";
-    } else if (value < 1024) {
+    value = value || 0;
+    if (value < 1024) {
         return value.toFixed(1) + "B ";
     } else if (value < 1048576) { //1024 * 1024
         return (value / 1024).toFixed(1) + "K ";
