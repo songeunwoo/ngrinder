@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="test" type="org.ngrinder.model.PerfTest" -->
 <#import "../common/spring.ftl" as spring/>
 <#include "../common/ngrinder_macros.ftl">
 <div class="row">
@@ -163,14 +164,15 @@
 	var curStatus = false;
 	var curAgentPerfStates = [];
 	var agentPerfStates = [];
-	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], null, null, samplingInterval);
-	function refreshData(tpsQueue) {
+	var tpsQueue = new Queue(60 / ${test.samplingInterval});
+	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], null, null, ${test.samplingInterval});
+	function refreshData() {
 		var refreshDiv = $("<div></div>");
 		var peakTps = 50;
 		refreshDiv.load(
 				"${req.getContextPath()}/perftest/<#if test.id??>${(test.id)?c}<#else>0</#if>/running/sample",
-				{},
 				function () {
+					debugger;
 					$("#running_time").text(showRunTime(curRunningTime));
 					if (curStatus == true) {
 						$("#last_sample_table tbody").html(refreshDiv.find("#last_sample_table_item"));
@@ -185,9 +187,9 @@
 					} else {
 						if ($('#running_section_tab:hidden')[0]) {
 							window.clearInterval(objTimer);
-							return;
 						}
 					}
+					return true;
 				}
 		);
 	}
@@ -229,14 +231,14 @@
 		ajaxObj.call();
 	}
 
-	$(document).ready(function () {
-		$("#stop_test_btn").click(function () {
-			var id = $(this).attr("sid");
-			bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
-				if (result) {
-					stopTests(id);
-				}
-			});
+	$("#stop_test_btn").click(function () {
+		var id = $(this).attr("sid");
+		bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
+			if (result) {
+				stopTests(id);
+			}
 		});
 	});
+	refreshData();
+	objTimer = window.setInterval("refreshData()", 1000 * ${test.samplingInterval});
 </script>

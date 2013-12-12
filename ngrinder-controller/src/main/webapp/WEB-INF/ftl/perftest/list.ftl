@@ -101,7 +101,7 @@
 				<colgroup>
 					<col width="30">
 					<col width="50">
-					<col>
+					<col width="150">
 					<col>
 					<col width="70">
 					<#if clustered>
@@ -126,7 +126,7 @@
 						<th id="region" name="region"><@spring.message "agent.table.region"/></th>
 						</#if>
 						<th id="start_time" name="startTime"><@spring.message "perfTest.table.startTime"/></th>
-						<th class="nothing"><@spring.message "perfTest.table.threshold"/></th>
+						<th class="nothing"><span class="ellipsis"><@spring.message "perfTest.table.threshold"/></th>
 						<th id="tps" name="tps"><@spring.message "perfTest.table.tps"/></th>
 						<th id="mean_test_time" name="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 						<th id="errors" class="ellipsis" name="errors"><@spring.message "perfTest.table.errorRate"/></th>

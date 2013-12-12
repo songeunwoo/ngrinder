@@ -328,7 +328,6 @@ ${processthread_policy_script}
 
 var objTimer;
 var durationMap = [];
-var tpsQueue;
 
 $(document).ready(function () {
 	$.ajaxSetup({
@@ -498,8 +497,7 @@ function initDuration() {
 var validationOptions = {};
 function addValidation() {
 	$.validator.addMethod("paramFmt", function(param, element) {
-		var pattern = /^[a-zA-Z0-9_\,\|]{0,30}$/;
-		var rule = new RegExp(pattern);
+		var rule = /^[a-zA-Z0-9_,\|]{0,30}$/;
 		return rule.test($.trim(param));
 	});
 	
@@ -519,8 +517,8 @@ function addValidation() {
 				range: [1, ${(maxVuserPerAgent)}]
 			},
 			scriptName: {
-	        	required: true
-	        },
+				required: true
+			},
 			durationHour: {
 				max: ${maxRunHour}
 			},
@@ -1089,17 +1087,14 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 	var testStatusImgPopover = $testStatusImg.data('popover');
 	$testStatusImg.attr("data-original-title", statusName);
 	testStatusImgPopover.options.content = message;
-	
-
 	$testStatusType.val(statusType);
 
 	if ($testStatusImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		$testStatusImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
-
-	if (statusType == "TESTING") {
+	if (isRunningStatusType(statusType)) {
 		displayConfigAndRunningSection();
-	} else if (statusType == "FINISHED" || statusType == "STOP_BY_ERROR"|| statusType == "STOP_ON_ERROR" || statusType == "CANCELED") {
+	} else if (isFinishedStatusType(statusType)) {
 		finished = true; 
 		// Wait and run because it takes time to transfer logs.
 		setTimeout('displayConfigAndReportSection()', 3000);
@@ -1107,6 +1102,14 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 		displayConfigOnly();
 	}
 }
+
+function isRunningStatusType(statusType) {
+	return statusType == "TESTING";
+}
+function isFinishedStatusType(statusType) {
+	return statusType == "FINISHED" || statusType == "STOP_BY_ERROR" || statusType == "STOP_ON_ERROR" || statusType == "CANCELED";
+}
+
 
 var finished = false;
 var testId = $('#test_id').val();
@@ -1127,9 +1130,8 @@ function displayConfigAndRunningSection() {
 	$("#running_section").show();
 	$("#report_section_tab").hide();
 	openRunningDiv(function() {
-
+		$("#foot_div").show();
 	});
-	tpsQueue = new Queue(60 / $("#sampling_interval").val());
 }
 
 function displayConfigAndReportSection() {
