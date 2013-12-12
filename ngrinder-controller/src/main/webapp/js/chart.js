@@ -52,6 +52,8 @@ function Chart(containerId, data, interval, opts) {
             labels: opts.labels,
             location: "ne",
             rowSpacing: "2px",
+            marginTop: opts.legend_margin || null,
+            marginRight: opts.legend_margin || null,
             rendererOptions: {
                 seriesToggle: 'normal'
             }

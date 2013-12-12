@@ -11,51 +11,35 @@
 
 	<div class="chart" id="memory_usage_chart"></div>
 </div>
-
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
-	function drawChart(id, data, yFormat, interval) {
-		var result = new Chart(id, data, interval, {xAxisFormatter:yFormat});
-		return result.plot();
-	}
-	var interval = 1;
-	var timer;
-	var cpuUsage = new Queue(60);
-	var memoryUsage = new Queue(60);
-	var cpuChart = drawChart('cpu_usage_chart', [cpuUsage.getArray()], formatPercentage, interval);
-	var memoryChart = drawChart('memory_usage_chart', [memoryUsage.getArray()], formatMemory, interval);
+	var interval = 3;
+	var cpuUsage = new Queue(60 / interval);
+	var memoryUsage = new Queue(60 / interval);
+	var cpuChart = new Chart("cpu_usage_chart", cpuUsage.getArray(), interval,
+			{yAxisFormatter: formatPercentage}).plot();
+	var memoryChart = new Chart("memory_usage_chart", memoryUsage.getArray(), interval,
+			{yAxisFormatter: formatMemory}).plot();
 	var errorCount = 0;
-	$(document).ready(function () {
-		if (getState()) {
-			timer = window.setInterval("getState()", interval * 1000);
-		}
-	});
 
 	function getState() {
-		var result = false;
 		var ajaxObj = new AjaxObj("/monitor/state");
 		ajaxObj.params = {'ip': '${(targetIP)!}'};
-		ajaxObj.async = false;
 		ajaxObj.success = function (res) {
 			cpuUsage.enQueue(res.cpuUsedPercentage);
 			memoryUsage.enQueue(res.totalMemory - res.freeMemory);
 			cpuChart.plot();
 			memoryChart.plot();
-			result = true;
-			errorCount = 0;
-		};
-		ajaxObj.error = function () {
-			errorCount = errorCount + 1;
-			if (errorCount > 3) {
-				showErrorMsg("Failed to get the monitoring data.");
-				result = false;
-				if (timer) {
-					window.clearInterval(timer);
-				}
-			}
+			return true;
 		};
 		ajaxObj.call();
-		return result;
 	}
 
+	getState();
+	var timer = window.setInterval("getState()", interval * 1000);
+	$('#target_info_modal').on('hidden', function () {
+		if (timer) {
+			window.clearInterval(timer);
+		}
+	});
 </script>

@@ -297,15 +297,29 @@
 							columnCount +"' class='no-padding'><table style='width:100%'><tr><td><div " +
 							"class='smallChart' id="+ tpsId +"></div></td> <td><div class='smallChart' id="+ meanTimeChartId +"></div></td> <td><div class='smallChart' id="+ errorChartId +"></div></td></tr></table></td></tr><tr></tr>");
 					$(this).closest('tr').after(testInfoTr);
-					var gridPadding = {top: 15, right: 10, bottom: 30, left: 40};
+					var gridPadding = { top: 15, right: 10, bottom: 30, left: 40 };
 					var ajaxObj = new AjaxObj("/perftest/api/"+ id +"/graph");
-					ajaxObj.params = {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700};
+					ajaxObj.params = {
+						'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
+						'imgWidth':100
+					};
 					ajaxObj.success = function(res) {
 						var chartInterval = res.chartInterval;
-						new Chart(tpsId, res.TPS.data , chartInterval, {labels:["TPS"], gridPadding:gridPadding,
-							numXTicks:7}).plot();
-						new Chart(meanTimeChartId, res.Mean_Test_Time_ms.data , chartInterval,	{labels:["Mean Test Time"], gridPadding:gridPadding, numXTicks:7}).plot();
-						new Chart(errorChartId, res.Errors.data , chartInterval, {labels:["Errors"],gridPadding:gridPadding, numXTicks:7}).plot();
+						new Chart(tpsId, res.TPS.data , chartInterval,
+								{
+									labels:["TPS"], gridPadding:gridPadding,
+									numXTicks:7, legend_margin:3
+								}).plot();
+						new Chart(meanTimeChartId, res.Mean_Test_Time_ms.data , chartInterval,
+								{
+									labels:["Mean Test Time"], gridPadding:gridPadding, numXTicks:7,
+									legend_margin:3
+								}).plot();
+						new Chart(errorChartId, res.Errors.data , chartInterval,
+								{
+									labels:["Errors"],
+									gridPadding:gridPadding, numXTicks:7, legend_margin:3
+								}).plot();
 						return true;
 					};
                     ajaxObj.call();

@@ -39,8 +39,7 @@
 		ajaxObj.call();
 	}
 	function drawChart(id, data, yFormat, interval) {
-		var result = new Chart(id, data, null, yFormat, interval);
-		return result.plot();
+		return new Chart(id, data, interval, {yAxisFormatter: yFormat}).plot();
 	}
 
 	function drawOptionalChart(id, data, interval, lables) {
@@ -50,6 +49,5 @@
 			$("#" + id + "_header").hide();
 		}
 	}
-
 	getMonitorDataAndDraw(${id}, "${targetIP}");
 </script>
