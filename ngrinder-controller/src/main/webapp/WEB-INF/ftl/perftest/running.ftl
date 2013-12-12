@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<#-- @ftlvariable name="test" type="org.ngrinder.model.PerfTest" -->
-<#include "../common/common.ftl">
-<#include "../common/jqplot.ftl">
+<#import "../common/spring.ftl" as spring>
 <#include "../common/ngrinder_macros.ftl">
-</head>
-<body>
 <div class="row">
 	<div class="span5">
 		<fieldSet>
@@ -317,5 +310,3 @@
 	samplingAjax.call();
 	objTimer = window.setInterval("samplingAjax.call()", 1000 * ${test.samplingInterval});
 </script>
-</body>
-</html>
