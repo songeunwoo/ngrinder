@@ -14,6 +14,7 @@
 package org.ngrinder.user.controller;
 
 import com.google.common.collect.Lists;
+import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
@@ -41,6 +42,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ObjectUtils.defaultIfNull;
 import static org.ngrinder.common.util.Preconditions.*;
 
@@ -57,8 +59,10 @@ public class UserController extends BaseController {
 
 	@Autowired
 	private UserService userService;
+
 	@Autowired
 	protected Config config;
+
 
 	/**
 	 * Get user list on the given role.
@@ -94,7 +98,6 @@ public class UserController extends BaseController {
 	}
 
 
-
 	/**
 	 * Get user creation form page.
 	 *
@@ -104,7 +107,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping("/new")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
-	public String  openForm(User user, final ModelMap model) {
+	public String openForm(User user, final ModelMap model) {
 		User one = User.createNew();
 		model.addAttribute("user", one);
 		model.addAttribute("allowUserIdChange", true);
@@ -157,9 +160,9 @@ public class UserController extends BaseController {
 	/**
 	 * Save or Update user detail info.
 	 *
-	 * @param user         current user
-	 * @param model        model
-	 * @param updatedUser  user to be updated.
+	 * @param user        current user
+	 * @param model       model
+	 * @param updatedUser user to be updated.
 	 * @return "redirect:/user/list" if current user change his info, otherwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
@@ -292,7 +295,7 @@ public class UserController extends BaseController {
 	/**
 	 * Get users by the given role.
 	 *
-	 * @param role  user role
+	 * @param role user role
 	 * @return json message
 	 */
 	@RestAPI
@@ -305,7 +308,7 @@ public class UserController extends BaseController {
 	/**
 	 * Get the user by the given user id.
 	 *
-	 * @param userId  user id
+	 * @param userId user id
 	 * @return json message
 	 */
 	@RestAPI
@@ -318,7 +321,7 @@ public class UserController extends BaseController {
 	/**
 	 * Create an user.
 	 *
-	 * @param newUser  new user
+	 * @param newUser new user
 	 * @return json message
 	 */
 	@RestAPI
@@ -332,8 +335,8 @@ public class UserController extends BaseController {
 	/**
 	 * Update the user.
 	 *
-	 * @param userId  user id
-	 * @param update  update user
+	 * @param userId user id
+	 * @param update update user
 	 * @return json message
 	 */
 	@RestAPI
@@ -348,7 +351,7 @@ public class UserController extends BaseController {
 	/**
 	 * Delete the user by the given userId.
 	 *
-	 * @param userId  user id
+	 * @param userId user id
 	 * @return json message
 	 */
 	@RestAPI
@@ -357,6 +360,49 @@ public class UserController extends BaseController {
 	public HttpEntity<String> delete(@PathVariable("userId") String userId) {
 		userService.delete(userId);
 		return successJsonHttpEntity();
+	}
+
+	/**
+	 * Search user list on the given keyword.
+	 *
+	 * @param pageable page info
+	 * @param keywords search keyword.
+	 * @return user/userList
+	 */
+	@RestAPI
+	@RequestMapping(value = "/api/search", method = RequestMethod.GET)
+	public HttpEntity<String> search(User user, @PageableDefaults Pageable pageable,
+	                                 @RequestParam(required = true) String keywords) {
+		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
+				defaultIfNull(pageable.getSort(),
+						new Sort(Direction.ASC, "userName")));
+		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
+		List<UserSearchResult> result = newArrayList();
+		for (User each : pagedUser) {
+			result.add(new UserSearchResult(each));
+		}
+		return toJsonHttpEntity(result);
+	}
+
+	public static class UserSearchResult {
+		@Expose
+		private String id;
+
+		@Expose
+		private String text;
+
+		public UserSearchResult(User user) {
+			id = user.getUserId();
+			text = StringUtils.abbreviate(user.getUserName() + " (" + user.getEmail() + " / " + user.getUserId(), 50);
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public String getId() {
+			return id;
+		}
 	}
 
 }

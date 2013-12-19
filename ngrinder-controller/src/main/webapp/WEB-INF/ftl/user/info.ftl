@@ -53,9 +53,8 @@
 
 	<#if allowShareChange>
 		<@control_group label_message_key="user.share.title">
-			<select id="user_switch_select" name="followersStr" style="width:300px" multiple>
-				<#include "switch_options.ftl">
-			</select>
+			<div id="user_switch_select" name="followersStr" style="width:300px" multiple>
+			</div>
 		</@control_group>
 	</#if>
 
@@ -216,13 +215,33 @@
 				hidePassword();
 			}
 		});
-
 		var switchedUsers = [];
 	<@list list_items = followers others = "no_message" ; user >
-		switchedUsers.push("${user.userId}");
+		switchedUsers.push({id:"${user.userId}", text:"${user.userId}"});
 	</@list>
-		$("#user_switch_select").val(switchedUsers).select2();
+		$("#user_switch_select").select2({
+			multiple: true,
+			minimumInputLength: 3,
+			ajax: {
+				url: "/user/api/search",
+				dataType: "json",
+				data: function (term, page) {
+					return {
+						keywords: term,
+						pageNumber: page,
+						pageSize: 10
+					}
+				},
+				results: function (data) {
+					return {results: data};
+				}
+			},
+			formatResult: function(data) {
+				return data.text
+			}
+		});
 
+		$("#user_switch_select").select2("data", switchedUsers);
 		$("#save_user_btn").click(function () {
 			document.forms.user_form.action = "${basePath}/save";
 			if ($("#user_form").valid()) {
