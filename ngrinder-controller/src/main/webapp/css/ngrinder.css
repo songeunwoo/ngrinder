@@ -1,6 +1,8 @@
 @charset "utf-8";
-body {
-	font-family: Arial, sansserif;
+
+html,body {
+	height: 100%;
+    font-family: Arial, sansserif;
 }
 
 body > .container {
@@ -8,16 +10,18 @@ body > .container {
 }
 
 .container .credit {
-    margin: 20px 350px;
+    margin: 10px 350px 0;
 }
 
 #wrap {
     min-height: 100%;
-    margin: 0 auto -60px;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -40px;
 }
 #foot_div {
     background-color: #f5f4f2;
-    height: 60px;
+    height: 40px;
 }
 #foot_div.container:before, .container:after {
     display: table;

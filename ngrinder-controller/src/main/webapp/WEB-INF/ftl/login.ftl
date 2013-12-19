@@ -14,7 +14,7 @@
 		}
 
 		.content {
-			height: 450px;
+			height: 470px;
 			margin-top: 30px;
 			padding-top: 30px;
 			background-color: #f5f4f2

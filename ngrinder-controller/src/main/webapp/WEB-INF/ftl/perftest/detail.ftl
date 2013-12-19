@@ -232,7 +232,7 @@
 					</div>
 				</#if>
 			</@security.authorize >
-			<div class="tabbable" style="margin-top: 0">
+			<div class="tabbable" style="margin-top: 0;margin-bottom: 50px">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
 					<li id="test_config_section_tab">
 						<a href="#test_config_section" data-toggle="tab">
@@ -315,7 +315,6 @@ var objTimer;
 var durationMap = [];
 
 $(document).ready(function () {
-    $("#wrap").css({"height":getDocHeight(230)});
 	$.ajaxSetup({
 		cache : false //close AJAX cache
 	});

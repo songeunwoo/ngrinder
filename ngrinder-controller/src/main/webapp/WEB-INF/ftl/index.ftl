@@ -4,6 +4,9 @@
 		<#include "common/common.ftl">
 		<title><@spring.message "home.title"/></title>
 		<style>
+			.wrap {
+				height: 470px;
+			}
 			.hero-unit { 
 				background-image: url('${req.getContextPath()}/img/bg_main_banner_en.png?${nGrinderVersion}');
 				margin-bottom: 10px;
@@ -24,7 +27,7 @@
 	<div id="wrap">
 	<#include "common/navigator.ftl">
 
-	<div class="container">
+	<div class="container wrap">
 		<div class="hero-unit"/>	
 			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickstart" method="POST">
 				<div class="quick-start" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
