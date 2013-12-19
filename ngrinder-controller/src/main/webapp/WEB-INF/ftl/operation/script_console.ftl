@@ -14,6 +14,7 @@
 </style>
 </head>
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
@@ -57,12 +58,15 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 				</#if></pre>
 			</div>
 		</div>
-		<#include "../common/copyright.ftl">
 	</div>
 	<#include "../common/codemirror.ftl">
+</div>
+<#include "../common/copyright.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/groovy.js"></script>
 	<script>
 		$(document).ready(function() {
+			$("#wrap").css({"height":getDocHeight(90)});
+
 			var editor = CodeMirror.fromTextArea(document.getElementById("script_editor"), {
 				mode: "groovy",
 				theme: "eclipse",

@@ -26,12 +26,10 @@
 		z-index:1151;
 	}
 
-
 	div.chart {
 		border: 1px solid #878988;
 		margin-bottom: 12px;
 	}
-
 
 	div.modal-body div.chart {
 		border:1px solid #878988; 
@@ -131,6 +129,10 @@
 		color: #468847;
 	}
 
+	legend {
+		padding-top: 10px;
+	}
+
 	label.region {
 		margin-left:-40px;
 	}
@@ -152,6 +154,7 @@
 </head>
 
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<form id="test_config_form" name="test_config_form" action="${req.getContextPath()}/perftest/new"
@@ -270,7 +273,6 @@
 				<input type="hidden" id="test_status" name="status" value="SAVED">
 			</#if>
 		</form>
-		<#include "../common/copyright.ftl">
 	</div>
 	<!--end container-->
 
@@ -300,6 +302,8 @@
 		</div>
 	</div>
 	<#include "host_modal.ftl">
+</div>
+<#include "../common/copyright.ftl">
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 <script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
@@ -311,6 +315,7 @@ var objTimer;
 var durationMap = [];
 
 $(document).ready(function () {
+    $("#wrap").css({"height":getDocHeight(230)});
 	$.ajaxSetup({
 		cache : false //close AJAX cache
 	});

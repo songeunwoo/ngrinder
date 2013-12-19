@@ -7,6 +7,7 @@
 </head>
 
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
@@ -18,11 +19,13 @@
 				</table>
 			</div>
 		</div>
-		<#include "../common/copyright.ftl">
 	</div>
+</div>
+<#include "../common/copyright.ftl">
 	<script>
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function pollingLogs() {
+			$("#wrap").css({"height":getDocHeight(60)});
 			var ajaxObj = new AjaxObj("/operation/log/last");
 			ajaxObj.success = function(data) {
 				var eachLog = $("tr#" +data.index + " td");
