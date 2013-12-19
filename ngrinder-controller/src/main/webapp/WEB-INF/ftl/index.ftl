@@ -26,9 +26,8 @@
 	<body>
 	<div id="wrap">
 	<#include "common/navigator.ftl">
-
 	<div class="container wrap">
-		<div class="hero-unit"/>	
+		<div class="hero-unit"/>
 			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickstart" method="POST">
 				<div class="quick-start" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
 					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message code="home.placeholder.url"/>"/>
@@ -127,16 +126,17 @@
 			}, '');
 
 			$("#start_test_btn").click(function() {
-				if ($("#url").valid()) {
-					var urlValue = $("#url").val();
+				var $url = $("#url");
+				if ($url.valid()) {
+					var urlValue = $url.val();
 					if (!urlValue.match("^(http|ftp)")) {
-						$("#url").val("http://" + urlValue);
+						$url.val("http://" + urlValue);
 					}
 					$("#quick_start").submit();
 					return true;
 				}
 				return false;
-			})
+			});
 			
 			$("#quick_start").validate({
 				errorPlacement: function(error, element) {

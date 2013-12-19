@@ -72,7 +72,10 @@
 					<img class="status" src="${req.getContextPath()}/img/ball/${agent.state.iconName}"/>
 				</div>
 			</td>
-			<td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+			<td>
+				<div class="ellipsis" title="${agent.ip}">
+					<a href="${req.getContextPath()}/agent/${agent.id}" target="_self" value="${agent.ip}">${agent.ip}</a>
+				</div>
 			</td>
 			<td id="port_${agent.id}">${(agent.port)!}</td>
 			<td class="ellipsis agent-name" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
@@ -127,27 +130,17 @@
 		enableChkboxSelectAll("agent_table");
 
 		$agentTable.on("click", ".approved", function () {
-			var sid = $(this).attr("sid");
-			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
-					{
-						"approve": "true"
-					},
-					function () {
-						showSuccessMsg("<@spring.message 'agent.message.approve'/>");
-					}
-			);
+			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
+					{	"approve": "true" },
+					"<@spring.message 'agent.message.approve'/>"
+			).call();
 		});
 
 		$agentTable.on("click", ".disapproved", function () {
-			var sid = $(this).attr("sid");
-			$.post("${req.getContextPath()}/agent/" + sid + "/approve",
-					{
-						"approve": "false"
-					},
-					function () {
-						showSuccessMsg("<@spring.message 'agent.message.disapprove'/>");
-					}
-			);
+			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
+					{	"approve": "false" },
+					"<@spring.message 'agent.message.disapprove'/>"
+			).call();
 		});
 	</#if>
 
@@ -219,7 +212,7 @@
 		var ajaxObj = new AjaxObj("/agent/api/states", null, "<@spring.message 'common.error.error'/>");
 		ajaxObj.success = function (data) {
 			for (var i = 0; i < data.length; i++) {
-				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].name);
+				updateStatus(data[i].id, data[i].icon, data[i].port, data[i].state);
 			}
 			if (ids.length == 0) {
 				return;

@@ -7,15 +7,11 @@
 	<title><@spring.message "perfTest.list.title"/></title>
 	<style>
 		td.today {
-			background-image: url('${req.getContextPath()}/img/icon_today.png');
-			background-repeat: no-repeat;
-			background-position: left top;
+			background: url('${req.getContextPath()}/img/icon_today.png') no-repeat left top;
 		}
 
 		td.yesterday {
-			background-image: url('${req.getContextPath()}/img/icon_yesterday.png');
-			background-repeat: no-repeat;
-			background-position: left top;
+			background: url('${req.getContextPath()}/img/icon_yesterday.png') no-repeat left top;
 		}
 
 		.popover {
@@ -30,18 +26,18 @@
 			text-overflow: ellipsis;
 		}
 
-		div.smallChart {
+		div.small-chart {
 			border: 1px solid #878988;
 			height: 150px;
 			min-width: 290px;
 		}
 
 		td.no-padding {
-			padding: 0px;
+			padding: 0;
 		}
 
 		td.jqplot-table-legend {
-			padding-bottom: 0px;
+			padding-bottom: 0;
 		}
 
         .img-unit {
@@ -64,7 +60,7 @@
 		</div>
 
 	<form id="test_list_form" name="test_list_form"
-	      class="well form-inline search-bar" style="margin-top:0px;height:30px;"
+	      class="well form-inline search-bar" style="margin-top:0;height:30px;"
 		  action="${req.getContextPath()}/perftest/list" method="POST">
 		<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 		<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
@@ -80,8 +76,8 @@
 				   name="query" id="query" value="${query!}">
 
 			<button type="submit" class="btn" id="search_btn">
-				<iclass
-				="icon-search"></i> <@spring.message "common.button.search"/></button>
+				<i class="icon-search"></i> <@spring.message "common.button.search"/>
+			</button>
 			<label class="checkbox" style="position:relative; margin-left:5px">
 				<input type="checkbox" id="running_only_checkbox" name="queryFilter"
 					   <#if queryFilter?? && queryFilter == 'R'>checked</#if>
@@ -177,7 +173,7 @@
 			<div class="ellipsis"
 				 rel="popover"
 				 data-html="true"
-				 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime?exists><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"
+				 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime??><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate??>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"
 				 data-title="${test.testName!""}">
 				<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName!""}</a>
 			</div>
@@ -240,14 +236,17 @@
 			<div>
 		</td>
 		<td class="center">
-			<a class="pointer-cursor" style="<#if test.status != 'FINISHED'>display: none;</#if>">
-				<i class="icon-download test-display" sid="${test.id}"></i>
+			<a class="pointer-cursor" style="<#if !test.status.isReportable()>display: none;</#if>">
+				<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
+				   class="icon-download	test-display"  sid="${test.id}"></i>
 			</a>
 			<a class="pointer-cursor" style="<#if deletable>display: none;</#if>">
-				<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i>
+				<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
+				   class="icon-remove test-remove" sid="${test.id}"></i>
 			</a>
 			<a class="pointer-cursor" style="<#if stoppable>display: none;</#if>">
-				<i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i>
+				<i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}"
+				   class="icon-stop test-stop" sid="${test.id}"></i>
 			</a>
 		</td>
 	</tr>
@@ -318,9 +317,16 @@ $(document).ready(function () {
 		var meanTimeChartId = "mean_time_chart" + id;
 		var errorChartId = "error_chart" + id;
 		if (!$(this).closest('tr').next('#' + perftestChartTrId).length) {
-			var testInfoTr = $("<tr id='" + perftestChartTrId + "' style='display:none'><td colspan='" +
-					columnCount + "' class='no-padding'><table style='width:100%'><tr><td><div " +
-					"class='smallChart' id=" + tpsId + "></div></td> <td><div class='smallChart' id=" + meanTimeChartId + "></div></td> <td><div class='smallChart' id=" + errorChartId + "></div></td></tr></table></td></tr><tr></tr>");
+			var testInfoTr = $("<tr id='" + perftestChartTrId + "' style='display:none'>" +
+					"<td colspan='" + columnCount + "' class='no-padding'>" +
+					"<table style='width:100%'>" +
+					"<tr>" +
+					"<td><div class='small-chart' id=" + tpsId + "></div></td>" +
+					"<td><div class='small-chart' id=" + meanTimeChartId + "></div></td> " +
+					"<td><div class='small-chart' id=" + errorChartId + "></div></td>" +
+					"</tr>" +
+					"</table>" +
+					"</td></tr>");
 			$(this).closest('tr').after(testInfoTr);
 			var gridPadding = { top: 15, right: 10, bottom: 30, left: 40 };
 			var ajaxObj = new AjaxObj("/perftest/api/" + id + "/graph");
@@ -329,17 +335,21 @@ $(document).ready(function () {
 				'imgWidth': 100
 			};
 			ajaxObj.success = function (res) {
+				/** @namespace res.chartInterval */
 				var chartInterval = res.chartInterval;
+				/** @namespace res.TPS */
 				new Chart(tpsId, res.TPS.data, chartInterval,
 						{
 							labels: ["TPS"], gridPadding: gridPadding,
 							numXTicks: 7, legend_margin: 3
 						}).plot();
+				/** @namespace res.Mean_Test_Time_ms */
 				new Chart(meanTimeChartId, res.Mean_Test_Time_ms.data, chartInterval,
 						{
 							labels: ["Mean Test Time"], gridPadding: gridPadding, numXTicks: 7,
 							legend_margin: 3
 						}).plot();
+				/** @namespace res.Errors */
 				new Chart(errorChartId, res.Errors.data, chartInterval,
 						{
 							labels: ["Errors"],
@@ -350,7 +360,6 @@ $(document).ready(function () {
 			ajaxObj.call();
 			testInfoTr.show("slow");
 		} else {
-			$("#" + perftestChartTrId).next('tr').remove();
 			$("#" + perftestChartTrId).remove();
 		}
 
@@ -358,14 +367,13 @@ $(document).ready(function () {
 
 	$("i.test-stop").click(function () {
 		var id = $(this).attr("sid");
-		bootbox.confirm("<@spring.message "perfTest.message.stop.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
+		bootbox.confirm("<@spring.message code="perfTest.message.stop.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
 			if (result) {
 				stopTests(id);
 			}
 		});
 	});
 
-<#if testList?has_content>
 	$("th").each(function () {
 		var $this = $(this);
 		if (!$this.hasClass("nothing")) {
@@ -390,7 +398,6 @@ $(document).ready(function () {
 
 		getList(1);
 	});
-</#if>
 
 	$("#current_running_status").click(function () {
 		$("#current_running_status_div").toggle();
@@ -398,7 +405,6 @@ $(document).ready(function () {
 
 	$("#scheduled_only_checkbox, #running_only_checkbox").click(function () {
 		var $this = $(this);
-		var $temp;
 		var checkId = $this.attr("id");
 		if (checkId == "scheduled_only_checkbox") {
 			checkboxReject($this, $("#running_only_checkbox"));
@@ -420,7 +426,7 @@ function deleteTests(ids) {
 			{ "ids": ids },
 			"<@spring.message "perfTest.message.delete.success"/>",
 			"<@spring.message "perfTest.message.delete.error"/>");
-	ajaxObj.success = function (res) {
+	ajaxObj.success = function () {
 		setTimeout(function () {
 			getList(1);
 		}, 500);
@@ -442,55 +448,67 @@ function getList(page) {
 	document.forms.test_list_form.submit();
 }
 
-function updateStatus(id, status, icon, stoppable, deletable, message) {
+function updateStatus(id, status, statusId, icon, stoppable, deletable, reportable, message) {
 	var $ballImg = $("#ball_" + id + " img");
 	if ($ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		$ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 		$(".icon-remove[sid=" + id + "]").remove();
 	}
 
-	$("#ball_" + id).attr("data-original-title", status);
-	$("#ball_" + id).data('popover').options.content = message;
+	var $ball = $("#ball_" + id);
+	$ball.attr("data-original-title", status);
+	$ball.data('popover').options.content = message;
 
 	if (stoppable == true) {
 		$("#stop_" + id).parent().show();
 	} else {
 		$("#stop_" + id).parent().hide();
 	}
+
 	if (deletable == true) {
 		$("#delete_" + id).parent().show();
 	} else {
 		$("#check_" + id).attr("disabled", true);
 		$("#delete_" + id).parent().hide();
 	}
+
+	if (reportable == true) {
+		$("#show_" + id).parent().show();
+	}
 }
 // Wrap this function in a closure so we don't pollute the namespace
 (function updateStatuses() {
-	var ids = $('input.perf_test').map(function () {
-		var perTestStatus = $(this).attr("status");
-		if (!(isFinishedStatusType(perTestStatus))) {
-			return this.value;
+	var ids = [];
+	$('input.perf_test').each(function() {
+		var $each = $(this);
+		if (!isFinishedStatusType($each.attr("status"))) {
+			ids.push($each.val());
 		}
-	}).get();
-
+	});
 	var ajaxObj = new AjaxObj("${req.getContextPath()}/perftest/api/status");
 	ajaxObj.type = "POST";
 	ajaxObj.params = {"ids": ids.join(",")};
 	ajaxObj.success = function (data) {
 		data = eval(data);
 		var status = data.status;
+		/** @namespace data.perfTestInfo */
 		var perfTest = data.perfTestInfo;
 		var springMessage = perfTest.length + " <@spring.message "perfTest.running.summary"/>";
 		$("#current_running_status").text(springMessage);
 		for (var i = 0; i < status.length; i++) {
 			var each = status[i];
-			var statusId = each.status_id;
-			$("#check_" + each.id).attr("status", statusId);
+			/** @namespace each.status_id */
 
-			if (statusId == "FINISHED" || statusId == "STOP_BY_ERROR" || statusId == "STOP_ON_ERROR" || statusId == "CANCELED") {
+			var statusId = each.status_type;
+			$("#check_" + each.id).attr("status", statusId);
+			if (each.reportable) {
 				location.reload();
 			}
-			updateStatus(each.id, each.name, each.icon, each.stoppable, each.deletable, each.message);
+			/** @namespace each.deletable */
+			/** @namespace each.reportable */
+			/** @namespace each.stoppable */
+			updateStatus(each.id, each.name, each.status_type, each.icon, each.stoppable, each.deletable,
+					each.reportable, each.message);
 		}
 		if (ids.length == 0) {
 			return true;

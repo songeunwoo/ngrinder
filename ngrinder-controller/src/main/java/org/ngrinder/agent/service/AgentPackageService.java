@@ -252,9 +252,11 @@ public class AgentPackageService {
 			dependencyStream = cl.getResourceAsStream("dependencies.txt");
 			final String dependencies = IOUtils.toString(dependencyStream);
 			for (String each : StringUtils.split(dependencies, ";")) {
-				libs.add(each.trim().replace(".jar", "").replace("-SNAPSHOT", ""));
+				libs.add(FilenameUtils.getBaseName(each.trim()).replace("-SNAPSHOT", ""));
 			}
 			libs.add(getPackageName("ngrinder-core").replace("-SNAPSHOT", ""));
+			libs.add(getPackageName("ngrinder-runtime").replace("-SNAPSHOT", ""));
+			libs.add(getPackageName("ngrinder-groovy").replace("-SNAPSHOT", ""));
 		} catch (Exception e) {
 			IOUtils.closeQuietly(dependencyStream);
 			LOGGER.error("Error while loading dependencies.txt", e);
