@@ -226,6 +226,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping("/switch_options")
 	public HttpEntity<String> switchOptions(User user, @RequestParam(required = true) final String keywords) {
+		List<UserSearchResult> result = newArrayList();
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			List<User> allUserByRole = userService.getAll(Role.USER);
 			CollectionUtils.filter(allUserByRole, new Predicate() {
@@ -235,11 +236,16 @@ public class UserController extends BaseController {
 					return each.getUserId().startsWith(keywords);
 				}
 			});
-			return toJsonHttpEntity(allUserByRole);
+			for (User each : allUserByRole) {
+				result.add(new UserSearchResult(each));
+			}
 		} else {
 			User currUser = userService.getOne(user.getUserId());
-			return toJsonHttpEntity(currUser.getOwners());
+			for (User each : currUser.getOwners()) {
+				result.add(new UserSearchResult(each));
+			}
 		}
+		return toJsonHttpEntity(result);
 	}
 
 	/**
@@ -394,8 +400,8 @@ public class UserController extends BaseController {
 		CollectionUtils.filter(result, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				User each = (User)object;
-				return !(each.getUserId().equals(currentUserId) || each.getUserId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
+				UserSearchResult each = (UserSearchResult)object;
+				return !(each.getId().equals(currentUserId) || each.getId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
 			}
 		});
 

@@ -190,7 +190,7 @@
 				ajax: {
 					url: "/user/switch_options",
 					dataType: "json",
-					data: function (term, page) {
+					data: function (term) {
 						return {
 							keywords: term
 						}
@@ -198,6 +198,9 @@
 					results: function (data) {
 						return {results: data};
 					}
+				},
+				formatSelection: function (data) {
+					return data.text;
 				},
 				formatResult: function(data) {
 					return data.text
