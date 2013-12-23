@@ -53,8 +53,7 @@
 
 	<#if allowShareChange>
 		<@control_group label_message_key="user.share.title">
-			<div id="user_switch_select" name="followersStr" style="width:300px" multiple>
-			</div>
+			<input type="hidden" id="user_switch_select" name="followersStr" style="width:300px" >
 		</@control_group>
 	</#if>
 
@@ -216,9 +215,9 @@
 			}
 		});
 		var switchedUsers = [];
-	<@list list_items = followers others = "no_message" ; user >
-		switchedUsers.push({id:"${user.userId}", text:"${user.userId}"});
-	</@list>
+		<@list list_items = followers others = "no_message" ; user >
+			switchedUsers.push({id:"${user.userId}", text:"${user.userId}"});
+		</@list>
 		$("#user_switch_select").select2({
 			multiple: true,
 			minimumInputLength: 3,
@@ -236,12 +235,24 @@
 					return {results: data};
 				}
 			},
-			formatResult: function(data) {
-				return data.text
+			formatSelection: function (data) {
+				return data.text;
+			},
+			initSelection: function (element, callback) {
+				var data = [];
+				$(element.val().split(",")).each(function(i) {
+					var item = this.split(':');
+					data.push({
+						id: item[0],
+						title: item[1]
+					});
+				});
+				callback(data);
 			}
 		});
 
 		$("#user_switch_select").select2("data", switchedUsers);
+
 		$("#save_user_btn").click(function () {
 			document.forms.user_form.action = "${basePath}/save";
 			if ($("#user_form").valid()) {
@@ -255,7 +266,6 @@
 				</#if>
 			}
 		});
-
 	});
 
 	function showPassword() {

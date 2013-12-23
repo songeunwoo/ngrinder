@@ -15,7 +15,10 @@ package org.ngrinder.user.controller;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.infra.config.Config;
@@ -122,7 +125,6 @@ public class UserController extends BaseController {
 	/**
 	 * Get user detail page.
 	 *
-	 * @param user   current user
 	 * @param model  mode
 	 * @param userId user to get
 	 * @return "user/detail"
@@ -219,19 +221,25 @@ public class UserController extends BaseController {
 	 * Get the follower list.
 	 *
 	 * @param user  current user
-	 * @param model model
-	 * @return "user/switch_options"
+	 * @param keywords search keyword.
+	 * @return json message
 	 */
 	@RequestMapping("/switch_options")
-	public String switchOptions(User user, ModelMap model) {
+	public HttpEntity<String> switchOptions(User user, @RequestParam(required = true) final String keywords) {
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			List<User> allUserByRole = userService.getAll(Role.USER);
-			model.addAttribute("shareUsers", allUserByRole);
+			CollectionUtils.filter(allUserByRole, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					User each = (User) object;
+					return each.getUserId().startsWith(keywords);
+				}
+			});
+			return toJsonHttpEntity(allUserByRole);
 		} else {
 			User currUser = userService.getOne(user.getUserId());
-			model.addAttribute("shareUsers", currUser.getOwners());
+			return toJsonHttpEntity(currUser.getOwners());
 		}
-		return "user/switch_options";
 	}
 
 	/**
@@ -367,7 +375,7 @@ public class UserController extends BaseController {
 	 *
 	 * @param pageable page info
 	 * @param keywords search keyword.
-	 * @return user/userList
+	 * @return json message
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/search", method = RequestMethod.GET)
@@ -379,8 +387,18 @@ public class UserController extends BaseController {
 		Page<User> pagedUser = userService.getPagedAll(keywords, pageable);
 		List<UserSearchResult> result = newArrayList();
 		for (User each : pagedUser) {
-			result.add(new UserSearchResult(each));
+				result.add(new UserSearchResult(each));
 		}
+
+		final String currentUserId = user.getUserId();
+		CollectionUtils.filter(result, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				User each = (User)object;
+				return !(each.getUserId().equals(currentUserId) || each.getUserId().equals(ControllerConstants.NGRINDER_INITIAL_ADMIN_USERID));
+			}
+		});
+
 		return toJsonHttpEntity(result);
 	}
 

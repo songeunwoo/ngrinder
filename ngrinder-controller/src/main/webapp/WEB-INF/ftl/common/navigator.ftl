@@ -179,11 +179,8 @@
 		});
 	}
 
-	function
-	}
-
-
 	function switchUser() {
+
 		$("#switch_user_select").change(function () {
 			document.location.href = "${req.getContextPath()}/user/switch?to=" + $(this).val();
 		});
@@ -191,13 +188,11 @@
 			$("#switch_user_select").select2({
 				minimumInputLength: 3,
 				ajax: {
-					url: "/user/api/search",
+					url: "/user/switch_options",
 					dataType: "json",
 					data: function (term, page) {
 						return {
-							keywords: term,
-							pageNumber: page,
-							pageSize: 10
+							keywords: term
 						}
 					},
 					results: function (data) {
