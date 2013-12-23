@@ -82,27 +82,25 @@ function getCookie(objName) {//get cookie value
 	return "";
 }
 
-function enableChkboxSelectAll(containerId) {
+function enableCheckboxSelectAll(containerId) {
 	var idStr = "#" + containerId + " ";
 	$(idStr + "td > input[disabled!='disabled']").click(function (event) {
 		if ($(idStr + "td > input[disabled!='disabled']").size() == $(idStr + "td > input:checked").size()) {
-			$(idStr + "th > input").attr("checked", "checked");
+			$(idStr + "th > input").attr("checked", true);
 		} else {
-			$(idStr + "th > input").removeAttr("checked");
+			$(idStr + "th > input").attr("checked", false);
 		}
-
-		event.stopImmediatePropagation();
+        event.stopImmediatePropagation();
 	});
 
 	$(idStr + "th > input").click(function (event) {
 		if ($(this)[0].checked) {
-			$(idStr + "td > input[disabled!='disabled']").each(function () {
-				if ($(this))
-					$(this).attr("checked", "checked");
+			$(idStr + "td > input[disabled!='disabled',type='checkbox']").each(function () {
+				this.checked = true
 			});
 		} else {
-			$("td > input").each(function () {
-				$(this).removeAttr("checked");
+			$("td > input[type='checkbox']").each(function () {
+                this.checked = false
 			});
 		}
 
@@ -150,6 +148,13 @@ function AjaxPostObj(url, params, successMessage, errorMessage) {
 	return ajaxObj;
 }
 
+function AjaxPutObj(url, params, successMessage, errorMessage) {
+    var ajaxObj = new AjaxObj(url, successMessage, errorMessage);
+    ajaxObj.type = "PUT";
+    ajaxObj.params = params;
+    return ajaxObj;
+}
+
 function AjaxObj(url, successMessage, errorMessage) {
 	this.url = url;
 	this.type = "GET";
@@ -171,6 +176,7 @@ AjaxObj.prototype.call = function () {
 	var that = this;
 	var path = ajaxCallContextPath + this.url;
 	var filteredParam = {};
+
 	$.each(this.params, function (key, value) {
 		var variable = "{" + key + "}";
 		if (path.indexOf(variable) != -1) {
@@ -238,3 +244,18 @@ AjaxObj.prototype.call = function () {
 		});
 	}
 };
+
+function getDocHeight(offset) {
+
+    var height = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+    );
+
+    if (typeof(offset) != "undefined"){
+        height += offset;
+    }
+
+    return height;
+}

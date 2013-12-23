@@ -40,14 +40,24 @@
 			padding-bottom: 0;
 		}
 
+        .img-unit {
+            background-image: url('${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}');
+            height: 110px;
+            padding: 0;
+            margin-top: 40px;
+        }
+
 	</style>
 </head>
 
 <body>
-<#include "../common/navigator.ftl">
+<div id="wrap">
+	<#include "../common/navigator.ftl">
 
-<div class="container">
-	<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
+	<div class="container">
+
+		<div class="img-unit">
+		</div>
 
 	<form id="test_list_form" name="test_list_form"
 	      class="well form-inline search-bar" style="margin-top:0;height:30px;"
@@ -226,18 +236,15 @@
 			<div>
 		</td>
 		<td class="center">
-			<a class="pointer-cursor" style="<#if !test.status.isReportable()>display: none;</#if>">
-				<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
-				   class="icon-download	test-display"  sid="${test.id}"></i>
-			</a>
-			<a class="pointer-cursor" style="<#if deletable>display: none;</#if>">
-				<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
-				   class="icon-remove test-remove" sid="${test.id}"></i>
-			</a>
-			<a class="pointer-cursor" style="<#if stoppable>display: none;</#if>">
-				<i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}"
-				   class="icon-stop test-stop" sid="${test.id}"></i>
-			</a>
+			<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
+			   style="<#if !test.status.isReportable()>display: none;</#if>"
+			   class="icon-download	test-display pointer-cursor"  sid="${test.id}"></i>
+			<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
+			   style="<#if deletable>display: none;</#if>"
+			   class="icon-remove test-remove pointer-cursor" sid="${test.id}"></i>
+			<i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}"
+			   style="<#if stoppable>display: none;</#if>"
+			   class="icon-stop test-stop pointer-cursor" sid="${test.id}"></i>
 		</td>
 	</tr>
 	</@list>
@@ -252,8 +259,11 @@
 	}
 </script>
 </#if>
-<#include "../common/copyright.ftl">
 </div>
+
+</div>
+<#include "../common/copyright.ftl">
+
 <script>
 $(document).ready(function () {
 	var columnCount = $('#head_tr_id').find('th').length;
@@ -267,7 +277,7 @@ $(document).ready(function () {
 
 	$("#nav_test").addClass("active");
 
-	enableChkboxSelectAll("test_table");
+	enableCheckboxSelectAll("test_table");
 
 	$("#delete_btn").click(function () {
 		var list = $("td input:checked");
@@ -447,20 +457,20 @@ function updateStatus(id, status, statusId, icon, stoppable, deletable, reportab
 	$ball.data('popover').options.content = message;
 
 	if (stoppable == true) {
-		$("#stop_" + id).parent().show();
+		$("#stop_" + id).show();
 	} else {
-		$("#stop_" + id).parent().hide();
+		$("#stop_" + id).hide();
 	}
 
 	if (deletable == true) {
-		$("#delete_" + id).parent().show();
+		$("#delete_" + id).show();
 	} else {
 		$("#check_" + id).attr("disabled", true);
-		$("#delete_" + id).parent().hide();
+		$("#delete_" + id).hide();
 	}
 
 	if (reportable == true) {
-		$("#show_" + id).parent().show();
+		$("#show_" + id).show();
 	}
 }
 // Wrap this function in a closure so we don't pollute the namespace

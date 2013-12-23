@@ -61,8 +61,7 @@
 	</style>
 </head>
 <body>
-<div>
-<#include "common/messages.ftl"/>
+	<#include "common/messages.ftl"/>
 	<script language="javascript">
 		if (top.location.href.indexOf("login") == -1) {
 			top.location.href = "${req.getContextPath()}/login";
@@ -112,22 +111,14 @@
 
 			</fieldset>
 		</form>
-		<div class="row" id="foot_div">
-			<div class="center">
-				<hr>
-				<footer>
-					<p>nGrinder ver ${nGrinderVersion}</p>
-				</footer>
-			</div>
-		</div>
+		<#include "common/copyright.ftl">
 	</div>
-</div>
+
 <div id="sign_up_modal_container"></div>
 <script language="javascript">
 	$(document).ready(function () {
 		$('input[placeholder]').placeholder();
 		$.ajaxSetup({ cache: false });
-
 		var language = getCookie("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE");
 		if (language.indexOf("kr") > -1) {
 			$("#native_language").val("kr");

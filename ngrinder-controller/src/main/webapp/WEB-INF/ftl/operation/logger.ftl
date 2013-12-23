@@ -4,9 +4,15 @@
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
 <title><@spring.message "operation.log.title"/></title>
+<style>
+	div.row {
+		margin-bottom: 50px;
+	}
+</style>
 </head>
 
 <body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
@@ -18,8 +24,9 @@
 				</table>
 			</div>
 		</div>
-		<#include "../common/copyright.ftl">
 	</div>
+</div>
+<#include "../common/copyright.ftl">
 	<script>
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function pollingLogs() {

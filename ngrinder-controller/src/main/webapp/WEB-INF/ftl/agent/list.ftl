@@ -6,12 +6,13 @@
 	<title><@spring.message "agent.title"/></title>
 </head>
 <body>
+<div id="wrap">
 <#include "../common/navigator.ftl">
 <div class="container">
 	<fieldSet>
 		<legend class="header"> <@spring.message "agent.list.title"/> </legend>
 	</fieldSet>
-<#include "region_selector.ftl">
+	<#include "region_selector.ftl">
 	<div class="well search-bar">
 		<button class="btn btn-success" id="update_agent_button">
 			<@spring.message "agent.list.update"/>
@@ -98,9 +99,10 @@
 		</@list>
 		</tbody>
 	</table>
-<#include "../common/copyright.ftl">
 	<!--content-->
 </div>
+</div>
+<#include "../common/copyright.ftl">
 <script>
 	$(document).ready(function () {
 		var $agentTable = $("#agent_table");
@@ -125,18 +127,18 @@
 		});
 
 		removeClick();
-		enableChkboxSelectAll("agent_table");
+		enableCheckboxSelectAll("agent_table");
 
 		$agentTable.on("click", ".approved", function () {
-			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
-					{	"approve": "true" },
+			new AjaxPutObj("/agent/api/" + $(this).attr("sid") + "?action=approve",
+					{},
 					"<@spring.message 'agent.message.approve'/>"
 			).call();
 		});
 
 		$agentTable.on("click", ".disapproved", function () {
-			new AjaxPostObj("${req.getContextPath()}/agent/" + $(this).attr("sid") + "/approve",
-					{	"approve": "false" },
+			new AjaxPutObj("/agent/api/" + $(this).attr("sid") + "?action=disapprove",
+					{},
 					"<@spring.message 'agent.message.disapprove'/>"
 			).call();
 		});
@@ -182,8 +184,8 @@
 	});
 
 	function stopAgents(ids) {
-		var ajaxObj = new AjaxPostObj("/agent/api/stop",
-				{ "ids": ids },
+		var ajaxObj = new AjaxPutObj("/agent/api?action=stop&ids=" + ids,
+				{},
 				"<@spring.message 'agent.message.stop.success'/>",
 				"<@spring.message 'agent.message.stop.error'/>");
 		ajaxObj.success = function () {
@@ -195,8 +197,8 @@
 	}
 
 	function updateAgents(ids) {
-		var ajaxObj = new AjaxPostObj("/agent/api/update",
-				{ "ids": ids },
+		var ajaxObj = new AjaxPutObj("/agent/api?action=update&ids=" + ids,
+				{},
 				"<@spring.message 'agent.message.update.success'/>",
 				"<@spring.message 'agent.message.update.error'/>");
 		ajaxObj.call();
