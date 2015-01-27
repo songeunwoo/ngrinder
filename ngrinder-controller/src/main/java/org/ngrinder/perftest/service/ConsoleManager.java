@@ -136,7 +136,7 @@ public class ConsoleManager {
 					consoleCommunicationSetting.setInactiveClientTimeOut(config.getInactiveClientTimeOut());
 				}
 				SingleConsole singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(),
-						consoleCommunicationSetting, baseConsoleProperties);
+						baseConsoleProperties, consoleCommunicationSetting);
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}

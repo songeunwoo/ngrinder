@@ -146,7 +146,8 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param port PORT
 	 */
 	public SingleConsole(int port) {
-		this("", port, ConsoleCommunicationSetting.asDefault(), ConsolePropertiesFactory.createEmptyConsoleProperties());
+		this("", port, ConsolePropertiesFactory.createEmptyConsoleProperties(),
+				ConsoleCommunicationSetting.asDefault());
 	}
 
 	/**
@@ -155,9 +156,10 @@ public class SingleConsole extends AbstractSingleConsole implements Listener, Sa
 	 * @param ip                IP
 	 * @param port              PORT
 	 * @param consoleProperties {@link ConsoleProperties} used.
+	 * @param consoleCommunicationSetting {@link ConsoleCommunicationSetting} used.
 	 */
-	public SingleConsole(String ip, int port, ConsoleCommunicationSetting consoleCommunicationSetting,
-						 ConsoleProperties consoleProperties) {
+	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties,
+						 ConsoleCommunicationSetting consoleCommunicationSetting) {
 		init(ip, port, consoleCommunicationSetting, consoleProperties);
 	}
 

@@ -170,8 +170,9 @@ public class AgentControllerTest extends AbstractMultiGrinderTestBase {
 		consoleCommunicationSetting.setInactiveClientTimeOut(timeout);
 
 		// Start console
-		final SingleConsole console1 = new SingleConsole("", getFreePort(), consoleCommunicationSetting,
-				ConsolePropertiesFactory.createEmptyConsoleProperties());
+		final SingleConsole console1 = new SingleConsole("", getFreePort(),
+				ConsolePropertiesFactory.createEmptyConsoleProperties(),
+				consoleCommunicationSetting);
 		console1.start();
 		console1.startSampling();
 
