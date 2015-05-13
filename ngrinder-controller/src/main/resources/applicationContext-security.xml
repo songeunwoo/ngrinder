@@ -3,8 +3,8 @@
              xmlns:beans="http://www.springframework.org/schema/beans"
              xmlns:util="http://www.springframework.org/schema/util"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-                    http://www.springframework.org/schema/security   http://www.springframework.org/schema/security/spring-security-3.1.xsd
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+                    http://www.springframework.org/schema/security   http://www.springframework.org/schema/security/spring-security-4.0.xsd
                     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 	<global-method-security pre-post-annotations="enabled"/>
@@ -26,7 +26,7 @@
 
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="svnAccessDecisionManager">
 		<http-basic entry-point-ref="svnHttpBasicEntryPoint"/>
-		<intercept-url pattern="/svn/**" access="A S U"/>
+		<intercept-url pattern="/svn/**" />
 	</http>
 
 	<!-- Generic Web -->
@@ -50,6 +50,9 @@
 		<beans:property name="authenticationSuccessHandler" ref="loginLogAuthenticationSuccessHandler"/>
 		<beans:property name="authenticationFailureHandler" ref="simpleUrlAuthenticationFailureHandler"/>
 		<beans:property name="authenticationManager" ref="authenticationManager"/>
+		<beans:property name="usernameParameter" value="j_username"/>
+		<beans:property name="passwordParameter" value="j_password"/>
+
 	</beans:bean>
 
 	<!-- SuccessHandler -->
@@ -90,8 +93,8 @@
 
 	<beans:bean id="basicProcessingFilter"
 				class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
-		<beans:property name="authenticationManager" ref="authenticationManager"/>
-		<beans:property name="authenticationEntryPoint" ref="httpBasicAuthenticationEntryPoint"/>
+		<beans:constructor-arg ref="authenticationManager"/>
+		<beans:constructor-arg ref="httpBasicAuthenticationEntryPoint"/>
 	</beans:bean>
 
 	<beans:bean id="httpBasicAuthenticationEntryPoint"
@@ -116,6 +119,7 @@
 				invalidate-session="true"/>
 		<session-management invalid-session-url="/login" session-fixation-protection="newSession"/>
 		<remember-me key="ngrinder" user-service-ref="ngrinderUserDetailsService"/>
+		<csrf disabled="true"/>
 	</http>
 
 
@@ -132,8 +136,8 @@
 
 	<beans:bean id="rememberMeServices"
 				class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
-		<beans:property name="userDetailsService" ref="ngrinderUserDetailsService"/>
-		<beans:property name="key" value="ngrinder"/>
+		<beans:constructor-arg name="key"  value="ngrinder"/>
+		<beans:constructor-arg name="userDetailsService" ref="ngrinderUserDetailsService"/>
 	</beans:bean>
 
 	<beans:bean id="ngrinderPreAuthProvider" class="org.ngrinder.security.NGrinderAuthenticationPreAuthProvider">
