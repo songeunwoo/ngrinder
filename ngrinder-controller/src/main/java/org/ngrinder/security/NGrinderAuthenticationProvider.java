@@ -99,8 +99,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 				"Bad credentials");
 		if (authentication.getCredentials() == null) {
 			LOG.debug("Authentication failed: no credentials provided");
-
-			throw new BadCredentialsException(message, userDetails);
+			throw new BadCredentialsException(message);
 		}
 
 		String presentedPassword = authentication.getCredentials().toString();
@@ -121,7 +120,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (!authorized) {
-			throw new BadCredentialsException(message, user);
+			throw new BadCredentialsException(message);
 		}
 
 		// If It's the first time to login
