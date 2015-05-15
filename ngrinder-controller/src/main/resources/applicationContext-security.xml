@@ -26,7 +26,7 @@
 
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="svnAccessDecisionManager">
 		<http-basic entry-point-ref="svnHttpBasicEntryPoint"/>
-		<intercept-url pattern="/svn/**" />
+		<intercept-url pattern="/svn/**" access="A S U" />
 	</http>
 
 	<!-- Generic Web -->
@@ -126,6 +126,7 @@
 	<beans:bean id="delegatingAuthenticationEntryPoint"
 				class="org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint">
 		<beans:constructor-arg>
+			<!--suppress InjectionValueTypeInspection -->
 			<util:map map-class="java.util.LinkedHashMap">
 				<beans:entry key="hasHeader('WWW-Authenticate','Basic')" value-ref="httpBasicAuthenticationEntryPoint"/>
 			</util:map>
@@ -142,8 +143,7 @@
 
 	<beans:bean id="ngrinderPreAuthProvider" class="org.ngrinder.security.NGrinderAuthenticationPreAuthProvider">
 		<beans:property name="preAuthenticatedUserDetailsService">
-			<beans:bean id="userDetailsServiceWrapper"
-						class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+			<beans:bean class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
 				<beans:property name="userDetailsService" ref="ngrinderUserDetailsService"/>
 			</beans:bean>
 		</beans:property>

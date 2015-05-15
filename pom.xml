@@ -62,7 +62,7 @@
 	</repositories>
 
 	<properties>
-		<spring.version>4.1.0.RELEASE</spring.version>
+		<spring.version>4.1.6.RELEASE</spring.version>
 		<spring.security.version>4.0.1.RELEASE</spring.security.version>
 		<jdk-version>1.6</jdk-version>
 		<ngrinder.version>${project.version}</ngrinder.version>
