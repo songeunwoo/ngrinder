@@ -7,7 +7,9 @@
                     http://www.springframework.org/schema/security   http://www.springframework.org/schema/security/spring-security-4.0.xsd
                     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
-	<global-method-security pre-post-annotations="enabled"/>
+	<global-method-security pre-post-annotations="enabled">
+        <expression-handler ref="methodSecurityExpressionHandler"/>
+    </global-method-security>
 
 	<beans:bean id="reflectionSaltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
 		<beans:property name="userPropertyToUse" value="username"/>
@@ -23,15 +25,25 @@
 		</beans:constructor-arg>
 	</beans:bean>
 
+	<beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+		<beans:property name="defaultRolePrefix" value="" />
+	</beans:bean>
+
+	<beans:bean id="methodSecurityExpressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+		<beans:property name="defaultRolePrefix" value="" />
+	</beans:bean>
+
+	<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+		<beans:property name="rolePrefix" value="" />
+	</beans:bean>
 
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="svnAccessDecisionManager">
 		<http-basic entry-point-ref="svnHttpBasicEntryPoint"/>
-		<intercept-url pattern="/svn/**" access="A S U" />
+		<intercept-url pattern="/svn/**" access="hasAnyRole('A', 'S', 'U')" />
 	</http>
 
 	<!-- Generic Web -->
 	<beans:bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter"/>
-
 
 	<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<beans:constructor-arg name="decisionVoters">
@@ -40,7 +52,6 @@
 			</beans:list>
 		</beans:constructor-arg>
 	</beans:bean>
-
 
 	<!-- custom-filter extends UsernamePasswordAuthenticationFilter -->
 	<beans:bean id="ngrinderUserPasswordAuthenticationFilter"
@@ -52,7 +63,6 @@
 		<beans:property name="authenticationManager" ref="authenticationManager"/>
 		<beans:property name="usernameParameter" value="j_username"/>
 		<beans:property name="passwordParameter" value="j_password"/>
-
 	</beans:bean>
 
 	<!-- SuccessHandler -->
@@ -79,6 +89,7 @@
 	<http pattern="/js/**" security="none"/>
 	<http pattern="/plugins/**" security="none"/>
 	<http pattern="/login" security="none"/>
+
 	<!-- used for shared test report page -->
 	<http pattern="/perftest/**/report" security="none"/>
 	<http pattern="/perftest/**/monitor" security="none"/>

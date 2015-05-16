@@ -119,7 +119,7 @@
 								<a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropDown.systemConfig"/></a>
 							</li>
 						</@security.authorize>
-						<@security.authorize access="hasRole('S') and hasRole('A')">
+						<@security.authorize access="hasAnyRole('A', 'S')">
 							<li class="divider"></li>
 							<li>
 								<a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropDown.announcement"/></a>
