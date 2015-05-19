@@ -40,6 +40,7 @@
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="svnAccessDecisionManager">
 		<http-basic entry-point-ref="svnHttpBasicEntryPoint"/>
 		<intercept-url pattern="/svn/**" access="hasAnyRole('A', 'S', 'U')" />
+		<csrf disabled="true"/>
 	</http>
 
 	<!-- Generic Web -->
