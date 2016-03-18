@@ -15,7 +15,20 @@
 		<deploy.dir>${basedir}/../../deploy</deploy.dir>
 		<jetty.version>6.1.25</jetty.version>
 	</properties>
-
+	
+	<repositories>
+	    <repository>
+	        <id>sonatype-nexus-snapshots</id>
+	        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	        <releases>
+	            <enabled>false</enabled>
+	        </releases>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+	</repositories>
+	
 	<profiles>
 		<profile>
 			<id>internal</id>
@@ -352,7 +365,11 @@
 			<artifactId>jcommander</artifactId>
 			<version>1.32</version>
 		</dependency>
-
+		<dependency>
+			<groupId>ro.fortsoft.pf4j</groupId>
+			<artifactId>pf4j-spring</artifactId>
+			<version>0.2.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
