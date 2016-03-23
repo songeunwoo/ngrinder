@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -13,6 +13,8 @@
  */
 package org.ngrinder.extension;
 
+import ro.fortsoft.pf4j.ExtensionPoint;
+
 /**
  * Plugin extension point which is executable when controller start and finish.
  * 
@@ -21,7 +23,7 @@ package org.ngrinder.extension;
  * @author JunHo Yoon
  * @since 3.0
  */
-public interface OnControllerLifeCycleRunnable {
+public interface OnControllerLifeCycleRunnable extends ExtensionPoint {
 
 	/**
 	 * Callback method which will be invoked whenever Controller is started.
